@@ -1,4 +1,4 @@
-﻿namespace MusicLibraryManager
+﻿namespace MusicLibraryManager.GUI
 {
     partial class Form1
     {
@@ -30,11 +30,8 @@
         {
             this.button1 = new System.Windows.Forms.Button();
             this.textBox1 = new System.Windows.Forms.TextBox();
-            this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.Column1 = new System.Windows.Forms.DataGridViewCheckBoxColumn();
-            this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            this.fileBrowser1 = new MusicLibraryManager.GUI.Controls.FileBrowser();
             this.SuspendLayout();
             // 
             // button1
@@ -49,57 +46,42 @@
             // 
             // textBox1
             // 
-            this.textBox1.Location = new System.Drawing.Point(12, 40);
+            this.textBox1.Location = new System.Drawing.Point(343, 1);
             this.textBox1.Multiline = true;
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(244, 204);
+            this.textBox1.Size = new System.Drawing.Size(398, 111);
             this.textBox1.TabIndex = 1;
-            // 
-            // dataGridView1
-            // 
-            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.Column1,
-            this.Column2});
-            this.dataGridView1.Location = new System.Drawing.Point(413, 26);
-            this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.Size = new System.Drawing.Size(328, 218);
-            this.dataGridView1.TabIndex = 2;
-            this.dataGridView1.CellValidated += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellValidated);
-            // 
-            // Column1
-            // 
-            this.Column1.FalseValue = "0";
-            this.Column1.HeaderText = "Column1";
-            this.Column1.IndeterminateValue = "2";
-            this.Column1.Name = "Column1";
-            this.Column1.ThreeState = true;
-            this.Column1.TrueValue = "1";
-            // 
-            // Column2
-            // 
-            this.Column2.HeaderText = "Column2";
-            this.Column2.Name = "Column2";
             // 
             // progressBar1
             // 
-            this.progressBar1.Location = new System.Drawing.Point(12, 250);
+            this.progressBar1.Location = new System.Drawing.Point(93, 1);
             this.progressBar1.Name = "progressBar1";
             this.progressBar1.Size = new System.Drawing.Size(244, 33);
             this.progressBar1.TabIndex = 3;
+            // 
+            // fileBrowser1
+            // 
+            this.fileBrowser1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.fileBrowser1.AutoScroll = true;
+            this.fileBrowser1.BackColor = System.Drawing.SystemColors.ControlDark;
+            this.fileBrowser1.Location = new System.Drawing.Point(12, 118);
+            this.fileBrowser1.Name = "fileBrowser1";
+            this.fileBrowser1.Size = new System.Drawing.Size(729, 340);
+            this.fileBrowser1.TabIndex = 4;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(753, 470);
+            this.Controls.Add(this.fileBrowser1);
             this.Controls.Add(this.progressBar1);
-            this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.button1);
             this.Name = "Form1";
             this.Text = "Music Library Manager";
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -109,10 +91,8 @@
 
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.TextBox textBox1;
-        private System.Windows.Forms.DataGridView dataGridView1;
-        private System.Windows.Forms.DataGridViewCheckBoxColumn Column1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
         private System.Windows.Forms.ProgressBar progressBar1;
+        private Controls.FileBrowser fileBrowser1;
     }
 }
 

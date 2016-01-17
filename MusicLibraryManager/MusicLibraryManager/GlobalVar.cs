@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,7 @@ namespace MusicLibraryManager
 {
     static class GlobalVar
     {
-        static Option option;
+        static public Option option;
+        static public Hashtable iconsInfo;
     }
 }

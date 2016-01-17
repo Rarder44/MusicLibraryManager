@@ -10,13 +10,15 @@ using System.Windows.Forms;
 using ExtendCSharp;
 using ExtendCSharp.Services;
 
-namespace MusicLibraryManager
+namespace MusicLibraryManager.GUI
 {
     public partial class Form1 : Form
     {
         public Form1()
         {
             InitializeComponent();
+
+            GlobalVar.iconsInfo = RegisteredFileType.GetFileTypeAndIcon();
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -37,7 +39,20 @@ namespace MusicLibraryManager
             FFmpeg f = new FFmpeg(@"C:\Users\Luca\Downloads\ffmpeg-20160116-git-d7c75a5-win64-static\ffmpeg-20160116-git-d7c75a5-win64-static\bin\ffmpeg.exe");
             f.FlacToMp3(@"C:\Users\Luca\Downloads\ffmpeg-20160116-git-d7c75a5-win64-static\ffmpeg-20160116-git-d7c75a5-win64-static\bin\a.flac", @"C:\Users\Luca\Downloads\ffmpeg-20160116-git-d7c75a5-win64-static\ffmpeg-20160116-git-d7c75a5-win64-static\bin\a.mp3", true, OnFFmpegStatusChanged,OnFFmpegProgressChanged, true);
             */
-            
+
+
+            MyFileSystemLoadOption lo = new MyFileSystemLoadOption();
+            lo.IgnoreException = true;
+            lo.RestrictExtensionEnable = true;
+            lo.RestrictExtension.Add("flac");
+            lo.RestrictExtension.Add("mp3");
+            MyFileSystem<MyAddittionalDataMyFileSystem> mfs = new MyFileSystem<MyAddittionalDataMyFileSystem>("E:\\MUSICA FLAC", lo);
+
+
+
+            fileBrowser1.LoadNode(mfs.Root);
+
+
         }
        
         /*
@@ -57,7 +72,7 @@ namespace MusicLibraryManager
 
         private void dataGridView1_CellValidated(object sender, DataGridViewCellEventArgs e)
         {
-            try
+            /*try
             {
                 textBox1.Text = "";
                 foreach (DataGridViewRow row in dataGridView1.Rows)
@@ -72,7 +87,7 @@ namespace MusicLibraryManager
 
                 
             }
-            catch(Exception ex) { }
+            catch(Exception ex) { }*/
         }
     }
 }
