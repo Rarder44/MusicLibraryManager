@@ -9,7 +9,9 @@ namespace MusicLibraryManager
 {
     static class GlobalVar
     {
+        static public String PathOption = "Option.xlm";
+        static public String PathFileRaccolta = "Media.xlm";
         static public Option option;
-        static public Hashtable iconsInfo;
+        
     }
 }

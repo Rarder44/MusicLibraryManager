@@ -17,8 +17,6 @@ namespace MusicLibraryManager.GUI
         public Form1()
         {
             InitializeComponent();
-
-            GlobalVar.iconsInfo = RegisteredFileType.GetFileTypeAndIcon();
         }
 
         private void button1_Click(object sender, EventArgs e)

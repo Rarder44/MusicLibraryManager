@@ -9,7 +9,7 @@ namespace MusicLibraryManager
     class Option
     {
         public String PathFFmpeg =null;
-
+        
 
     }
 }

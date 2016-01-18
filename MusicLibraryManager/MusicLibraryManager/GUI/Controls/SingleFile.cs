@@ -16,28 +16,50 @@ namespace MusicLibraryManager.GUI.Controls
 {
     public partial class SingleFile : UserControl
     {
+        //TODO: controllo e migliore gestione del nodo e della selezione ( controllo unico per selezionare/deselezionare grafica e nodo )
+        #region Variabili
+
         public bool ShowCheckBox {
             get { return checkBox1.Visible; }
             set
             {
-                checkBox1.Visible = value;
+                if(Selectionable)
+                    checkBox1.Visible = value;
+                else
+                    checkBox1.Visible = false;
             }
         }
-        public bool Selectionable { get; set; } = true;
+
+        bool _Selectionable = true;
+        public bool Selectionable
+        {
+            get { return _Selectionable; }
+            set
+            {
+                _Selectionable = value;
+                if(!_Selectionable)
+                {
+                    checkBox1.MouseClick -= checkBox1_MouseClick;
+                    checkBox1.Checked = false;
+                    _Status = SingleFileStatus.NotSelected;
+                    checkBox1.MouseClick += checkBox1_MouseClick;
+                }
+            }
+        }
 
         SingleFileStatus _Status = SingleFileStatus.NotSelected;
-        SingleFileStatus Status
+        public SingleFileStatus Status
         {
             get { return _Status; }
             set
             {
                 if (!Selectionable)
                 {
-                    checkBox1.CheckedChanged -= checkBox1_CheckedChanged;
+                    checkBox1.MouseClick -= checkBox1_MouseClick;
                     checkBox1.Checked = false;
                     Nodo.AddittionalData.Selezionato = false;
                     _Status = SingleFileStatus.NotSelected;
-                    checkBox1.CheckedChanged += checkBox1_CheckedChanged;
+                    checkBox1.MouseClick += checkBox1_MouseClick;
                     return;
                 }
                    
@@ -49,17 +71,15 @@ namespace MusicLibraryManager.GUI.Controls
                 
                 if (_Status == SingleFileStatus.Selected)
                 {
-                    checkBox1.CheckedChanged -= checkBox1_CheckedChanged;
+                    checkBox1.MouseClick -= checkBox1_MouseClick;
                     checkBox1.Checked = true;
-                    Nodo.AddittionalData.Selezionato = true;
-                    checkBox1.CheckedChanged += checkBox1_CheckedChanged;
+                    checkBox1.MouseClick += checkBox1_MouseClick;
                 }
                 else if (_Status == SingleFileStatus.NotSelected)
                 {
-                    checkBox1.CheckedChanged -= checkBox1_CheckedChanged;
+                    checkBox1.MouseClick -= checkBox1_MouseClick;
                     checkBox1.Checked = false;
-                    Nodo.AddittionalData.Selezionato = false;
-                    checkBox1.CheckedChanged += checkBox1_CheckedChanged;
+                    checkBox1.MouseClick += checkBox1_MouseClick;
                 }
 
                 Invalidate();
@@ -75,12 +95,27 @@ namespace MusicLibraryManager.GUI.Controls
             set { label1.SetTextInvoke(value); }
         }
 
+        #endregion
 
+        public bool EqualNodo(MyFileSystemNode<MyAddittionalDataMyFileSystem> n)
+        {
+            return n == Nodo;
+        }
+
+        #region Delegati ed Eventi
 
         public delegate void SingleFileDoubleClick(MyFileSystemNode<MyAddittionalDataMyFileSystem> Nodo);
         public event SingleFileDoubleClick OnSingleFileDoubleClick;
 
+        public delegate void SingleFileRightClick(MyFileSystemNode<MyAddittionalDataMyFileSystem> Nodo);
+        public event SingleFileRightClick OnSingleFileRightClick;
 
+        public delegate void SingleFileSelectChange(MyFileSystemNode<MyAddittionalDataMyFileSystem> Nodo, Keys Modificatore);
+        public event SingleFileSelectChange OnSingleFileSelectChange;
+
+        #endregion
+
+        #region Costruttori
 
         public SingleFile(MyFileSystemNode<MyAddittionalDataMyFileSystem> Nodo)
         {
@@ -92,37 +127,36 @@ namespace MusicLibraryManager.GUI.Controls
                 this.Icon.BackgroundImage = global::MusicLibraryManager.Properties.Resources.folder;
             else if (Nodo.Type == MyFileSystemNodeType.File)
             {
-                object o = GlobalVar.iconsInfo[Path.GetExtension(Nodo.Name)];
-                if(o!=null)
-                {
-                    string fileAndParam = o.ToString();
-                    if (!String.IsNullOrEmpty(fileAndParam))
-                    {
-                        Icon icon = null;
-                        bool isLarge = true;
-                        icon = RegisteredFileType.ExtractIconFromFile(fileAndParam, isLarge);
-                        if (icon != null)
-                            this.Icon.BackgroundImage = icon.ToBitmap();
-                    }
-                } 
+                Icon icon = RegisteredFileType.GetIconFromExtension(Path.GetExtension(Nodo.Name));
+                if (icon != null)
+                    this.Icon.BackgroundImage = icon.ToBitmap();
             }
 
             
             label1.Text = Nodo.ToString();
 
 
-            this.Click += new System.EventHandler(this.SingleFile_Click);
-            label1.Click += new System.EventHandler(this.SingleFile_Click);
-            Icon.Click += new System.EventHandler(this.SingleFile_Click);
+            this.MouseClick += SingleFile_MouseClick;
+            label1.MouseClick += SingleFile_MouseClick;
+            Icon.MouseClick += SingleFile_MouseClick;
 
-            this.DoubleClick += new System.EventHandler(this.SingleFile_DoubleClick);
-            label1.DoubleClick += new System.EventHandler(this.SingleFile_DoubleClick);
-            Icon.DoubleClick += new System.EventHandler(this.SingleFile_DoubleClick);
+            this.MouseClick += SingleFile_RightClickCheck;
+            label1.MouseClick += SingleFile_RightClickCheck;
+            Icon.MouseClick += SingleFile_RightClickCheck;
+            checkBox1.MouseClick += SingleFile_RightClickCheck;
 
+
+            this.MouseDoubleClick += SingleFile_MouseDoubleClick;
+            label1.MouseDoubleClick += SingleFile_MouseDoubleClick;
+            Icon.MouseDoubleClick += SingleFile_MouseDoubleClick;
+
+            
             Status = Nodo.AddittionalData.Selezionato ? SingleFileStatus.Selected : SingleFileStatus.NotSelected;
         }
 
+        #endregion
 
+        #region Override
 
         protected override CreateParams CreateParams
         {
@@ -150,27 +184,84 @@ namespace MusicLibraryManager.GUI.Controls
             }
         }
 
+        #endregion
 
+        #region Handler
 
-        private void SingleFile_DoubleClick(object sender, EventArgs e)
+        private void SingleFile_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            if (OnSingleFileDoubleClick != null)
+            if(e.Button==MouseButtons.Left && OnSingleFileDoubleClick != null)
                 OnSingleFileDoubleClick(Nodo);
         }
-
-        private void SingleFile_Click(object sender, EventArgs e)
+        private void SingleFile_MouseClick(object sender, MouseEventArgs e)
         {
-            if(Status!=SingleFileStatus.Selected)
-                Status = SingleFileStatus.Selected;
+
+        }
+        private void SingleFile_RightClickCheck(object sender, MouseEventArgs e)
+        {
+            if(e.Button==MouseButtons.Right && OnSingleFileRightClick!=null)
+            {
+                if(sender is SingleFile)
+                    OnSingleFileRightClick(sender._Cast<SingleFile>().Nodo);
+                else
+                    if(sender._Cast<Control>().Parent is SingleFile)
+                        OnSingleFileRightClick(sender._Cast<Control>().Parent._Cast<SingleFile>().Nodo);
+            }
+                
+        }
+        private void checkBox1_MouseClick(object sender, MouseEventArgs e)
+        {
+            Keys k = Control.ModifierKeys;
+            Status = checkBox1.Checked ? SingleFileStatus.Selected : SingleFileStatus.NotSelected;
+            SetSelectChildNode(checkBox1.Checked);
+            //TODO: SetSelectParentNode -> ma va controllato il seleziona/deseleziona ( due regole diverse: true= abilita "sempre" false= controlla se ci sono altri child prima di disabilitare
+            if (OnSingleFileSelectChange != null)
+                OnSingleFileSelectChange(Nodo, k);
         }
 
-        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+
+        #endregion
+
+        #region Dispatcher
+
+        public void SetSelectParentNode(bool Value)
         {
-            Status =  checkBox1.Checked ? SingleFileStatus.Selected : SingleFileStatus.NotSelected ;  
+            if (Nodo.Parent != null)
+                SetSelectParentNodeRecursive(Nodo, Value);
+        }
+        public void SetSelectParentNodeRecursive(MyFileSystemNode<MyAddittionalDataMyFileSystem> Node, bool Value)
+        {
+            Node.AddittionalData.Selezionato = Value;
+            if (Nodo.Parent != null)
+            {
+                if (Value)
+                    SetSelectChildNodeRecursive(Node.Parent, true);
+                else
+                {
+                    foreach (MyFileSystemNode<MyAddittionalDataMyFileSystem> n in Nodo.Parent.GetAllNode())
+                        if (n.AddittionalData.Selezionato)
+                            return;
+
+                    SetSelectChildNodeRecursive(Node.Parent, false);
+                }
+            }             
         }
 
 
-        
+        public void SetSelectChildNode(bool Value )
+        {
+            SetSelectChildNodeRecursive(Nodo, Value);
+        }
+        public void SetSelectChildNodeRecursive(MyFileSystemNode<MyAddittionalDataMyFileSystem> Node, bool Value)
+        {
+            Node.AddittionalData.Selezionato = Value;
+            foreach(MyFileSystemNode<MyAddittionalDataMyFileSystem> n in Node.GetAllNode())
+                SetSelectChildNodeRecursive(n, Value);
+            
+        }
+        #endregion
+
+     
     }
     public enum SingleFileStatus
     {
