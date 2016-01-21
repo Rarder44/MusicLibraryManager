@@ -66,6 +66,7 @@
     </Compile>
     <Compile Include="GlobalVar.cs" />
     <Compile Include="MyAddittionalDataMyFileSystem.cs" />
+    <Compile Include="MyFileSystemPlus.cs" />
     <Compile Include="Option.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

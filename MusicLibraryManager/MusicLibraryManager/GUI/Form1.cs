@@ -18,7 +18,7 @@ namespace MusicLibraryManager.GUI
         {
             InitializeComponent();
         }
-
+        MyFileSystemPlus mfs;
         private void button1_Click(object sender, EventArgs e)
         {
 
@@ -39,16 +39,20 @@ namespace MusicLibraryManager.GUI
             */
 
 
-            MyFileSystemLoadOption lo = new MyFileSystemLoadOption();
+            FileSystemPlusLoadOption lo = new FileSystemPlusLoadOption();
             lo.IgnoreException = true;
             lo.RestrictExtensionEnable = true;
             lo.RestrictExtension.Add("flac");
             lo.RestrictExtension.Add("mp3");
-            MyFileSystem<MyAddittionalDataMyFileSystem> mfs = new MyFileSystem<MyAddittionalDataMyFileSystem>("E:\\MUSICA FLAC", lo);
-
-
-
+            mfs = new MyFileSystemPlus("E:\\MUSICA FLAC", lo);
             fileBrowser1.LoadNode(mfs.Root);
+
+            /*String ss=Json.Serialize(mfs);
+            MyFileSystemPlus aa = Json.Deserialize<MyFileSystemPlus > (ss);
+            aa.Root.SetParentOnAllChild(FileSystemNodePlusParentSetType.AllNode);
+            fileBrowser1.LoadNode(aa.Root);*/
+
+
 
 
         }
@@ -67,25 +71,11 @@ namespace MusicLibraryManager.GUI
 
 
 
-
-        private void dataGridView1_CellValidated(object sender, DataGridViewCellEventArgs e)
+        private void button2_Click(object sender, EventArgs e)
         {
-            /*try
-            {
-                textBox1.Text = "";
-                foreach (DataGridViewRow row in dataGridView1.Rows)
-                {
-                    DataGridViewCheckBoxCell chk = row.Cells[0] as DataGridViewCheckBoxCell;
-                    textBox1.Text += Convert.ToInt32(chk.Value) + "\r\n";
-
-                }
-                
-                
-
-
-                
-            }
-            catch(Exception ex) { }*/
+            mfs.RimuoviOggettiNonSelezionati();
+            mfs.CancellaCartelleVuote();
+            fileBrowser1.LoadNode(mfs.Root);
         }
     }
 }

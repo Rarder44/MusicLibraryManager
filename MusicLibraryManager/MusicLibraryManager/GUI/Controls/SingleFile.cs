@@ -16,77 +16,11 @@ namespace MusicLibraryManager.GUI.Controls
 {
     public partial class SingleFile : UserControl
     {
-        //TODO: controllo e migliore gestione del nodo e della selezione ( controllo unico per selezionare/deselezionare grafica e nodo )
         #region Variabili
 
-        public bool ShowCheckBox {
-            get { return checkBox1.Visible; }
-            set
-            {
-                if(Selectionable)
-                    checkBox1.Visible = value;
-                else
-                    checkBox1.Visible = false;
-            }
-        }
+        public SelectControl sc = null;
 
-        bool _Selectionable = true;
-        public bool Selectionable
-        {
-            get { return _Selectionable; }
-            set
-            {
-                _Selectionable = value;
-                if(!_Selectionable)
-                {
-                    checkBox1.MouseClick -= checkBox1_MouseClick;
-                    checkBox1.Checked = false;
-                    _Status = SingleFileStatus.NotSelected;
-                    checkBox1.MouseClick += checkBox1_MouseClick;
-                }
-            }
-        }
-
-        SingleFileStatus _Status = SingleFileStatus.NotSelected;
-        public SingleFileStatus Status
-        {
-            get { return _Status; }
-            set
-            {
-                if (!Selectionable)
-                {
-                    checkBox1.MouseClick -= checkBox1_MouseClick;
-                    checkBox1.Checked = false;
-                    Nodo.AddittionalData.Selezionato = false;
-                    _Status = SingleFileStatus.NotSelected;
-                    checkBox1.MouseClick += checkBox1_MouseClick;
-                    return;
-                }
-                   
-                if (_Status == value)
-                    return;
-
-                
-                _Status = value;
-                
-                if (_Status == SingleFileStatus.Selected)
-                {
-                    checkBox1.MouseClick -= checkBox1_MouseClick;
-                    checkBox1.Checked = true;
-                    checkBox1.MouseClick += checkBox1_MouseClick;
-                }
-                else if (_Status == SingleFileStatus.NotSelected)
-                {
-                    checkBox1.MouseClick -= checkBox1_MouseClick;
-                    checkBox1.Checked = false;
-                    checkBox1.MouseClick += checkBox1_MouseClick;
-                }
-
-                Invalidate();
-            }
-        } 
-
-        MyFileSystemNode<MyAddittionalDataMyFileSystem> Nodo;
+        FileSystemNodePlus<MyAddittionalDataMyFileSystem> Nodo;
 
         public String RealName { get { return Nodo.Name; } }
         public String ShowedName
@@ -97,35 +31,35 @@ namespace MusicLibraryManager.GUI.Controls
 
         #endregion
 
-        public bool EqualNodo(MyFileSystemNode<MyAddittionalDataMyFileSystem> n)
+        public bool EqualNodo(FileSystemNodePlus<MyAddittionalDataMyFileSystem> n)
         {
             return n == Nodo;
         }
 
         #region Delegati ed Eventi
 
-        public delegate void SingleFileDoubleClick(MyFileSystemNode<MyAddittionalDataMyFileSystem> Nodo);
+        public delegate void SingleFileDoubleClick(FileSystemNodePlus<MyAddittionalDataMyFileSystem> Nodo);
         public event SingleFileDoubleClick OnSingleFileDoubleClick;
 
-        public delegate void SingleFileRightClick(MyFileSystemNode<MyAddittionalDataMyFileSystem> Nodo);
+        public delegate void SingleFileRightClick(FileSystemNodePlus<MyAddittionalDataMyFileSystem> Nodo);
         public event SingleFileRightClick OnSingleFileRightClick;
 
-        public delegate void SingleFileSelectChange(MyFileSystemNode<MyAddittionalDataMyFileSystem> Nodo, Keys Modificatore);
+        public delegate void SingleFileSelectChange(FileSystemNodePlus<MyAddittionalDataMyFileSystem> Nodo, Keys Modificatore);
         public event SingleFileSelectChange OnSingleFileSelectChange;
 
         #endregion
 
         #region Costruttori
 
-        public SingleFile(MyFileSystemNode<MyAddittionalDataMyFileSystem> Nodo)
+        public SingleFile(FileSystemNodePlus<MyAddittionalDataMyFileSystem> Nodo)
         {
             InitializeComponent();
 
             this.Nodo = Nodo;
 
-            if (Nodo.Type == MyFileSystemNodeType.Directory)
+            if (Nodo.Type == FileSystemNodePlusType.Directory)
                 this.Icon.BackgroundImage = global::MusicLibraryManager.Properties.Resources.folder;
-            else if (Nodo.Type == MyFileSystemNodeType.File)
+            else if (Nodo.Type == FileSystemNodePlusType.File)
             {
                 Icon icon = RegisteredFileType.GetIconFromExtension(Path.GetExtension(Nodo.Name));
                 if (icon != null)
@@ -150,8 +84,22 @@ namespace MusicLibraryManager.GUI.Controls
             label1.MouseDoubleClick += SingleFile_MouseDoubleClick;
             Icon.MouseDoubleClick += SingleFile_MouseDoubleClick;
 
-            
-            Status = Nodo.AddittionalData.Selezionato ? SingleFileStatus.Selected : SingleFileStatus.NotSelected;
+            sc = new SelectControl(Nodo, checkBox1);
+            sc.OnShowCheckBoxChanged += () => { Invalidate(); };
+            sc.OnCurrentSelectChanged += () => { Invalidate(); };
+            sc.OnNodeSelectChanged += () => 
+            {
+                SetSelectParentNode(sc.NodeSelect);
+                SetSelectChildNode(sc.NodeSelect);
+            };
+            sc.OnCheckBoxClick += (Keys Modificatore) =>
+            {
+                if (OnSingleFileSelectChange != null)
+                    OnSingleFileSelectChange(Nodo, Modificatore);
+                Invalidate();
+            };
+
+
         }
 
         #endregion
@@ -169,7 +117,7 @@ namespace MusicLibraryManager.GUI.Controls
         }
         protected override void OnPaintBackground(PaintEventArgs e)
         {
-            if (_Status == SingleFileStatus.Selected)
+            /*if (_Status == SingleFileStatus.Selected)
             {
                 Rectangle rc = new Rectangle(0, 0, this.ClientSize.Width, this.ClientSize.Height);
                 using (LinearGradientBrush brush = new LinearGradientBrush(rc, Color.FromArgb(220,235,252), Color.FromArgb(193, 219, 252), 90))
@@ -178,6 +126,20 @@ namespace MusicLibraryManager.GUI.Controls
                 }
             }
             else if (_Status == SingleFileStatus.NotSelected)
+            {
+                Rectangle rc = new Rectangle(0, 0, this.ClientSize.Width, this.ClientSize.Height);
+                e.Graphics.FillRectangle(Brushes.White, rc);
+            }*/
+
+            if (sc.CurrentSelect)
+            {
+                Rectangle rc = new Rectangle(0, 0, this.ClientSize.Width, this.ClientSize.Height);
+                using (LinearGradientBrush brush = new LinearGradientBrush(rc, Color.FromArgb(220, 235, 252), Color.FromArgb(193, 219, 252), 90))
+                {
+                    e.Graphics.FillRectangle(brush, rc);
+                }
+            }
+            else
             {
                 Rectangle rc = new Rectangle(0, 0, this.ClientSize.Width, this.ClientSize.Height);
                 e.Graphics.FillRectangle(Brushes.White, rc);
@@ -209,16 +171,6 @@ namespace MusicLibraryManager.GUI.Controls
             }
                 
         }
-        private void checkBox1_MouseClick(object sender, MouseEventArgs e)
-        {
-            Keys k = Control.ModifierKeys;
-            Status = checkBox1.Checked ? SingleFileStatus.Selected : SingleFileStatus.NotSelected;
-            SetSelectChildNode(checkBox1.Checked);
-            //TODO: SetSelectParentNode -> ma va controllato il seleziona/deseleziona ( due regole diverse: true= abilita "sempre" false= controlla se ci sono altri child prima di disabilitare
-            if (OnSingleFileSelectChange != null)
-                OnSingleFileSelectChange(Nodo, k);
-        }
-
 
         #endregion
 
@@ -227,24 +179,24 @@ namespace MusicLibraryManager.GUI.Controls
         public void SetSelectParentNode(bool Value)
         {
             if (Nodo.Parent != null)
-                SetSelectParentNodeRecursive(Nodo, Value);
+                SetSelectParentNodeRecursive(Nodo.Parent, Value);
         }
-        public void SetSelectParentNodeRecursive(MyFileSystemNode<MyAddittionalDataMyFileSystem> Node, bool Value)
+        public void SetSelectParentNodeRecursive(FileSystemNodePlus<MyAddittionalDataMyFileSystem> Nodo, bool Value)
         {
-            Node.AddittionalData.Selezionato = Value;
-            if (Nodo.Parent != null)
+            if (Value)
             {
-                if (Value)
-                    SetSelectChildNodeRecursive(Node.Parent, true);
-                else
-                {
-                    foreach (MyFileSystemNode<MyAddittionalDataMyFileSystem> n in Nodo.Parent.GetAllNode())
-                        if (n.AddittionalData.Selezionato)
-                            return;
+                Nodo.AddittionalData.Selezionato = true;
+            }
+            else
+            {
+                foreach (FileSystemNodePlus<MyAddittionalDataMyFileSystem> n in Nodo.GetAllNode())
+                    if (n.AddittionalData.Selezionato)
+                        return;
+                Nodo.AddittionalData.Selezionato = false;
 
-                    SetSelectChildNodeRecursive(Node.Parent, false);
-                }
-            }             
+            }
+            if (Nodo.Parent != null)
+                SetSelectParentNodeRecursive(Nodo.Parent, Value);
         }
 
 
@@ -252,16 +204,149 @@ namespace MusicLibraryManager.GUI.Controls
         {
             SetSelectChildNodeRecursive(Nodo, Value);
         }
-        public void SetSelectChildNodeRecursive(MyFileSystemNode<MyAddittionalDataMyFileSystem> Node, bool Value)
+        public void SetSelectChildNodeRecursive(FileSystemNodePlus<MyAddittionalDataMyFileSystem> Node, bool Value)
         {
             Node.AddittionalData.Selezionato = Value;
-            foreach(MyFileSystemNode<MyAddittionalDataMyFileSystem> n in Node.GetAllNode())
+            foreach(FileSystemNodePlus<MyAddittionalDataMyFileSystem> n in Node.GetAllNode())
                 SetSelectChildNodeRecursive(n, Value);
             
         }
         #endregion
 
      
+    }
+
+    public class SelectControl
+    {
+        #region Variabili
+
+        FileSystemNodePlus<MyAddittionalDataMyFileSystem> Node = null;
+        CheckBox c;
+
+        #endregion
+
+        #region Costruttori
+
+        public SelectControl(FileSystemNodePlus<MyAddittionalDataMyFileSystem> Node, CheckBox c)
+        {
+            this.Node = Node;
+            this.c = c;
+            c.MouseClick += C_MouseClick;
+            CurrentSelect = NodeSelect;
+        }
+
+
+        #endregion
+
+
+        private void C_MouseClick(object sender, MouseEventArgs e)
+        {
+            Keys k = Control.ModifierKeys;
+            Select = sender._Cast<CheckBox>().Checked;
+
+            if (OnCheckBoxClick != null)
+                OnCheckBoxClick(k);
+        }
+
+
+        #region Delegati ed Eventi
+
+        public delegate void ShowCheckBoxChangedHandler();
+        public delegate void NodeSelectChangedHandler();
+        public delegate void CurrentSelectChangedHandler();
+        public delegate void CheckBoxClickHandler(Keys Modificatore);
+
+        public event ShowCheckBoxChangedHandler OnShowCheckBoxChanged;
+        public event NodeSelectChangedHandler OnNodeSelectChanged;
+        public event CurrentSelectChangedHandler OnCurrentSelectChanged;
+        public event CheckBoxClickHandler OnCheckBoxClick;
+
+        #endregion
+
+        #region Proprietà
+
+        bool _Selectionable = true;
+        public bool Selectionable
+        {
+            get
+            {
+                return _Selectionable;
+            }
+            set
+            {
+                if (_Selectionable = value)
+                    return;
+
+                _Selectionable = value;
+                if(_Selectionable)
+                {
+                    ShowCheckBox = true;
+                    CurrentSelect = NodeSelect;
+                }
+                else
+                {
+                    ShowCheckBox = false;
+                    CurrentSelect = false;
+                }
+            }
+        }
+        public bool ShowCheckBox
+        {
+            get { return c.Visible; }
+            set
+            {
+                if (c.Visible != value)
+                {
+                    c.Visible = value;
+                    if (OnShowCheckBoxChanged != null)
+                        OnShowCheckBoxChanged();
+                }
+            }
+        }
+
+        public bool NodeSelect {
+            get
+            {
+                return Node.AddittionalData.Selezionato;
+            }
+            set
+            {
+                if (Node.AddittionalData.Selezionato != value)
+                {
+                    Node.AddittionalData.Selezionato = value;
+                    if (OnNodeSelectChanged != null)
+                        OnNodeSelectChanged();
+                }
+            }
+        }
+        public bool CurrentSelect
+        {
+            get
+            {
+                return c.Checked;
+            }
+            set
+            {
+                if (c.Checked != value)
+                {
+                    c.Checked = value;
+                    if (OnCurrentSelectChanged != null)
+                        OnCurrentSelectChanged();
+                }
+            }
+        }
+
+        public bool Select
+        {
+            set
+            {
+                NodeSelect = value;
+                CurrentSelect = value;
+            }
+        }
+
+        #endregion
+
     }
     public enum SingleFileStatus
     {

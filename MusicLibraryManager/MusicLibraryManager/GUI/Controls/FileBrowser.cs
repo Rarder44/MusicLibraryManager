@@ -13,6 +13,8 @@ namespace MusicLibraryManager.GUI.Controls
 {
     public partial class FileBrowser : UserControl
     {
+        #region Variable
+
         FileBrowserStatus _Status = FileBrowserStatus.browsing;
         public FileBrowserStatus Status
         {
@@ -29,30 +31,43 @@ namespace MusicLibraryManager.GUI.Controls
 
         public int LastClicked = -1;
 
+        FileSystemNodePlus<MyAddittionalDataMyFileSystem> CurrentNode = null;
+
+        #endregion
+
         public FileBrowser()
         {
             InitializeComponent();
         }
 
 
-        public void LoadNode(MyFileSystemNode<MyAddittionalDataMyFileSystem> Node)
+        public void LoadNode(FileSystemNodePlus<MyAddittionalDataMyFileSystem> Node)
         {
-            Controls.Clear();
-            if (Node.Parent != null)
+            if (Node != null)
             {
-                AddComponent(Node.Parent, false, "..");
+                CurrentNode = Node;
+                Controls.Clear();
+                if (Node.Parent != null)
+                {
+                    AddComponent(Node.Parent, false, "..");
+
+                }
+                foreach (FileSystemNodePlus<MyAddittionalDataMyFileSystem> nd in Node.GetAllNode(FileSystemNodePlusType.Directory))
+                {
+                    AddComponent(nd);
+                }
+                foreach (FileSystemNodePlus<MyAddittionalDataMyFileSystem> nf in Node.GetAllNode(FileSystemNodePlusType.File))
+                {
+                    AddComponent(nf);
+                }
+                this.Focus();
             }
-            foreach (MyFileSystemNode<MyAddittionalDataMyFileSystem> nd in Node.GetAllNode(MyFileSystemNodeType.Directory))
-            {
-                AddComponent(nd);
-            }
-            foreach (MyFileSystemNode<MyAddittionalDataMyFileSystem> nf in Node.GetAllNode(MyFileSystemNodeType.File))
-            {
-                AddComponent(nf);
-            }
-            this.Focus();
         }
-        public void AddComponent(MyFileSystemNode<MyAddittionalDataMyFileSystem> Component,bool Selectionable=true,String OverrideName=null)
+        public void ReloadNode()
+        {
+            LoadNode(CurrentNode);
+        }
+        public void AddComponent(FileSystemNodePlus<MyAddittionalDataMyFileSystem> Component,bool Selectionable=true,String OverrideName=null)
         {
             SingleFile s = new SingleFile(Component);
             s.Location = new Point(0, s.Height * Controls.Count);
@@ -64,19 +79,19 @@ namespace MusicLibraryManager.GUI.Controls
 
             if(OverrideName!=null)
                 s.ShowedName = OverrideName;
-            s.Selectionable = Selectionable;
-
+            
             if (_Status == FileBrowserStatus.browsing)
-                s.ShowCheckBox = false;
+                s.sc.ShowCheckBox = false;
             else if (_Status == FileBrowserStatus.Select)
-                s.ShowCheckBox = true;
+                s.sc.ShowCheckBox = true;
+
+            s.sc.Selectionable = Selectionable;
 
 
             Controls.Add(s);
         }
 
        
-
         public void ReloadCheckBoxPropriety()
         {
             if (_Status == FileBrowserStatus.browsing)
@@ -86,9 +101,21 @@ namespace MusicLibraryManager.GUI.Controls
         }
         public void ChekBoxVisible(bool Status)
         {
-            foreach(Control c in Controls)
-                if (c is SingleFile)
-                    c._Cast<SingleFile>().ShowCheckBox = Status; 
+            if(Status)
+            {
+                foreach (Control c in Controls)
+                    if (c is SingleFile)
+                    {
+                        SingleFile ss = c._Cast<SingleFile>();
+                        if (ss.sc.Selectionable)
+                            c._Cast<SingleFile>().sc.ShowCheckBox = true;
+                    }
+            }
+            else
+                foreach (Control c in Controls)
+                    if (c is SingleFile)
+                        c._Cast<SingleFile>().sc.ShowCheckBox = false;
+                    
         }
 
 
@@ -111,21 +138,20 @@ namespace MusicLibraryManager.GUI.Controls
         }
         private void deselezionaTuttoToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            //TODO: controllo e miglioro deselezione
             foreach (SingleFile sf in Controls.OfType<SingleFile>())
             {
-                sf.Status = SingleFileStatus.NotSelected;
-                sf.SetSelectChildNode(false);
+                if(!sf.EqualNodo(CurrentNode.Parent))
+                    sf.sc.Select = false;
             }
-                    
+            
         }
 
-        private void S_OnSingleFileDoubleClick(MyFileSystemNode<MyAddittionalDataMyFileSystem> Nodo)
+        private void S_OnSingleFileDoubleClick(FileSystemNodePlus<MyAddittionalDataMyFileSystem> Nodo)
         {
-            if (Nodo.Type == MyFileSystemNodeType.Directory)
+            if (Nodo.Type == FileSystemNodePlusType.Directory)
                 LoadNode(Nodo);
         }
-        private void S_OnSingleFileRightClick(MyFileSystemNode<MyAddittionalDataMyFileSystem> Nodo)
+        private void S_OnSingleFileRightClick(FileSystemNodePlus<MyAddittionalDataMyFileSystem> Nodo)
         {
             ApricontextMenuStrip(Cursor.Position);
         }
@@ -134,13 +160,21 @@ namespace MusicLibraryManager.GUI.Controls
             if (e.Button == MouseButtons.Right)
                 ApricontextMenuStrip(Cursor.Position);
         }
-        private void S_OnSingleFileSelectChange(MyFileSystemNode<MyAddittionalDataMyFileSystem> Nodo, Keys Modificatore)
+        private void S_OnSingleFileSelectChange(FileSystemNodePlus<MyAddittionalDataMyFileSystem> Nodo, Keys Modificatore)
         {
             if(Modificatore!=Keys.Shift)
                 LastClicked = Controls.IndexOf(Controls.OfType<SingleFile>().Where(sf => sf.EqualNodo(Nodo)).First());
             else
             {
-                //TODO: selezione con modificatore
+                int NowClicked= Controls.IndexOf(Controls.OfType<SingleFile>().Where(sf => sf.EqualNodo(Nodo)).First());
+                int max = LastClicked > NowClicked ? LastClicked : NowClicked;
+                for (int i=LastClicked<NowClicked?LastClicked:NowClicked;i<max;i++)
+                {
+                    if (Controls[i] is SingleFile)
+                        Controls[i]._Cast<SingleFile>().sc.Select = true;
+                }
+                LastClicked = NowClicked;
+
             }
         }
 
