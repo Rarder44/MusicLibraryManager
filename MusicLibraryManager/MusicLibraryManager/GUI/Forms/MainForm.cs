@@ -9,14 +9,62 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using ExtendCSharp;
 using ExtendCSharp.Services;
+using MusicLibraryManager.DataSave;
 
-namespace MusicLibraryManager.GUI
+namespace MusicLibraryManager.GUI.Forms
 {
-    public partial class Form1 : Form
+    public partial class MainForm : Form
     {
-        public Form1()
+        Option option;
+        public MainForm()
         {
             InitializeComponent();
+        }
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+            FileData FD = FileReader.ReadFile(GlobalVar.PathOption);
+            if (FD == null)
+            {
+                MessageBox.Show("File di opzioni: " + GlobalVar.PathOption + " Non trovato.\r\nVerrà creato un nuovo file Opzioni");
+                option = new Option();
+                FileReader.WriteFile(GlobalVar.PathOption, option, FileDataType.Option);
+            }
+            else if(FD.o ==null || !(FD.o is Option) )
+            {
+                MessageBox.Show("File di opzioni: " + GlobalVar.PathOption + " non caricato correttamente.\r\nVerrà creato un nuovo file Opzioni");
+                option = new Option();
+                FileReader.WriteFile(GlobalVar.PathOption, option, FileDataType.Option);
+            }
+            else
+            {
+                option = FD.o._Cast<Option>();
+            }
+
+            option.OnSomethingChenged += (ChangedVar var) =>
+            {
+                FileReader.WriteFile(GlobalVar.PathOption, option, FileDataType.Option);
+                if((var&ChangedVar.PathMedia)==ChangedVar.PathMedia)
+                {
+                    LoadMediaLibrary();
+                }
+            };
+
+
+            if (option.PathMedia!=null)
+            {
+                LoadMediaLibrary();
+            }
+        }
+
+        void LoadMediaLibrary()
+        {
+            FileSystemPlusLoadOption lo = new FileSystemPlusLoadOption();
+            lo.IgnoreException = true;
+            lo.RestrictExtensionEnable = true;
+            lo.RestrictExtension.Add("flac");
+            lo.RestrictExtension.Add("mp3");
+            mfs = new MyFileSystemPlus(option.PathMedia, lo);
+            fileBrowser1.LoadNode(mfs.Root);
         }
         MyFileSystemPlus mfs;
         private void button1_Click(object sender, EventArgs e)
@@ -39,13 +87,7 @@ namespace MusicLibraryManager.GUI
             */
 
 
-            FileSystemPlusLoadOption lo = new FileSystemPlusLoadOption();
-            lo.IgnoreException = true;
-            lo.RestrictExtensionEnable = true;
-            lo.RestrictExtension.Add("flac");
-            lo.RestrictExtension.Add("mp3");
-            mfs = new MyFileSystemPlus("E:\\MUSICA FLAC", lo);
-            fileBrowser1.LoadNode(mfs.Root);
+            
 
             /*String ss=Json.Serialize(mfs);
             MyFileSystemPlus aa = Json.Deserialize<MyFileSystemPlus > (ss);
@@ -77,5 +119,12 @@ namespace MusicLibraryManager.GUI
             mfs.CancellaCartelleVuote();
             fileBrowser1.LoadNode(mfs.Root);
         }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            new OptionForm(option).ShowDialog();
+        }
+
+       
     }
 }
