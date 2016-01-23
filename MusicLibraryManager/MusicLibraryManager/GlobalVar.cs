@@ -10,5 +10,6 @@ namespace MusicLibraryManager
     static class GlobalVar
     {
         static public String PathOption = "Option.mlmo";
+        static public String PathPlaylistlsocation = "Playlistlsocation.mlmp";
     }
 }

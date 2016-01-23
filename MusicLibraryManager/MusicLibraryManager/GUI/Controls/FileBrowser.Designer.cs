@@ -32,6 +32,8 @@
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.sceltaCheckBoxToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deselezionaTuttoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.aggiungiRimuoviToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -39,23 +41,37 @@
             // 
             this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.sceltaCheckBoxToolStripMenuItem,
-            this.deselezionaTuttoToolStripMenuItem});
+            this.deselezionaTuttoToolStripMenuItem,
+            this.toolStripSeparator1,
+            this.aggiungiRimuoviToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(169, 70);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(171, 76);
             // 
             // sceltaCheckBoxToolStripMenuItem
             // 
             this.sceltaCheckBoxToolStripMenuItem.Name = "sceltaCheckBoxToolStripMenuItem";
-            this.sceltaCheckBoxToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.sceltaCheckBoxToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
             this.sceltaCheckBoxToolStripMenuItem.Text = "Scelta CheckBox";
             this.sceltaCheckBoxToolStripMenuItem.Click += new System.EventHandler(this.sceltaCheckBoxToolStripMenuItem_Click);
             // 
             // deselezionaTuttoToolStripMenuItem
             // 
             this.deselezionaTuttoToolStripMenuItem.Name = "deselezionaTuttoToolStripMenuItem";
-            this.deselezionaTuttoToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
+            this.deselezionaTuttoToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
             this.deselezionaTuttoToolStripMenuItem.Text = "Deseleziona Tutto";
             this.deselezionaTuttoToolStripMenuItem.Click += new System.EventHandler(this.deselezionaTuttoToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(167, 6);
+            // 
+            // aggiungiRimuoviToolStripMenuItem
+            // 
+            this.aggiungiRimuoviToolStripMenuItem.Name = "aggiungiRimuoviToolStripMenuItem";
+            this.aggiungiRimuoviToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
+            this.aggiungiRimuoviToolStripMenuItem.Text = "Aggiungi Rimuovi";
+            this.aggiungiRimuoviToolStripMenuItem.Click += new System.EventHandler(this.aggiungiRimuoviToolStripMenuItem_Click);
             // 
             // FileBrowser
             // 
@@ -77,5 +93,7 @@
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
         private System.Windows.Forms.ToolStripMenuItem sceltaCheckBoxToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem deselezionaTuttoToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripMenuItem aggiungiRimuoviToolStripMenuItem;
     }
 }

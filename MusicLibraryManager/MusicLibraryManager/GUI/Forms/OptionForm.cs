@@ -16,6 +16,8 @@ namespace MusicLibraryManager.GUI.Forms
     public partial class OptionForm : Form
     {
         Option option = null;
+
+
         public OptionForm(Option o)
         {
             InitializeComponent();
@@ -23,9 +25,12 @@ namespace MusicLibraryManager.GUI.Forms
         }
         private void OptionForm_Load(object sender, EventArgs e)
         {
-            textBox1.Text = option.PathMedia;
-            textBox2.Text = option.PathFFmpeg;
+            textBox_rootMedia.Text = option.PathMedia;
+            textBox_ffmpeg.Text = option.PathFFmpeg;
+            foreach(string s in option.Extensions)
+                listBox1.Items.Add(s);
         }
+
         private void MediaPath_Click(object sender, EventArgs e)
         {
             FolderSelectDialog fsd = new FolderSelectDialog();
@@ -33,12 +38,14 @@ namespace MusicLibraryManager.GUI.Forms
             {
                 if (Directory.Exists(fsd.FileName))
                 {
-                    textBox1.Text = fsd.FileName;
+                    textBox_rootMedia.Text = fsd.FileName;
                 }
                 else
                     MessageBox.Show("Errore nel recupero della cartella");
             }
         }
+
+
         private void FFmpeg_Click(object sender, EventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog();
@@ -50,7 +57,7 @@ namespace MusicLibraryManager.GUI.Forms
                 {
                     if(FFmpeg.Initialize(ofd.FileName))
                     {
-                        textBox2.Text = ofd.FileName;
+                        textBox_ffmpeg.Text = ofd.FileName;
                     }
                     else
                     {
@@ -62,15 +69,47 @@ namespace MusicLibraryManager.GUI.Forms
             }
         }
 
+       
+        private void listBox1_MouseDown(object sender, MouseEventArgs e)
+        {
+            if(e.Button==MouseButtons.Right)
+            {
+                listBox1.SelectedIndex = listBox1.IndexFromPoint(e.X, e.Y);
+                if(listBox1.SelectedIndex!=-1)
+                    contextMenuStrip1.Show(Cursor.Position);
+            }
+        }
+        private void button4_Click(object sender, EventArgs e)
+        {
+            listBox1.Items.Add(textBox_ext.Text.Trim(' ', '.').ToLower());
+            textBox_ext.Text = "";
+        }
+        private void asdToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            listBox1.Items.Remove(listBox1.SelectedItem);
+        }
+
 
         private void Salva_Click(object sender, EventArgs e)
         {
-            option.PathMedia = textBox1.Text;
-            option.PathFFmpeg = textBox2.Text;
-            option.SomethingChenged();
+            option.PathMedia = textBox_rootMedia.Text;
+            option.PathFFmpeg = textBox_ffmpeg.Text;
+
+            ListPlus<String> ls = listBox1.Items.ToListPlus<String>();
+            option.Extensions.RemoveNotInRange(ls);
+            option.Extensions.AddUnique(ls);
+            if (option.ChangedVar != ChangedVar.nul)
+            {
+                option.SomethingChenged();
+            }
+
+                   
             Close();
         }
 
-        
+        private void OptionForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+
+        }
     }
 }

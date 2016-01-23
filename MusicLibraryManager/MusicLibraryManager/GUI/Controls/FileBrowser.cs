@@ -31,17 +31,39 @@ namespace MusicLibraryManager.GUI.Controls
 
         public int LastClicked = -1;
 
-        FileSystemNodePlus<MyAddittionalDataMyFileSystem> CurrentNode = null;
+        FileSystemNodePlus<MyAddittionalData> CurrentNode = null;
+        MyFileSystemPlus currentFileSystem = null;
+
+        public FileBrowserType Type = FileBrowserType.Root;
+        public List<Playlist> lp = null;
 
         #endregion
+
+        public delegate void AddItemRequestEventHandler(Playlist p, MyFileSystemPlus f);
+        public event AddItemRequestEventHandler AddItemRequest;
+
+        public delegate void RemoveItemRequestEventHandler(MyFileSystemPlus ToRemoveSelect);
+        public event RemoveItemRequestEventHandler RemoveItemRequest;
+
 
         public FileBrowser()
         {
             InitializeComponent();
         }
 
-
-        public void LoadNode(FileSystemNodePlus<MyAddittionalDataMyFileSystem> Node)
+        public void Clear()
+        {
+            Controls.Clear();
+        }
+        public void LoadMyFileSystemPlus(MyFileSystemPlus mfsp)
+        {
+            currentFileSystem = mfsp;
+            if(currentFileSystem!=null)
+                LoadNode(currentFileSystem.Root);
+            else
+                LoadNode(null);
+        }
+        private void LoadNode(FileSystemNodePlus<MyAddittionalData> Node)
         {
             if (Node != null)
             {
@@ -50,13 +72,12 @@ namespace MusicLibraryManager.GUI.Controls
                 if (Node.Parent != null)
                 {
                     AddComponent(Node.Parent, false, "..");
-
                 }
-                foreach (FileSystemNodePlus<MyAddittionalDataMyFileSystem> nd in Node.GetAllNode(FileSystemNodePlusType.Directory))
+                foreach (FileSystemNodePlus<MyAddittionalData> nd in Node.GetAllNode(FileSystemNodePlusType.Directory))
                 {
                     AddComponent(nd);
                 }
-                foreach (FileSystemNodePlus<MyAddittionalDataMyFileSystem> nf in Node.GetAllNode(FileSystemNodePlusType.File))
+                foreach (FileSystemNodePlus<MyAddittionalData> nf in Node.GetAllNode(FileSystemNodePlusType.File))
                 {
                     AddComponent(nf);
                 }
@@ -67,7 +88,7 @@ namespace MusicLibraryManager.GUI.Controls
         {
             LoadNode(CurrentNode);
         }
-        public void AddComponent(FileSystemNodePlus<MyAddittionalDataMyFileSystem> Component,bool Selectionable=true,String OverrideName=null)
+        public void AddComponent(FileSystemNodePlus<MyAddittionalData> Component,bool Selectionable=true,String OverrideName=null)
         {
             SingleFile s = new SingleFile(Component);
             s.Location = new Point(0, s.Height * Controls.Count);
@@ -125,9 +146,42 @@ namespace MusicLibraryManager.GUI.Controls
                 sceltaCheckBoxToolStripMenuItem.Text = "Modalità Scelta";
             else if(_Status == FileBrowserStatus.Select)
                     sceltaCheckBoxToolStripMenuItem.Text = "Modalità Naviga";
+
+            if (Type == FileBrowserType.Root)
+            {
+                aggiungiRimuoviToolStripMenuItem.Text = "Aggiungi a";
+                aggiungiRimuoviToolStripMenuItem.DropDownItems.Clear();
+                foreach (Playlist p in lp)
+                {
+                    ToolStripMenuItemPlus t = new ToolStripMenuItemPlus(p);
+                    t.Click += (object sender, EventArgs e) =>
+                    {
+                        if (AddItemRequest != null)
+                        {
+                            AddItemRequest(sender._Cast<ToolStripMenuItemPlus>().TextObject._Cast<Playlist>(), currentFileSystem);
+                        }
+                    };
+                    aggiungiRimuoviToolStripMenuItem.DropDownItems.Add(t);
+                }
+            }
+            else
+            {
+                aggiungiRimuoviToolStripMenuItem.Text = "Rimuovi";
+                aggiungiRimuoviToolStripMenuItem.DropDownItems.Clear();
+                aggiungiRimuoviToolStripMenuItem.Click -= AggiungiRimuoviToolStripMenuItem_Click;
+               aggiungiRimuoviToolStripMenuItem.Click += AggiungiRimuoviToolStripMenuItem_Click;
+
+            }
             contextMenuStrip1.Show(Cursor.Position);
         }
 
+        private void AggiungiRimuoviToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (RemoveItemRequest != null)
+            {
+                RemoveItemRequest(currentFileSystem);
+            }
+        }
 
         private void sceltaCheckBoxToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -146,12 +200,12 @@ namespace MusicLibraryManager.GUI.Controls
             
         }
 
-        private void S_OnSingleFileDoubleClick(FileSystemNodePlus<MyAddittionalDataMyFileSystem> Nodo)
+        private void S_OnSingleFileDoubleClick(FileSystemNodePlus<MyAddittionalData> Nodo)
         {
             if (Nodo.Type == FileSystemNodePlusType.Directory)
                 LoadNode(Nodo);
         }
-        private void S_OnSingleFileRightClick(FileSystemNodePlus<MyAddittionalDataMyFileSystem> Nodo)
+        private void S_OnSingleFileRightClick(FileSystemNodePlus<MyAddittionalData> Nodo)
         {
             ApricontextMenuStrip(Cursor.Position);
         }
@@ -160,7 +214,7 @@ namespace MusicLibraryManager.GUI.Controls
             if (e.Button == MouseButtons.Right)
                 ApricontextMenuStrip(Cursor.Position);
         }
-        private void S_OnSingleFileSelectChange(FileSystemNodePlus<MyAddittionalDataMyFileSystem> Nodo, Keys Modificatore)
+        private void S_OnSingleFileSelectChange(FileSystemNodePlus<MyAddittionalData> Nodo, Keys Modificatore)
         {
             if(Modificatore!=Keys.Shift)
                 LastClicked = Controls.IndexOf(Controls.OfType<SingleFile>().Where(sf => sf.EqualNodo(Nodo)).First());
@@ -178,12 +232,22 @@ namespace MusicLibraryManager.GUI.Controls
             }
         }
 
-       
+        private void aggiungiRimuoviToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 
     public enum FileBrowserStatus
     {
         Select,
         browsing,
+    }
+
+
+    public enum FileBrowserType
+    {
+        Root,
+        Playlist,
     }
 }

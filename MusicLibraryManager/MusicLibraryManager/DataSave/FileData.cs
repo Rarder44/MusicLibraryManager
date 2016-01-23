@@ -28,6 +28,7 @@ namespace MusicLibraryManager.DataSave
     {
         MediaLibrary,
         Option,
+        Playlistlsocation,
         Playlist,
         NotSet
     }

@@ -20,7 +20,7 @@ namespace MusicLibraryManager.GUI.Controls
 
         public SelectControl sc = null;
 
-        FileSystemNodePlus<MyAddittionalDataMyFileSystem> Nodo;
+        FileSystemNodePlus<MyAddittionalData> Nodo;
 
         public String RealName { get { return Nodo.Name; } }
         public String ShowedName
@@ -31,27 +31,27 @@ namespace MusicLibraryManager.GUI.Controls
 
         #endregion
 
-        public bool EqualNodo(FileSystemNodePlus<MyAddittionalDataMyFileSystem> n)
+        public bool EqualNodo(FileSystemNodePlus<MyAddittionalData> n)
         {
             return n == Nodo;
         }
 
         #region Delegati ed Eventi
 
-        public delegate void SingleFileDoubleClick(FileSystemNodePlus<MyAddittionalDataMyFileSystem> Nodo);
+        public delegate void SingleFileDoubleClick(FileSystemNodePlus<MyAddittionalData> Nodo);
         public event SingleFileDoubleClick OnSingleFileDoubleClick;
 
-        public delegate void SingleFileRightClick(FileSystemNodePlus<MyAddittionalDataMyFileSystem> Nodo);
+        public delegate void SingleFileRightClick(FileSystemNodePlus<MyAddittionalData> Nodo);
         public event SingleFileRightClick OnSingleFileRightClick;
 
-        public delegate void SingleFileSelectChange(FileSystemNodePlus<MyAddittionalDataMyFileSystem> Nodo, Keys Modificatore);
+        public delegate void SingleFileSelectChange(FileSystemNodePlus<MyAddittionalData> Nodo, Keys Modificatore);
         public event SingleFileSelectChange OnSingleFileSelectChange;
 
         #endregion
 
         #region Costruttori
 
-        public SingleFile(FileSystemNodePlus<MyAddittionalDataMyFileSystem> Nodo)
+        public SingleFile(FileSystemNodePlus<MyAddittionalData> Nodo)
         {
             InitializeComponent();
 
@@ -181,7 +181,7 @@ namespace MusicLibraryManager.GUI.Controls
             if (Nodo.Parent != null)
                 SetSelectParentNodeRecursive(Nodo.Parent, Value);
         }
-        public void SetSelectParentNodeRecursive(FileSystemNodePlus<MyAddittionalDataMyFileSystem> Nodo, bool Value)
+        public void SetSelectParentNodeRecursive(FileSystemNodePlus<MyAddittionalData> Nodo, bool Value)
         {
             if (Value)
             {
@@ -189,7 +189,7 @@ namespace MusicLibraryManager.GUI.Controls
             }
             else
             {
-                foreach (FileSystemNodePlus<MyAddittionalDataMyFileSystem> n in Nodo.GetAllNode())
+                foreach (FileSystemNodePlus<MyAddittionalData> n in Nodo.GetAllNode())
                     if (n.AddittionalData.Selezionato)
                         return;
                 Nodo.AddittionalData.Selezionato = false;
@@ -204,10 +204,10 @@ namespace MusicLibraryManager.GUI.Controls
         {
             SetSelectChildNodeRecursive(Nodo, Value);
         }
-        public void SetSelectChildNodeRecursive(FileSystemNodePlus<MyAddittionalDataMyFileSystem> Node, bool Value)
+        public void SetSelectChildNodeRecursive(FileSystemNodePlus<MyAddittionalData> Node, bool Value)
         {
             Node.AddittionalData.Selezionato = Value;
-            foreach(FileSystemNodePlus<MyAddittionalDataMyFileSystem> n in Node.GetAllNode())
+            foreach(FileSystemNodePlus<MyAddittionalData> n in Node.GetAllNode())
                 SetSelectChildNodeRecursive(n, Value);
             
         }
@@ -220,14 +220,14 @@ namespace MusicLibraryManager.GUI.Controls
     {
         #region Variabili
 
-        FileSystemNodePlus<MyAddittionalDataMyFileSystem> Node = null;
+        FileSystemNodePlus<MyAddittionalData> Node = null;
         CheckBox c;
 
         #endregion
 
         #region Costruttori
 
-        public SelectControl(FileSystemNodePlus<MyAddittionalDataMyFileSystem> Node, CheckBox c)
+        public SelectControl(FileSystemNodePlus<MyAddittionalData> Node, CheckBox c)
         {
             this.Node = Node;
             this.c = c;

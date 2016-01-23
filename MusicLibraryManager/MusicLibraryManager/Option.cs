@@ -4,17 +4,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using ExtendCSharp;
 namespace MusicLibraryManager
 {
     [JsonObject(MemberSerialization.OptIn)]
     public class Option
     {
         ChangedVar cv = ChangedVar.nul;
-
+        public ChangedVar ChangedVar { get { return cv; } }
 
         [JsonProperty]
-        public String _PathFFmpeg =null;
+        String _PathFFmpeg =null;
         public String PathFFmpeg
         {
             get { return _PathFFmpeg; }
@@ -29,7 +29,7 @@ namespace MusicLibraryManager
 
 
         [JsonProperty]
-        public String _PathMedia = null;
+        String _PathMedia = null;
         public String PathMedia
         {
             get { return _PathMedia; }
@@ -41,6 +41,29 @@ namespace MusicLibraryManager
                 cv |= ChangedVar.PathMedia;
             }
         }
+
+        [JsonProperty]
+        ListPlus<String> _Extensions  = null;
+        public ListPlus<String> Extensions
+        {
+            get { return _Extensions; }
+            set
+            {
+                if (_Extensions == value)
+                    return;
+                _Extensions = value;
+                cv |= ChangedVar.Extensions;
+            }
+        }
+
+
+        public  Option()
+        {
+            _Extensions = new ListPlus<String>();
+            _Extensions.OnAdd += (object sender, EventArgs e) => { cv |= ChangedVar.Extensions; };
+            _Extensions.OnRemove += (object sender, EventArgs e) => { cv |= ChangedVar.Extensions; };
+        }
+
 
         public void SomethingChenged()
         {
@@ -61,6 +84,7 @@ namespace MusicLibraryManager
         nul=0,
         PathFFmpeg=1,
         PathMedia=2,
+        Extensions=4,
 
     }
 }

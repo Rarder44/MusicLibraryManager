@@ -10,17 +10,73 @@ using System.Windows.Forms;
 using ExtendCSharp;
 using ExtendCSharp.Services;
 using MusicLibraryManager.DataSave;
+using MusicLibraryManager.GUI.Controls;
 
 namespace MusicLibraryManager.GUI.Forms
 {
     public partial class MainForm : Form
     {
         Option option;
+        MainFormStatus _status;
+        MainFormStatus status
+        {
+            get { return _status; }
+            set
+            {
+                _status = status;
+                if(_status==MainFormStatus.RootBrowsing)
+                {
+                    fileBrowser1.Type = GUI.Controls.FileBrowserType.Root;
+                    fileBrowser1.lp = listBox_playlists.Items.ToList<Playlist>();
+                }
+                else if (_status == MainFormStatus.PlaylistBrowsing)
+                {
+                    fileBrowser1.Type = GUI.Controls.FileBrowserType.Playlist;
+                    fileBrowser1.lp = null;
+                }
+            }
+        }
+
+        MyFileSystemPlus Current = null;
+        MyFileSystemPlus RootFileSystem;
+
+
         public MainForm()
         {
             InitializeComponent();
         }
         private void MainForm_Load(object sender, EventArgs e)
+        {
+            LoadOptionFromFile();
+            LoadPlaylistlsocationFromFile();
+            status = MainFormStatus.RootBrowsing;
+            fileBrowser1.AddItemRequest += (Playlist p, MyFileSystemPlus f) =>
+            {
+                MyFileSystemPlus c = f.Clone()._Cast<MyFileSystemPlus>();
+
+                c.RimuoviOggettiNonSelezionati();
+                c.CancellaCartelleVuote();
+                
+                if (p.FileSystem == null)
+                    p.FileSystem = new MyFileSystemPlus();
+                p.FileSystem.Merge(c);
+                p.FileSystem.Root.SetParentOnAllChild(FileSystemNodePlusLevelType.AllNode);
+                new SingleFile(p.FileSystem.Root).SetSelectChildNode(false);
+                new SingleFile(RootFileSystem.Root).SetSelectChildNode(false);
+                SavePlaylist(p);
+            };
+            fileBrowser1.RemoveItemRequest += (MyFileSystemPlus ToRemoveSelect) =>
+            {
+                ToRemoveSelect.RimuoviOggettiSelezionati();
+                ToRemoveSelect.CancellaCartelleVuote();
+                fileBrowser1.ReloadNode();
+                SavePlaylist(listBox_playlists.Items.Cast<Playlist>().Where(x => x.FileSystem == ToRemoveSelect).First());
+            };
+
+        }
+
+
+        void LoadOptionFromFile()
         {
             FileData FD = FileReader.ReadFile(GlobalVar.PathOption);
             if (FD == null)
@@ -29,7 +85,7 @@ namespace MusicLibraryManager.GUI.Forms
                 option = new Option();
                 FileReader.WriteFile(GlobalVar.PathOption, option, FileDataType.Option);
             }
-            else if(FD.o ==null || !(FD.o is Option) )
+            else if (FD.o == null || !(FD.o is Option))
             {
                 MessageBox.Show("File di opzioni: " + GlobalVar.PathOption + " non caricato correttamente.\r\nVerrà creato un nuovo file Opzioni");
                 option = new Option();
@@ -43,30 +99,150 @@ namespace MusicLibraryManager.GUI.Forms
             option.OnSomethingChenged += (ChangedVar var) =>
             {
                 FileReader.WriteFile(GlobalVar.PathOption, option, FileDataType.Option);
-                if((var&ChangedVar.PathMedia)==ChangedVar.PathMedia)
+                if ((var & ChangedVar.PathMedia) == ChangedVar.PathMedia || (var & ChangedVar.Extensions) == ChangedVar.Extensions)
                 {
-                    LoadMediaLibrary();
+                    LoadRootMediaLibrary();
                 }
             };
 
-
-            if (option.PathMedia!=null)
+            if (option.PathMedia != null)
             {
-                LoadMediaLibrary();
+                LoadRootMediaLibrary();
             }
         }
-
-        void LoadMediaLibrary()
+        void LoadPlaylistlsocationFromFile()
         {
+            FileData FD = FileReader.ReadFile(GlobalVar.PathPlaylistlsocation);
+            if (FD == null)
+            {
+                FileReader.WriteFile(GlobalVar.PathPlaylistlsocation, new Playlistlsocation(), FileDataType.Playlistlsocation);
+            }
+            else if (FD.o == null || !(FD.o is Playlistlsocation))
+            {
+                MessageBox.Show("File di Playlists: " + GlobalVar.PathOption + " non caricato correttamente.\r\n");
+                FileReader.WriteFile(GlobalVar.PathPlaylistlsocation, new Playlistlsocation(), FileDataType.Playlistlsocation);
+            }
+            else
+            {
+                Playlistlsocation pll = FD.o._Cast<Playlistlsocation>();
+                if (pll.PathPlaylist != null)
+                    LoadPlaylists(pll.PathPlaylist);
+            }            
+        }
+        void SavePlaylistlsocation()
+        {
+            Playlistlsocation pll = new Playlistlsocation();
+            foreach (Playlist p in listBox_playlists.Items)
+                pll.PathPlaylist.Add(p.Path);
+            FileReader.WriteFile(GlobalVar.PathPlaylistlsocation, pll, FileDataType.Playlistlsocation);
+        }
+
+
+
+        void LoadRootMediaLibrary()
+        {
+            if (option == null || option.PathMedia == null)
+                return;
+
             FileSystemPlusLoadOption lo = new FileSystemPlusLoadOption();
             lo.IgnoreException = true;
             lo.RestrictExtensionEnable = true;
-            lo.RestrictExtension.Add("flac");
-            lo.RestrictExtension.Add("mp3");
-            mfs = new MyFileSystemPlus(option.PathMedia, lo);
-            fileBrowser1.LoadNode(mfs.Root);
+            if (option != null && option.Extensions != null)
+                foreach (string s in option.Extensions)
+                    lo.RestrictExtension.AddToLower(s);
+
+            RootFileSystem = new MyFileSystemPlus(option.PathMedia, lo);
+            LoadLastLoadedRootMediaLibrary();
         }
-        MyFileSystemPlus mfs;
+        void LoadLastLoadedRootMediaLibrary()
+        {
+            Current = RootFileSystem;
+            status = MainFormStatus.RootBrowsing;
+            ReloadCurrentFileSystem();
+        }
+       
+
+
+        void LoadPlaylists(List<String> Paths)
+        {
+            bool err = false;
+            foreach (String Path in Paths)
+            {
+                FileData FD = FileReader.ReadFile(Path);
+                if (FD == null)
+                {
+                    MessageBox.Show("Playlist : " + Path + " non trovata.\r\n");
+                    err = true;
+                }
+                else if (FD.o == null || !(FD.o is Playlist))
+                {
+                    MessageBox.Show("Playlist: " + Path + " non caricata correttamente.\r\n");
+                    err = true;
+                }
+                else
+                {
+                    Playlist p = FD.o._Cast<Playlist>();
+                    if(p==null)
+                    {
+                        MessageBox.Show("Playlist: " + Path + " non caricata correttamente.\r\n");
+                        err = true;
+                    }
+                    else
+                    {
+                        p.Path = Path;
+                        if (p.FileSystem != null && p.FileSystem.Root!=null)
+                            p.FileSystem.Root.SetParentOnAllChild(FileSystemNodePlusLevelType.AllNode);
+                        listBox_playlists.Items.Add(p);
+                    }
+                    
+                    
+                }  
+            }
+            if(err)
+                SavePlaylistlsocation();
+
+        }
+        void SavePlaylists()
+        {
+            foreach (Playlist p in listBox_playlists.Items)
+                SavePlaylist(p);
+        }
+
+        void LoadPlaylist(Playlist p)
+        {
+            Current = p.FileSystem;
+            fileBrowser1.Type = GUI.Controls.FileBrowserType.Playlist;
+            ReloadCurrentFileSystem();
+        }
+        void SavePlaylist(Playlist p)
+        {
+            if(p!=null)
+                FileReader.WriteFile(p.Path, p, FileDataType.Playlist);
+        }
+
+        void AddPlaylist(Playlist p)
+        {
+            listBox_playlists.AddInvoke(p);
+        }
+        void RemovePlaylist(Playlist p)
+        {
+            listBox_playlists.RemoveInvoke(p);
+        }
+
+        void ReloadCurrentFileSystem()
+        {
+            if (Current != null)
+            {
+                fileBrowser1.LoadMyFileSystemPlus(Current);
+            }
+            else
+            {
+                fileBrowser1.Clear();
+            }
+        }
+
+
+
         private void button1_Click(object sender, EventArgs e)
         {
 
@@ -115,16 +291,79 @@ namespace MusicLibraryManager.GUI.Forms
 
         private void button2_Click(object sender, EventArgs e)
         {
-            mfs.RimuoviOggettiNonSelezionati();
-            mfs.CancellaCartelleVuote();
-            fileBrowser1.LoadNode(mfs.Root);
+            LoadLastLoadedRootMediaLibrary();
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
-            new OptionForm(option).ShowDialog();
+            OptionForm o = new OptionForm(option);
+            o.ShowDialog();
         }
 
-       
+
+
+
+        private void listBox_playlists_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            int i = listBox_playlists.IndexFromPoint(e.X, e.Y);
+            if (i != -1)
+            {
+                LoadPlaylist((Playlist)listBox_playlists.Items[i]);
+            }
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            RequestForm rq = new RequestForm();
+            rq.Text = "Inserisci Nome Playlist";
+            rq.label1.Text = "Inserisci il nome della Playlist";
+            rq.ShowDialog();
+            if(rq.Saved)
+            {
+                String s = rq.textBox1.Text.Trim();
+                if (s=="")
+                {
+                    MessageBox.Show("Devi Inserire un nome valido");
+                    return;
+                }
+
+                SaveFileDialog sfd = new SaveFileDialog();
+                sfd.Filter = "Media Library Manager File | *.mlm;";
+                if (sfd.ShowDialog()==DialogResult.OK)
+                {
+                    Playlist p = new Playlist(sfd.FileName,s);
+                    AddPlaylist(p);
+                    SavePlaylist(p);
+                    SavePlaylistlsocation();
+                    status = MainFormStatus.RootBrowsing;
+                }
+            }
+        }
+
+        private void listBox_playlists_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                int i = listBox_playlists.IndexFromPoint(e.X, e.Y);
+                if (i != -1)
+                {
+                    listBox_playlists.SelectedIndex = i;
+                    contextMenuStrip1.Show(Cursor.Position);
+                }
+            }
+        }
+
+        private void rimuoviToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            listBox_playlists.RemoveAtInvoke(listBox_playlists.SelectedIndex);
+            status = MainFormStatus.RootBrowsing;
+            SavePlaylistlsocation();
+        }
+    }
+
+    public enum MainFormStatus
+    {
+        RootBrowsing,
+        PlaylistBrowsing
     }
 }
