@@ -61,6 +61,7 @@ namespace MusicLibraryManager.GUI.Forms
                     p.FileSystem = new MyFileSystemPlus();
                 p.FileSystem.Merge(c);
                 p.FileSystem.Root.SetParentOnAllChild(FileSystemNodePlusLevelType.AllNode);
+                p.FileSystem.RootPath = f.RootPath;
                 new SingleFile(p.FileSystem.Root).SetSelectChildNode(false);
                 new SingleFile(RootFileSystem.Root).SetSelectChildNode(false);
                 SavePlaylist(p);
@@ -103,12 +104,21 @@ namespace MusicLibraryManager.GUI.Forms
                 {
                     LoadRootMediaLibrary();
                 }
+                else if((var & ChangedVar.PathFFmpeg) == ChangedVar.PathFFmpeg)
+                {
+                    FFmpeg.Initialize(option.PathFFmpeg);
+                }
             };
 
             if (option.PathMedia != null)
             {
                 LoadRootMediaLibrary();
             }
+            if (option.PathFFmpeg != null)
+            {
+                FFmpeg.Initialize(option.PathFFmpeg);
+            }
+
         }
         void LoadPlaylistlsocationFromFile()
         {
@@ -243,50 +253,7 @@ namespace MusicLibraryManager.GUI.Forms
 
 
 
-        private void button1_Click(object sender, EventArgs e)
-        {
-
-            /*
-            File System
-            MyFileSystemLoadOption lo =new MyFileSystemLoadOption();
-            lo.IgnoreException = true;
-            MyFileSystem mfs= new MyFileSystem("D:",lo);
-            MyFileSystemNode n = mfs.Root["\\DownloadTorrent\\3DMGAME-7.Days.To.Die.Alpha.13.6.Steam.Edition.X64.Cracked-3DM\\3DMGAME-7.Days.To.Die.Alpha.13.6.Steam.Edition.X64.Cracked-3DM\\7 Days To Die\\serverconfig.xml"];
-            n = mfs.Root["\\DownloadTorrent\\3DMGAME-7.Days.To.Die.Alpha.13.6.Steam.Edition.X64.Cracked-3DM\\3DMGAME-7.Days.To.Die.Alpha.13.6.Steam.Edition.X64.Cracked-3DM\\7 Days To Die\\installscript.vdf"];
-            String ss = n.GetFullPath();
-            */
-
-            /*
-            Conversione Flac2Mp3
-            FFmpeg f = new FFmpeg(@"C:\Users\Luca\Downloads\ffmpeg-20160116-git-d7c75a5-win64-static\ffmpeg-20160116-git-d7c75a5-win64-static\bin\ffmpeg.exe");
-            f.FlacToMp3(@"C:\Users\Luca\Downloads\ffmpeg-20160116-git-d7c75a5-win64-static\ffmpeg-20160116-git-d7c75a5-win64-static\bin\a.flac", @"C:\Users\Luca\Downloads\ffmpeg-20160116-git-d7c75a5-win64-static\ffmpeg-20160116-git-d7c75a5-win64-static\bin\a.mp3", true, OnFFmpegStatusChanged,OnFFmpegProgressChanged, true);
-            */
-
-
-            
-
-            /*String ss=Json.Serialize(mfs);
-            MyFileSystemPlus aa = Json.Deserialize<MyFileSystemPlus > (ss);
-            aa.Root.SetParentOnAllChild(FileSystemNodePlusParentSetType.AllNode);
-            fileBrowser1.LoadNode(aa.Root);*/
-
-
-
-
-        }
-       
-        /*
-        void OnFFmpegStatusChanged(FFmpegStatus Status)
-        {
-            textBox1.SetTextInvoke( Status.ToString());
-        }
-
-        void OnFFmpegProgressChanged(int Percent)
-        {
-            progressBar1.SetValueInvoke(Percent);
-        }
-        */
-
+   
 
 
         private void button2_Click(object sender, EventArgs e)
@@ -359,6 +326,63 @@ namespace MusicLibraryManager.GUI.Forms
             status = MainFormStatus.RootBrowsing;
             SavePlaylistlsocation();
         }
+
+
+
+
+
+        private void originaleToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listBox_playlists.SelectedItem is Playlist)
+            {
+                FolderSelectDialog fsd = new FolderSelectDialog();
+                if (fsd.ShowDialog())
+                {
+                    String destFolder = fsd.FileName;
+                    Playlist p = (Playlist)listBox_playlists.SelectedItem;
+                    ListPlus<String> ls = p.FileSystem.GetAllFilePath();
+
+                    ListPlus<Tuple<String, String>> lss = new ListPlus<Tuple<string, string>>();
+                    foreach (String s in ls)
+                    {
+                        lss.Add(new Tuple<string, string>(SystemService.Combine(p.FileSystem.RootPath, s.TrimStart('\\', '/')), SystemService.Combine(destFolder, s.TrimStart('\\', '/'))));
+                    }
+
+
+                    //TODO richiamare la convert dicendogli di non convertire nulla ma di copiare
+                    ConvertMedia CM = new ConvertMedia(new ConversionParameter(lss, true));
+                    CM.Show();
+                    CM.Start();
+                }
+            }
+
+
+        }
+        private void convertiMP3ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if(listBox_playlists.SelectedItem is Playlist)
+            {
+                FolderSelectDialog fsd = new FolderSelectDialog();
+                if (fsd.ShowDialog())
+                {
+                    String destFolder = fsd.FileName;
+                    Playlist p = (Playlist)listBox_playlists.SelectedItem;
+                    ListPlus<String> ls = p.FileSystem.GetAllFilePath();
+                    
+                    ListPlus<Tuple<String, String>> lss = new ListPlus<Tuple<string, string>>();
+                    foreach (String s in ls)
+                    {    
+                        lss.Add(new Tuple<string, string>(SystemService.Combine(p.FileSystem.RootPath, s.TrimStart('\\', '/')), SystemService.Combine(destFolder, SystemService.ChangeExtension(s.TrimStart('\\', '/'), "mp3"))));
+                    }
+
+                    ConvertMedia CM = new ConvertMedia(new ConversionParameter(lss, true));
+                    CM.Show();
+                    CM.Start();
+                }
+            }
+        }
+
+       
     }
 
     public enum MainFormStatus
