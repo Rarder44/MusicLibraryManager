@@ -85,6 +85,8 @@ namespace MusicLibraryManager.GUI.Forms
                     }
                     progressBar_total.SetValueInvoke(progressBar_total.Value+1);
                 }
+                FormClosing -= ConvertMedia_FormClosing;
+                this.CloseInvoke();
             });
             Esecuzione.Start(CP);
         }

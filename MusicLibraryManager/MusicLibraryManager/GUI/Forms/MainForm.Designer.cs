@@ -36,13 +36,15 @@
             this.button4 = new System.Windows.Forms.Button();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.esportaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.rimuoviToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.fileBrowser1 = new MusicLibraryManager.GUI.Controls.FileBrowser();
             this.originaleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.convertiMP3ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.incorporaMetadataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.rimuoviToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.fileBrowser1 = new MusicLibraryManager.GUI.Controls.FileBrowser();
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -107,9 +109,11 @@
             this.toolStripSeparator1,
             this.incorporaMetadataToolStripMenuItem,
             this.toolStripSeparator2,
+            this.toolStripMenuItem1,
+            this.toolStripSeparator3,
             this.rimuoviToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(179, 104);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(179, 132);
             // 
             // esportaToolStripMenuItem
             // 
@@ -120,10 +124,36 @@
             this.esportaToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
             this.esportaToolStripMenuItem.Text = "Esporta";
             // 
+            // originaleToolStripMenuItem
+            // 
+            this.originaleToolStripMenuItem.Name = "originaleToolStripMenuItem";
+            this.originaleToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.originaleToolStripMenuItem.Text = "Originale";
+            this.originaleToolStripMenuItem.Click += new System.EventHandler(this.originaleToolStripMenuItem_Click);
+            // 
+            // convertiMP3ToolStripMenuItem
+            // 
+            this.convertiMP3ToolStripMenuItem.Name = "convertiMP3ToolStripMenuItem";
+            this.convertiMP3ToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.convertiMP3ToolStripMenuItem.Text = "Converti MP3";
+            this.convertiMP3ToolStripMenuItem.Click += new System.EventHandler(this.convertiMP3ToolStripMenuItem_Click);
+            // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
             this.toolStripSeparator1.Size = new System.Drawing.Size(175, 6);
+            // 
+            // incorporaMetadataToolStripMenuItem
+            // 
+            this.incorporaMetadataToolStripMenuItem.Name = "incorporaMetadataToolStripMenuItem";
+            this.incorporaMetadataToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
+            this.incorporaMetadataToolStripMenuItem.Text = "Incorpora Metadata";
+            this.incorporaMetadataToolStripMenuItem.Click += new System.EventHandler(this.incorporaMetadataToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(175, 6);
             // 
             // rimuoviToolStripMenuItem
             // 
@@ -145,30 +175,17 @@
             this.fileBrowser1.Status = MusicLibraryManager.GUI.Controls.FileBrowserStatus.browsing;
             this.fileBrowser1.TabIndex = 4;
             // 
-            // originaleToolStripMenuItem
+            // toolStripMenuItem1
             // 
-            this.originaleToolStripMenuItem.Name = "originaleToolStripMenuItem";
-            this.originaleToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.originaleToolStripMenuItem.Text = "Originale";
-            this.originaleToolStripMenuItem.Click += new System.EventHandler(this.originaleToolStripMenuItem_Click);
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(178, 22);
+            this.toolStripMenuItem1.Text = "Check dei File";
+            this.toolStripMenuItem1.Click += new System.EventHandler(this.toolStripMenuItem1_Click);
             // 
-            // convertiMP3ToolStripMenuItem
+            // toolStripSeparator3
             // 
-            this.convertiMP3ToolStripMenuItem.Name = "convertiMP3ToolStripMenuItem";
-            this.convertiMP3ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.convertiMP3ToolStripMenuItem.Text = "Converti MP3";
-            this.convertiMP3ToolStripMenuItem.Click += new System.EventHandler(this.convertiMP3ToolStripMenuItem_Click);
-            // 
-            // incorporaMetadataToolStripMenuItem
-            // 
-            this.incorporaMetadataToolStripMenuItem.Name = "incorporaMetadataToolStripMenuItem";
-            this.incorporaMetadataToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
-            this.incorporaMetadataToolStripMenuItem.Text = "Incorpora Metadata";
-            // 
-            // toolStripSeparator2
-            // 
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(175, 6);
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(175, 6);
             // 
             // MainForm
             // 
@@ -206,6 +223,8 @@
         private System.Windows.Forms.ToolStripMenuItem convertiMP3ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem incorporaMetadataToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
     }
 }
 

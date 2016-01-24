@@ -258,6 +258,8 @@ namespace MusicLibraryManager.GUI.Forms
 
         private void button2_Click(object sender, EventArgs e)
         {
+            listBox_playlists.SelectedIndex = -1;
+
             LoadLastLoadedRootMediaLibrary();
         }
 
@@ -382,7 +384,50 @@ namespace MusicLibraryManager.GUI.Forms
             }
         }
 
-       
+        private void incorporaMetadataToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (MessageBox.Show("Attenzione!\r\nSe un file non viene trovato NON verrà eliminato dalla lista ma i metadati rimmarrano vuoti\r\nTip: Esegui prima \"Check dei File\"\r\n\r\nIl processo può richiedere paracchio tempo, continuare?","Attenzione",MessageBoxButtons.YesNo,MessageBoxIcon.Exclamation) == DialogResult.Yes)
+            {
+
+            }
+        }
+
+        private void toolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            //TODO: testare l'incorporazione dei metadata
+            //TODO: implementare finestra e nuovo thread per la ricerca dei metadata
+            if (listBox_playlists.SelectedItem is Playlist)
+            {
+                IncorporaMetadataRicorsivo(((Playlist)listBox_playlists.SelectedItem).FileSystem.Root);
+                SavePlaylist((Playlist)listBox_playlists.SelectedItem);
+            }
+
+        }
+
+
+        private void IncorporaMetadataRicorsivo(FileSystemNodePlus<MyAddittionalData> nodo)
+        {
+            foreach(FileSystemNodePlus<MyAddittionalData> n in nodo.GetAllNode())
+            {
+                if(n.Type==FileSystemNodePlusType.Directory)
+                    IncorporaMetadataRicorsivo(n);
+                else if (n.Type == FileSystemNodePlusType.File)
+                {
+                    String p = n.GetFullPath();
+                    if (SystemService.Exist(p))
+                    {
+                        if (n.AddittionalData == null)
+                            n.AddittionalData = new MyAddittionalData();
+
+                        if (n.AddittionalData.Metadata == null)
+                            n.AddittionalData.Metadata = new FFmpegMetadata();
+
+                        n.AddittionalData.Metadata = FFmpeg.GetMetadata(p);
+                        n.AddittionalData.MD5 = SystemService.GetMD5(p);
+                    }
+                }
+            }
+        }
     }
 
     public enum MainFormStatus

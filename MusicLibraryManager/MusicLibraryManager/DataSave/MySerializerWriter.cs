@@ -12,6 +12,7 @@ namespace MusicLibraryManager.DataSave
 {
     static class MySerializerWriter
     {
+        //TODO: implementare una serializzazione piu efficace ( binary )
         static public void Serialize(Object o, String Path)
         {
             File.WriteAllText(Path, Json.Serialize(o));
