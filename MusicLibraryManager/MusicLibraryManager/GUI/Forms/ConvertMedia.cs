@@ -10,19 +10,18 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using ExtendCSharp;
-
+using static ExtendCSharp.Services.FFmpeg;
 
 namespace MusicLibraryManager.GUI.Forms
 {
     public partial class ConvertMedia : Form
     {
         ConversionParameter CP;
-        ListPlus<Tuple<String, String,FFmpegError>> Error;
+        public ListPlus<Tuple<String, String,FFmpegError>> Error;
 
         public bool Pause { get; set; }
         Thread Esecuzione;
         
-        //TODO: implementare metodi per la selezione del formato di output e se convertire o no determinati formati/tutti  i file
 
 
         public ConvertMedia(ConversionParameter cp)
@@ -42,6 +41,7 @@ namespace MusicLibraryManager.GUI.Forms
                 return;
             }
             Pause = false;
+            e.Cancel = true;
         }
 
 
@@ -63,33 +63,72 @@ namespace MusicLibraryManager.GUI.Forms
                     MessageBox.Show("FFmpeg non inizializzato!", "Errore", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
+
                 Error = new ListPlus<Tuple<string, string, FFmpegError>>();
 
 
                 progressBar_total.SetMaximumInvoke(conv.SourceDestination.Count);
-                foreach (Tuple<String, String> t in conv.SourceDestination)
-                {
-                    while(Pause)
-                        Thread.Sleep(100);
-                    
 
-                    if (t.Item1.ToLower().EndsWith("mp3"))
+
+                if(conv.TipoConversione==ConversinType.SoloDiversi)
+                {
+                    foreach (Tuple<String, String> t in conv.SourceDestination)
+                    {
+                        while (Pause)
+                            Thread.Sleep(100);
+
+
+                        if (t.Item1.ToLower().EndsWith("mp3"))
+                        {
+                            textBox_source.SetTextInvoke(t.Item1);
+                            textBox_destination.SetTextInvoke(t.Item2);
+                            SystemService.CopySecure(t.Item1, t.Item2, conv.OverrideIfExist, (double p, ref bool f) => { progressBar_single.SetValueInvoke((int)p); });
+                        }
+                        else
+                        {
+                            if(!FFmpeg.ConvertTo(conv.ConvertiIn,t.Item1,t.Item2,conv.OverrideIfExist, OnFFmpegStatusChanged, OnFFmpegProgressChanged,false))
+                                Error.Add(new Tuple<string, string, FFmpegError>(t.Item1, t.Item2, FFmpegError.DestFolderNotFound));
+                        }
+                        progressBar_total.SetValueInvoke(progressBar_total.Value + 1);
+                    }
+                }
+                else if(conv.TipoConversione==ConversinType.Mai)
+                {
+                    foreach (Tuple<String, String> t in conv.SourceDestination)
                     {
                         textBox_source.SetTextInvoke(t.Item1);
                         textBox_destination.SetTextInvoke(t.Item2);
-                        SystemService.CopySecure(t.Item1, t.Item2, true, (double p, ref bool f) => { progressBar_single.SetValueInvoke((int)p); });
+                        SystemService.CopySecure(t.Item1, t.Item2, conv.OverrideIfExist, (double p, ref bool f) => { progressBar_single.SetValueInvoke((int)p); });
+                        progressBar_total.SetValueInvoke(progressBar_total.Value + 1);
                     }
-                    else
-                    {
-                        FFmpeg.ToMp3(t.Item1, t.Item2, conv.OverrideIFExist, OnFFmpegStatusChanged, OnFFmpegProgressChanged, false);
-                    }
-                    progressBar_total.SetValueInvoke(progressBar_total.Value+1);
                 }
+                else if(conv.TipoConversione==ConversinType.Sempre)
+                {
+                    foreach (Tuple<String, String> t in conv.SourceDestination)
+                    {
+                        while (Pause)
+                            Thread.Sleep(100);
+
+                        if (!FFmpeg.ConvertTo(conv.ConvertiIn, t.Item1, t.Item2, conv.OverrideIfExist, OnFFmpegStatusChanged, OnFFmpegProgressChanged, false))
+                            Error.Add(new Tuple<string, string, FFmpegError>(t.Item1, t.Item2, FFmpegError.DestFolderNotFound));
+
+                        progressBar_total.SetValueInvoke(progressBar_total.Value + 1);
+                    }
+                }
+                
+               
                 FormClosing -= ConvertMedia_FormClosing;
+                MessageBox.Show("Finito!");
+                if (OnFFmpegConversionEnd != null)
+                    OnFFmpegConversionEnd();
                 this.CloseInvoke();
+              
             });
             Esecuzione.Start(CP);
+
+            
         }
+
 
 
         void OnFFmpegStatusChanged(FFmpegStatus Status, String Source, String Destination)
@@ -112,28 +151,45 @@ namespace MusicLibraryManager.GUI.Forms
 
         public void Stop()
         {
-
                 try
                 {
                     Esecuzione.Abort();
                 }
                 catch (Exception)
                 {}
-            
-
         }
+
+
+        public delegate void FFmpegConversionEnd();
+        public event FFmpegConversionEnd OnFFmpegConversionEnd;
+
+
     }
 
     public class ConversionParameter
     {
-        public ConversionParameter(ListPlus<Tuple<String, String>> SourceDestination,bool OverrideIfExist=true)
+        public ConversionParameter(ListPlus<Tuple<String, String>> SourceDestination, ConversinType TipoConversione, FFmpegConversionEndFormat ConvertiIn ,bool OverrideIfExist=true)
         {
             this.SourceDestination = SourceDestination;
+            this.OverrideIfExist = OverrideIfExist;
+            this.TipoConversione = TipoConversione;
+            this.ConvertiIn = ConvertiIn;
         }
         public ListPlus<Tuple<String, String>> SourceDestination;
-        public bool OverrideIFExist { get; set; }
+        public bool OverrideIfExist { get; set; }
+        public ConversinType TipoConversione { get; set; }
+        public FFmpegConversionEndFormat ConvertiIn { get; set; }
     }
 
+    
+
+
+    public enum ConversinType
+    {
+        Sempre,
+        SoloDiversi,
+        Mai
+    }
 
 
 

@@ -63,6 +63,12 @@
     <Compile Include="GUI\Controls\SingleFile.Designer.cs">
       <DependentUpon>SingleFile.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\Forms\IncorporaMetadata.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Forms\IncorporaMetadata.Designer.cs">
+      <DependentUpon>IncorporaMetadata.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\Forms\ConvertMedia.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -97,11 +103,15 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DataSave\FileData.cs" />
+    <Compile Include="Services\MetadataService.cs" />
     <EmbeddedResource Include="GUI\Controls\FileBrowser.resx">
       <DependentUpon>FileBrowser.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Controls\SingleFile.resx">
       <DependentUpon>SingleFile.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Forms\IncorporaMetadata.resx">
+      <DependentUpon>IncorporaMetadata.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Forms\ConvertMedia.resx">
       <DependentUpon>ConvertMedia.cs</DependentUpon>

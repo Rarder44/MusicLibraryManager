@@ -11,6 +11,7 @@ using ExtendCSharp;
 using ExtendCSharp.Services;
 using MusicLibraryManager.DataSave;
 using MusicLibraryManager.GUI.Controls;
+using System.Threading;
 
 namespace MusicLibraryManager.GUI.Forms
 {
@@ -203,9 +204,7 @@ namespace MusicLibraryManager.GUI.Forms
                         if (p.FileSystem != null && p.FileSystem.Root!=null)
                             p.FileSystem.Root.SetParentOnAllChild(FileSystemNodePlusLevelType.AllNode);
                         listBox_playlists.Items.Add(p);
-                    }
-                    
-                    
+                    }  
                 }  
             }
             if(err)
@@ -218,6 +217,9 @@ namespace MusicLibraryManager.GUI.Forms
                 SavePlaylist(p);
         }
 
+        
+
+
         void LoadPlaylist(Playlist p)
         {
             Current = p.FileSystem;
@@ -229,6 +231,27 @@ namespace MusicLibraryManager.GUI.Forms
             if(p!=null)
                 FileReader.WriteFile(p.Path, p, FileDataType.Playlist);
         }
+
+        void ReloadPlaylistFromFile(Playlist p)
+        {
+            if(SystemService.FileExist(p.Path))
+            {
+                FileData FD = FileReader.ReadFile(p.Path);
+                if (FD != null && FD.o is Playlist)
+                {
+                    Playlist temp = FD.o._Cast<Playlist>();
+                    if (p != null)
+                    {
+                        p.FileSystem = temp.FileSystem;
+                        if (p.FileSystem != null && p.FileSystem.Root != null)
+                            p.FileSystem.Root.SetParentOnAllChild(FileSystemNodePlusLevelType.AllNode);
+                    }
+                }
+
+            }
+        }
+
+
 
         void AddPlaylist(Playlist p)
         {
@@ -340,6 +363,7 @@ namespace MusicLibraryManager.GUI.Forms
                 FolderSelectDialog fsd = new FolderSelectDialog();
                 if (fsd.ShowDialog())
                 {
+                    bool OverrideIfExist = MessageBox.Show("Sovrascrivere eventuali file esistenti?", "Conferma Sovrascrittura", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.Yes ? true : false;
                     String destFolder = fsd.FileName;
                     Playlist p = (Playlist)listBox_playlists.SelectedItem;
                     ListPlus<String> ls = p.FileSystem.GetAllFilePath();
@@ -352,7 +376,15 @@ namespace MusicLibraryManager.GUI.Forms
 
 
                     //TODO richiamare la convert dicendogli di non convertire nulla ma di copiare
-                    ConvertMedia CM = new ConvertMedia(new ConversionParameter(lss, true));
+                    ConvertMedia CM = new ConvertMedia(new ConversionParameter(lss,ConversinType.Mai,FFmpegConversionEndFormat.mp3, OverrideIfExist));
+                    CM.OnFFmpegConversionEnd += () =>
+                    {
+                        if (CM.Error != null && CM.Error.Count != 0)
+                        {
+                            MessageBox.Show("Errori presenti durante la conversione!");
+                            //TODO: visualizzazione degli errori
+                        }
+                    };
                     CM.Show();
                     CM.Start();
                 }
@@ -367,6 +399,7 @@ namespace MusicLibraryManager.GUI.Forms
                 FolderSelectDialog fsd = new FolderSelectDialog();
                 if (fsd.ShowDialog())
                 {
+                    bool OverrideIfExist = MessageBox.Show("Sovrascrivere eventuali file esistenti?", "Conferma Sovrascrittura", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation)==DialogResult.Yes?true:false;
                     String destFolder = fsd.FileName;
                     Playlist p = (Playlist)listBox_playlists.SelectedItem;
                     ListPlus<String> ls = p.FileSystem.GetAllFilePath();
@@ -377,7 +410,15 @@ namespace MusicLibraryManager.GUI.Forms
                         lss.Add(new Tuple<string, string>(SystemService.Combine(p.FileSystem.RootPath, s.TrimStart('\\', '/')), SystemService.Combine(destFolder, SystemService.ChangeExtension(s.TrimStart('\\', '/'), "mp3"))));
                     }
 
-                    ConvertMedia CM = new ConvertMedia(new ConversionParameter(lss, true));
+                    ConvertMedia CM = new ConvertMedia(new ConversionParameter(lss, ConversinType.SoloDiversi, FFmpegConversionEndFormat.mp3, OverrideIfExist));
+                    CM.OnFFmpegConversionEnd += () =>
+                    {
+                        if (CM.Error != null && CM.Error.Count != 0)
+                        {
+                            MessageBox.Show("Errori presenti durante la conversione!");
+                            //TODO: visualizzazione degli errori
+                        }
+                    };
                     CM.Show();
                     CM.Start();
                 }
@@ -386,53 +427,53 @@ namespace MusicLibraryManager.GUI.Forms
 
         private void incorporaMetadataToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("Attenzione!\r\nSe un file non viene trovato NON verrà eliminato dalla lista ma i metadati rimmarrano vuoti\r\nTip: Esegui prima \"Check dei File\"\r\n\r\nIl processo può richiedere paracchio tempo, continuare?","Attenzione",MessageBoxButtons.YesNo,MessageBoxIcon.Exclamation) == DialogResult.Yes)
-            {
-
-            }
-        }
-
-        private void toolStripMenuItem1_Click(object sender, EventArgs e)
-        {
-            //TODO: testare l'incorporazione dei metadata
-            //TODO: implementare finestra e nuovo thread per la ricerca dei metadata
             if (listBox_playlists.SelectedItem is Playlist)
-            {
-                IncorporaMetadataRicorsivo(((Playlist)listBox_playlists.SelectedItem).FileSystem.Root);
-                SavePlaylist((Playlist)listBox_playlists.SelectedItem);
-            }
-
-        }
-
-
-        private void IncorporaMetadataRicorsivo(FileSystemNodePlus<MyAddittionalData> nodo)
-        {
-            foreach(FileSystemNodePlus<MyAddittionalData> n in nodo.GetAllNode())
-            {
-                if(n.Type==FileSystemNodePlusType.Directory)
-                    IncorporaMetadataRicorsivo(n);
-                else if (n.Type == FileSystemNodePlusType.File)
+                if (MessageBox.Show("Attenzione!\r\nSe un file non viene trovato NON verrà eliminato dalla lista ma i metadati rimmarrano vuoti\r\nTip: Esegui prima \"Check dei File\"\r\n\r\nIl processo può richiedere paracchio tempo, continuare?","Attenzione",MessageBoxButtons.YesNo,MessageBoxIcon.Exclamation) == DialogResult.Yes)
                 {
-                    String p = n.GetFullPath();
-                    if (SystemService.Exist(p))
+                    Playlist p = (Playlist)listBox_playlists.SelectedItem;
+                    IncorporaMetadata IM = new IncorporaMetadata(p);
+                    IM.OnIncorporaMetadataFormEnd += (Playlist pp, IncorporaMetadataFormResult Result) =>
                     {
-                        if (n.AddittionalData == null)
-                            n.AddittionalData = new MyAddittionalData();
+                        if (Result == IncorporaMetadataFormResult.Finish)
+                        {
+                            if(pp!=null)
+                                SavePlaylist(pp);
+                        }
+                        else
+                        {
+                            if (pp != null)
+                                ReloadPlaylistFromFile(pp);
+                        }
+                    };
+                    IM.Show();
+                    IM.Start();
 
-                        if (n.AddittionalData.Metadata == null)
-                            n.AddittionalData.Metadata = new FFmpegMetadata();
-
-                        n.AddittionalData.Metadata = FFmpeg.GetMetadata(p);
-                        n.AddittionalData.MD5 = SystemService.GetMD5(p);
-                    }
                 }
-            }
         }
+
+
+
+        private void CheckDeiFiletoolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            //TODO: verificare per ogni file se esiste, se non viene trovato salvare ogni nodo in un nodo temporaneo
+            //TODO: i nodi che hanno i metadata li sfoglio ed in base all'MD5 controllo se trovo qualcosa nella libreria ( per ora solo ricerca come MD5 )
+            //TODO: cerco di correggere i nodi errati e mostro un riepilogo 
+
+        }
+
+
+
     }
+
+
+
 
     public enum MainFormStatus
     {
         RootBrowsing,
         PlaylistBrowsing
     }
+
+
+
 }

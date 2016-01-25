@@ -180,7 +180,7 @@
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
             this.toolStripMenuItem1.Size = new System.Drawing.Size(178, 22);
             this.toolStripMenuItem1.Text = "Check dei File";
-            this.toolStripMenuItem1.Click += new System.EventHandler(this.toolStripMenuItem1_Click);
+            this.toolStripMenuItem1.Click += new System.EventHandler(this.CheckDeiFiletoolStripMenuItem1_Click);
             // 
             // toolStripSeparator3
             // 
