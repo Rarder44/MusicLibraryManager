@@ -177,12 +177,11 @@ namespace MusicLibraryManager.GUI.Controls
 
         private void AggiungiRimuoviToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            //TODO: se sono in rimuovi esegui il codice sotto, se sono in aggiungi non eseguirlo
-
-            if (RemoveItemRequest != null)
-            {
-                RemoveItemRequest(currentFileSystem);
-            }
+            if (Type == FileBrowserType.Playlist)
+                if (RemoveItemRequest != null)
+                {
+                    RemoveItemRequest(currentFileSystem);
+                }
         }
 
         private void sceltaCheckBoxToolStripMenuItem_Click(object sender, EventArgs e)

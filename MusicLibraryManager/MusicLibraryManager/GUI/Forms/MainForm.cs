@@ -48,6 +48,8 @@ namespace MusicLibraryManager.GUI.Forms
         }
         private void MainForm_Load(object sender, EventArgs e)
         {
+           
+
             LoadOptionFromFile();
             LoadPlaylistlsocationFromFile();
             status = MainFormStatus.RootBrowsing;
@@ -152,7 +154,7 @@ namespace MusicLibraryManager.GUI.Forms
 
         void LoadRootMediaLibrary()
         {
-            if (option == null || option.PathMedia == null)
+            if (option == null || option.PathMedia == null || option.PathMedia == "")
                 return;
 
             FileSystemPlusLoadOption lo = new FileSystemPlusLoadOption();

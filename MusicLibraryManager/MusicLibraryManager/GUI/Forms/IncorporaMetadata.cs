@@ -60,7 +60,6 @@ namespace MusicLibraryManager.GUI.Forms
 
 
                 Playlist pp = (Playlist)n;
-                //TODO: controllare getnodecount
                 int Total = pp.FileSystem.Root.GetNodeCount(FileSystemNodePlusLevelType.AllNode, FileSystemNodePlusType.File);
                 progressBar_total.SetMaximumInvoke(Total);
 
