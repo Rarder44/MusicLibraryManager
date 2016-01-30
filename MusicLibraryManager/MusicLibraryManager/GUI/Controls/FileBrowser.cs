@@ -73,11 +73,11 @@ namespace MusicLibraryManager.GUI.Controls
                 {
                     AddComponent(Node.Parent, false, "..");
                 }
-                foreach (FileSystemNodePlus<MyAddittionalData> nd in Node.GetAllNode(FileSystemNodePlusType.Directory))
+                foreach (FileSystemNodePlus<MyAddittionalData> nd in Node.GetAllNode(FileSystemNodePlusType.Directory).OrderBy(x => x.Name))
                 {
                     AddComponent(nd);
                 }
-                foreach (FileSystemNodePlus<MyAddittionalData> nf in Node.GetAllNode(FileSystemNodePlusType.File))
+                foreach (FileSystemNodePlus<MyAddittionalData> nf in Node.GetAllNode(FileSystemNodePlusType.File).OrderBy(x => x.Name))
                 {
                     AddComponent(nf);
                 }

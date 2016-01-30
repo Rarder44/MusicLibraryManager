@@ -42,10 +42,19 @@ namespace MusicLibraryManager.GUI.Forms
         MyFileSystemPlus RootFileSystem;
 
 
+        string[] args = null;
+
         public MainForm()
         {
             InitializeComponent();
         }
+        public MainForm(string[] args)
+        {
+            InitializeComponent();
+            this.args = args;
+            
+        }
+
         private void MainForm_Load(object sender, EventArgs e)
         {
            
@@ -77,6 +86,38 @@ namespace MusicLibraryManager.GUI.Forms
                 SavePlaylist(listBox_playlists.Items.Cast<Playlist>().Where(x => x.FileSystem == ToRemoveSelect).First());
             };
 
+
+            if(args!=null && args.Length!=0)
+            {
+                foreach (String s in args)
+                {
+                    if (SystemService.FileExist(s))
+                    {
+                        FileData FD = FileReader.ReadFile(s);
+                        if (FD == null)
+                            continue;
+
+                        if (FD.Type == FileDataType.Playlist)
+                        {
+                            LoadPlaylist(s);
+                        }
+                        else if (FD.Type == FileDataType.Option)
+                        {
+                            if(MessageBox.Show("Vuoi sostituire le opzioni?","Continuare?",MessageBoxButtons.YesNo,MessageBoxIcon.Warning)==DialogResult.Yes)
+                            {
+                                SystemService.CopySecure(s, GlobalVar.PathOption, true);
+                                LoadOptionFromFile();
+                            }
+                        }
+                        else if (FD.Type == FileDataType.Playlistlsocation)
+                        {
+                            Playlistlsocation pll = FD.o._Cast<Playlistlsocation>();
+                            if (pll.PathPlaylist != null)
+                                LoadPlaylists(pll.PathPlaylist,true,false,true);
+                        }
+                    }
+                }
+            }
         }
 
 
@@ -173,43 +214,54 @@ namespace MusicLibraryManager.GUI.Forms
             status = MainFormStatus.RootBrowsing;
             ReloadCurrentFileSystem();
         }
-       
 
 
-        void LoadPlaylists(List<String> Paths)
+        bool LoadPlaylist(String Path, bool ShowMessage = true)
         {
-            bool err = false;
-            foreach (String Path in Paths)
+            FileData FD = FileReader.ReadFile(Path);
+            if (FD == null)
             {
-                FileData FD = FileReader.ReadFile(Path);
-                if (FD == null)
-                {
+                if (ShowMessage)
                     MessageBox.Show("Playlist : " + Path + " non trovata.\r\n");
-                    err = true;
-                }
-                else if (FD.o == null || !(FD.o is Playlist))
-                {
+                return false;
+            }
+            else if (FD.o == null || !(FD.o is Playlist))
+            {
+                if (ShowMessage)
                     MessageBox.Show("Playlist: " + Path + " non caricata correttamente.\r\n");
-                    err = true;
+                return false;
+            }
+            else
+            {
+                Playlist p = FD.o._Cast<Playlist>();
+                if (p == null)
+                {
+                    if (ShowMessage)
+                        MessageBox.Show("Playlist: " + Path + " non caricata correttamente.\r\n");
+                    return false;
                 }
                 else
                 {
-                    Playlist p = FD.o._Cast<Playlist>();
-                    if(p==null)
-                    {
-                        MessageBox.Show("Playlist: " + Path + " non caricata correttamente.\r\n");
-                        err = true;
-                    }
-                    else
-                    {
-                        p.Path = Path;
-                        if (p.FileSystem != null && p.FileSystem.Root!=null)
-                            p.FileSystem.Root.SetParentOnAllChild(FileSystemNodePlusLevelType.AllNode);
-                        listBox_playlists.Items.Add(p);
-                    }  
-                }  
+                    p.Path = Path;
+                    if (p.FileSystem != null && p.FileSystem.Root != null)
+                        p.FileSystem.Root.SetParentOnAllChild(FileSystemNodePlusLevelType.AllNode);
+                    listBox_playlists.Items.Add(p);
+                    return true;
+                }
             }
-            if(err)
+        }
+        void LoadPlaylists(List<String> Paths,bool ShowMessage=true,bool ClearOld=true,bool ForceResavePlaylist=false)
+        {
+            if (ClearOld)
+                listBox_playlists.ClearInvoke();
+
+            bool err = false;
+            foreach (String Path in Paths)
+            {
+                err = !LoadPlaylist(Path, ShowMessage);
+              
+            }
+            if(err || ForceResavePlaylist)
                 SavePlaylistlsocation();
 
         }
@@ -221,7 +273,7 @@ namespace MusicLibraryManager.GUI.Forms
 
         
 
-
+        
         void LoadPlaylist(Playlist p)
         {
             Current = p.FileSystem;
@@ -462,7 +514,6 @@ namespace MusicLibraryManager.GUI.Forms
             //TODO: cerco di correggere i nodi errati e mostro un riepilogo 
 
         }
-
 
 
     }

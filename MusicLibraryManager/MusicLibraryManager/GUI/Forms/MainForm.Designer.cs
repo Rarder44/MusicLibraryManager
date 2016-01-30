@@ -29,7 +29,6 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.listBox_playlists = new System.Windows.Forms.ListBox();
             this.button3 = new System.Windows.Forms.Button();
@@ -41,21 +40,12 @@
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.incorporaMetadataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-            this.rimuoviToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.fileBrowser1 = new MusicLibraryManager.GUI.Controls.FileBrowser();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            this.rimuoviToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.fileBrowser1 = new MusicLibraryManager.GUI.Controls.FileBrowser();
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(12, 11);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 0;
-            this.button1.Text = "button1";
-            this.button1.UseVisualStyleBackColor = true;
             // 
             // button2
             // 
@@ -77,6 +67,7 @@
             this.listBox_playlists.Name = "listBox_playlists";
             this.listBox_playlists.Size = new System.Drawing.Size(184, 459);
             this.listBox_playlists.TabIndex = 6;
+
             this.listBox_playlists.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.listBox_playlists_MouseDoubleClick);
             this.listBox_playlists.MouseDown += new System.Windows.Forms.MouseEventHandler(this.listBox_playlists_MouseDown);
             // 
@@ -113,7 +104,7 @@
             this.toolStripSeparator3,
             this.rimuoviToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(179, 132);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(179, 110);
             // 
             // esportaToolStripMenuItem
             // 
@@ -155,6 +146,18 @@
             this.toolStripSeparator2.Name = "toolStripSeparator2";
             this.toolStripSeparator2.Size = new System.Drawing.Size(175, 6);
             // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(178, 22);
+            this.toolStripMenuItem1.Text = "Check dei File";
+            this.toolStripMenuItem1.Click += new System.EventHandler(this.CheckDeiFiletoolStripMenuItem1_Click);
+            // 
+            // toolStripSeparator3
+            // 
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(175, 6);
+            // 
             // rimuoviToolStripMenuItem
             // 
             this.rimuoviToolStripMenuItem.Name = "rimuoviToolStripMenuItem";
@@ -175,18 +178,6 @@
             this.fileBrowser1.Status = MusicLibraryManager.GUI.Controls.FileBrowserStatus.browsing;
             this.fileBrowser1.TabIndex = 4;
             // 
-            // toolStripMenuItem1
-            // 
-            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(178, 22);
-            this.toolStripMenuItem1.Text = "Check dei File";
-            this.toolStripMenuItem1.Click += new System.EventHandler(this.CheckDeiFiletoolStripMenuItem1_Click);
-            // 
-            // toolStripSeparator3
-            // 
-            this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(175, 6);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -197,7 +188,6 @@
             this.Controls.Add(this.fileBrowser1);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.button4);
-            this.Controls.Add(this.button1);
             this.DoubleBuffered = true;
             this.Name = "MainForm";
             this.Text = "Music Library Manager";
@@ -208,8 +198,6 @@
         }
 
         #endregion
-
-        private System.Windows.Forms.Button button1;
         private Controls.FileBrowser fileBrowser1;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Button button3;
