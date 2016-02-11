@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.button2 = new System.Windows.Forms.Button();
             this.listBox_playlists = new System.Windows.Forms.ListBox();
             this.button3 = new System.Windows.Forms.Button();
@@ -67,7 +68,6 @@
             this.listBox_playlists.Name = "listBox_playlists";
             this.listBox_playlists.Size = new System.Drawing.Size(184, 459);
             this.listBox_playlists.TabIndex = 6;
-
             this.listBox_playlists.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.listBox_playlists_MouseDoubleClick);
             this.listBox_playlists.MouseDown += new System.Windows.Forms.MouseEventHandler(this.listBox_playlists_MouseDown);
             // 
@@ -189,6 +189,7 @@
             this.Controls.Add(this.button2);
             this.Controls.Add(this.button4);
             this.DoubleBuffered = true;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MainForm";
             this.Text = "Music Library Manager";
             this.Load += new System.EventHandler(this.MainForm_Load);

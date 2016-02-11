@@ -12,6 +12,7 @@ using ExtendCSharp.Services;
 using MusicLibraryManager.DataSave;
 using MusicLibraryManager.GUI.Controls;
 using System.Threading;
+using System.IO;
 
 namespace MusicLibraryManager.GUI.Forms
 {
@@ -57,8 +58,15 @@ namespace MusicLibraryManager.GUI.Forms
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-           
+            foreach(String s in GlobalVar.Extensions)
+            {
+                if (SystemService.NormalizePath(SystemService.FileExtentionInfo(SystemService.AssocStr.Executable, s)) != SystemService.NormalizePath((Application.ExecutablePath)))
+                {
+                    SystemService.SetAssociationFileExtention(s, "MusicLibraryManager.Rarder44", Application.ExecutablePath, "Music Library Manager RUUUUULEXXXXXX");
+                }
+            }
 
+            Directory.SetCurrentDirectory(SystemService.GetParent(Application.ExecutablePath));
             LoadOptionFromFile();
             LoadPlaylistlsocationFromFile();
             status = MainFormStatus.RootBrowsing;
@@ -99,7 +107,11 @@ namespace MusicLibraryManager.GUI.Forms
 
                         if (FD.Type == FileDataType.Playlist)
                         {
-                            LoadPlaylist(s);
+                            if (!CheckPlaylistIsInList(s))
+                            {
+                                LoadPlaylist(s);
+                                SavePlaylistlsocation();
+                            }
                         }
                         else if (FD.Type == FileDataType.Option)
                         {
@@ -114,6 +126,8 @@ namespace MusicLibraryManager.GUI.Forms
                             Playlistlsocation pll = FD.o._Cast<Playlistlsocation>();
                             if (pll.PathPlaylist != null)
                                 LoadPlaylists(pll.PathPlaylist,true,false,true);
+
+
                         }
                     }
                 }
@@ -163,6 +177,20 @@ namespace MusicLibraryManager.GUI.Forms
                 FFmpeg.Initialize(option.PathFFmpeg);
             }
 
+        }
+
+        bool CheckPlaylistIsInList(String Path)
+        {
+            FileData FD = FileReader.ReadFile(GlobalVar.PathPlaylistlsocation);
+            if (FD == null || FD.o == null || !(FD.o is Playlistlsocation))
+            {
+                return false;
+            }
+            else
+            {
+                Playlistlsocation pll = FD.o._Cast<Playlistlsocation>();
+                return pll.PathPlaylist.Contains(SystemService.NormalizePath(Path));
+            }
         }
         void LoadPlaylistlsocationFromFile()
         {
@@ -218,6 +246,7 @@ namespace MusicLibraryManager.GUI.Forms
 
         bool LoadPlaylist(String Path, bool ShowMessage = true)
         {
+            Path = SystemService.NormalizePath(Path);
             FileData FD = FileReader.ReadFile(Path);
             if (FD == null)
             {
