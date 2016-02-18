@@ -446,7 +446,11 @@ namespace MusicLibraryManager.GUI.Forms
                 FolderSelectDialog fsd = new FolderSelectDialog();
                 if (fsd.ShowDialog())
                 {
-                    bool OverrideIfExist = MessageBox.Show("Sovrascrivere eventuali file esistenti?", "Conferma Sovrascrittura", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.Yes ? true : false;
+                    DialogResult dr = MessageBox.Show("Sovrascrivere eventuali file esistenti?\r\n\r\nSi: il processo Sovrascriverà eventuali file già presenti con lo stesso nome\r\nNo: Il processo VERRA' comunque avviato ma, se un file è già presente nella cartella di Output, questo non verrà sovrascritto\r\nAnnulla: Il processo verrà interrotto", "Conferma Sovrascrittura", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Exclamation);
+                    if (dr == DialogResult.Cancel)
+                        return;
+
+                    bool OverrideIfExist = dr == DialogResult.Yes ? true : false;
                     String destFolder = fsd.FileName;
                     Playlist p = (Playlist)listBox_playlists.SelectedItem;
                     ListPlus<String> ls = p.FileSystem.GetAllFilePath();
@@ -458,7 +462,6 @@ namespace MusicLibraryManager.GUI.Forms
                     }
 
 
-                    //TODO richiamare la convert dicendogli di non convertire nulla ma di copiare
                     ConvertMedia CM = new ConvertMedia(new ConversionParameter(lss,ConversinType.Mai,FFmpegConversionEndFormat.mp3, OverrideIfExist));
                     CM.OnFFmpegConversionEnd += () =>
                     {
@@ -482,7 +485,11 @@ namespace MusicLibraryManager.GUI.Forms
                 FolderSelectDialog fsd = new FolderSelectDialog();
                 if (fsd.ShowDialog())
                 {
-                    bool OverrideIfExist = MessageBox.Show("Sovrascrivere eventuali file esistenti?", "Conferma Sovrascrittura", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation)==DialogResult.Yes?true:false;
+                    DialogResult dr = MessageBox.Show("Sovrascrivere eventuali file esistenti?\r\n\r\nSi: il processo Sovrascriverà eventuali file già presenti con lo stesso nome\r\nNo: Il processo VERRA' comunque avviato ma, se un file è già presente nella cartella di Output, questo non verrà sovrascritto\r\nAnnulla: Il processo verrà interrotto", "Conferma Sovrascrittura", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Exclamation);
+                    if (dr == DialogResult.Cancel)
+                        return;
+                    bool OverrideIfExist = dr == DialogResult.Yes ? true : false;
+
                     String destFolder = fsd.FileName;
                     Playlist p = (Playlist)listBox_playlists.SelectedItem;
                     ListPlus<String> ls = p.FileSystem.GetAllFilePath();

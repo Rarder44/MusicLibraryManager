@@ -30,10 +30,7 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-            this.button2 = new System.Windows.Forms.Button();
             this.listBox_playlists = new System.Windows.Forms.ListBox();
-            this.button3 = new System.Windows.Forms.Button();
-            this.button4 = new System.Windows.Forms.Button();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.esportaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.originaleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -44,54 +41,24 @@
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.rimuoviToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.button3 = new System.Windows.Forms.Button();
+            this.button2 = new System.Windows.Forms.Button();
+            this.button4 = new System.Windows.Forms.Button();
             this.fileBrowser1 = new MusicLibraryManager.GUI.Controls.FileBrowser();
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // button2
-            // 
-            this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button2.Location = new System.Drawing.Point(1107, 89);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(75, 23);
-            this.button2.TabIndex = 0;
-            this.button2.Text = "Root";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // listBox_playlists
             // 
             this.listBox_playlists.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.listBox_playlists.FormattingEnabled = true;
-            this.listBox_playlists.Location = new System.Drawing.Point(12, 118);
+            this.listBox_playlists.Location = new System.Drawing.Point(12, 66);
             this.listBox_playlists.Name = "listBox_playlists";
-            this.listBox_playlists.Size = new System.Drawing.Size(184, 459);
+            this.listBox_playlists.Size = new System.Drawing.Size(184, 511);
             this.listBox_playlists.TabIndex = 6;
             this.listBox_playlists.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.listBox_playlists_MouseDoubleClick);
             this.listBox_playlists.MouseDown += new System.Windows.Forms.MouseEventHandler(this.listBox_playlists_MouseDown);
-            // 
-            // button3
-            // 
-            this.button3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button3.BackgroundImage = global::MusicLibraryManager.Properties.Resources.setting;
-            this.button3.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.button3.Location = new System.Drawing.Point(1132, 12);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(50, 50);
-            this.button3.TabIndex = 5;
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
-            // 
-            // button4
-            // 
-            this.button4.Location = new System.Drawing.Point(12, 89);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(75, 23);
-            this.button4.TabIndex = 0;
-            this.button4.Text = "Crea Playlist";
-            this.button4.UseVisualStyleBackColor = true;
-            this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
             // contextMenuStrip1
             // 
@@ -165,6 +132,40 @@
             this.rimuoviToolStripMenuItem.Text = "Rimuovi";
             this.rimuoviToolStripMenuItem.Click += new System.EventHandler(this.rimuoviToolStripMenuItem_Click);
             // 
+            // button3
+            // 
+            this.button3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.button3.BackgroundImage = global::MusicLibraryManager.Properties.Resources.Setting;
+            this.button3.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.button3.Location = new System.Drawing.Point(1144, 10);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(50, 50);
+            this.button3.TabIndex = 5;
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
+            // 
+            // button2
+            // 
+            this.button2.BackgroundImage = global::MusicLibraryManager.Properties.Resources.Root;
+            this.button2.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.button2.Location = new System.Drawing.Point(202, 10);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(50, 50);
+            this.button2.TabIndex = 0;
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
+            // 
+            // button4
+            // 
+            this.button4.BackgroundImage = global::MusicLibraryManager.Properties.Resources.Plus;
+            this.button4.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.button4.Location = new System.Drawing.Point(12, 10);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(50, 50);
+            this.button4.TabIndex = 0;
+            this.button4.UseVisualStyleBackColor = true;
+            this.button4.Click += new System.EventHandler(this.button4_Click);
+            // 
             // fileBrowser1
             // 
             this.fileBrowser1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -172,9 +173,9 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.fileBrowser1.AutoScroll = true;
             this.fileBrowser1.BackColor = System.Drawing.SystemColors.ControlDark;
-            this.fileBrowser1.Location = new System.Drawing.Point(202, 118);
+            this.fileBrowser1.Location = new System.Drawing.Point(202, 68);
             this.fileBrowser1.Name = "fileBrowser1";
-            this.fileBrowser1.Size = new System.Drawing.Size(980, 459);
+            this.fileBrowser1.Size = new System.Drawing.Size(992, 509);
             this.fileBrowser1.Status = MusicLibraryManager.GUI.Controls.FileBrowserStatus.browsing;
             this.fileBrowser1.TabIndex = 4;
             // 
@@ -182,7 +183,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1194, 595);
+            this.ClientSize = new System.Drawing.Size(1201, 595);
             this.Controls.Add(this.listBox_playlists);
             this.Controls.Add(this.button3);
             this.Controls.Add(this.fileBrowser1);

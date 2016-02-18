@@ -56,7 +56,7 @@
             // Icon
             // 
             this.Icon.BackColor = System.Drawing.Color.Transparent;
-            this.Icon.BackgroundImage = global::MusicLibraryManager.Properties.Resources.folder;
+            this.Icon.BackgroundImage = global::MusicLibraryManager.Properties.Resources.Folder;
             this.Icon.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.Icon.Location = new System.Drawing.Point(0, 0);
             this.Icon.Name = "Icon";

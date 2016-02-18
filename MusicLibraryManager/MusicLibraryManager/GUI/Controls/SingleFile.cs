@@ -58,7 +58,7 @@ namespace MusicLibraryManager.GUI.Controls
             this.Nodo = Nodo;
 
             if (Nodo.Type == FileSystemNodePlusType.Directory)
-                this.Icon.BackgroundImage = global::MusicLibraryManager.Properties.Resources.folder;
+                this.Icon.BackgroundImage = global::MusicLibraryManager.Properties.Resources.Folder;
             else if (Nodo.Type == FileSystemNodePlusType.File)
             {
                 Icon icon = RegisteredFileType.GetIconFromExtension(Path.GetExtension(Nodo.Name));
