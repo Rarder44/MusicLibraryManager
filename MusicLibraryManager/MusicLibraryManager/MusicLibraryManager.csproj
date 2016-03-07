@@ -66,6 +66,12 @@
     <Compile Include="GUI\Controls\SingleFile.Designer.cs">
       <DependentUpon>SingleFile.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\Forms\CountSpace.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Forms\CountSpace.Designer.cs">
+      <DependentUpon>CountSpace.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\Forms\IncorporaMetadata.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -112,6 +118,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Controls\SingleFile.resx">
       <DependentUpon>SingleFile.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Forms\CountSpace.resx">
+      <DependentUpon>CountSpace.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Forms\IncorporaMetadata.resx">
       <DependentUpon>IncorporaMetadata.cs</DependentUpon>

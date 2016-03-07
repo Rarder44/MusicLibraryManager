@@ -65,12 +65,12 @@ namespace MusicLibraryManager.GUI.Forms
                 }
 
                 Error = new ListPlus<Tuple<string, string, FFmpegError>>();
-
+                
 
                 progressBar_total.SetMaximumInvoke(conv.SourceDestination.Count);
 
-
-                if(conv.TipoConversione==ConversinType.SoloDiversi)
+                
+                if (conv.TipoConversione==ConversinType.SoloDiversi)
                 {
                     foreach (Tuple<String, String> t in conv.SourceDestination)
                     {
@@ -82,12 +82,35 @@ namespace MusicLibraryManager.GUI.Forms
                         {
                             textBox_source.SetTextInvoke(t.Item1);
                             textBox_destination.SetTextInvoke(t.Item2);
-                            SystemService.CopySecure(t.Item1, t.Item2, conv.OverrideIfExist, (double p, ref bool f) => { progressBar_single.SetValueInvoke((int)p); });
+                            SystemService.CopySecure(t.Item1, t.Item2, conv.OverrideIfExist,
+                                    (double p, ref bool f) => {
+                                        progressBar_single.SetValueInvoke((int)p);
+                                    },
+                                    (bool copiato,Exception ex)=> {
+                                        if(!copiato)
+                                        {
+                                            if(ex!=null)
+                                            {
+                                                textBox1.AppendTextInvoke("Err: " + ex.Message+"\r\n");
+                                            }
+                                            else
+                                            {
+                                                textBox1.AppendTextInvoke("Err: " + t.Item1 + " -> " + t.Item2 + "\r\n");
+                                            }
+
+                                            Error.Add(new Tuple<string, string, FFmpegError>(t.Item1, t.Item2, FFmpegError.nul));
+                                        }
+                                    }
+                                );
+
                         }
                         else
                         {
-                            if(!FFmpeg.ConvertTo(conv.ConvertiIn,t.Item1,t.Item2,conv.OverrideIfExist, OnFFmpegStatusChanged, OnFFmpegProgressChanged,false))
+                            if (!FFmpeg.ConvertTo(conv.ConvertiIn, t.Item1, t.Item2, conv.OverrideIfExist, OnFFmpegStatusChanged, OnFFmpegProgressChanged, false))
+                            {
                                 Error.Add(new Tuple<string, string, FFmpegError>(t.Item1, t.Item2, FFmpegError.DestFolderNotFound));
+                                textBox1.AppendTextInvoke("Err: " + t.Item1 + " -> " + t.Item2 + "\r\n");
+                            }
                         }
                         progressBar_total.SetValueInvoke(progressBar_total.Value + 1);
                     }
@@ -163,7 +186,18 @@ namespace MusicLibraryManager.GUI.Forms
         public delegate void FFmpegConversionEnd();
         public event FFmpegConversionEnd OnFFmpegConversionEnd;
 
-
+        private void textBox1_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.A && e.Modifiers == Keys.Control)
+            {
+                ((TextBox)sender).SelectAll();
+            }
+            else if (!(e.KeyCode == Keys.C && e.Modifiers == Keys.Control))
+            {
+                e.Handled = true;
+                e.SuppressKeyPress = true;
+            }
+        }
     }
 
     public class ConversionParameter

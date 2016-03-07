@@ -1,6 +1,6 @@
 ﻿namespace MusicLibraryManager.GUI.Forms
 {
-    partial class ConvertMedia
+    partial class CountSpace
     {
         /// <summary>
         /// Required designer variable.
@@ -29,10 +29,8 @@
         private void InitializeComponent()
         {
             this.textBox_source = new System.Windows.Forms.TextBox();
-            this.textBox_destination = new System.Windows.Forms.TextBox();
             this.progressBar_total = new System.Windows.Forms.ProgressBar();
             this.textBox1 = new System.Windows.Forms.TextBox();
-            this.progressBar_single = new System.Windows.Forms.ProgressBar();
             this.SuspendLayout();
             // 
             // textBox_source
@@ -42,14 +40,6 @@
             this.textBox_source.ReadOnly = true;
             this.textBox_source.Size = new System.Drawing.Size(556, 20);
             this.textBox_source.TabIndex = 0;
-            // 
-            // textBox_destination
-            // 
-            this.textBox_destination.Location = new System.Drawing.Point(12, 38);
-            this.textBox_destination.Name = "textBox_destination";
-            this.textBox_destination.ReadOnly = true;
-            this.textBox_destination.Size = new System.Drawing.Size(556, 20);
-            this.textBox_destination.TabIndex = 0;
             // 
             // progressBar_total
             // 
@@ -70,29 +60,20 @@
             this.textBox1.TabIndex = 2;
             this.textBox1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBox1_KeyDown);
             // 
-            // progressBar_single
-            // 
-            this.progressBar_single.Location = new System.Drawing.Point(12, 64);
-            this.progressBar_single.Name = "progressBar_single";
-            this.progressBar_single.Size = new System.Drawing.Size(556, 23);
-            this.progressBar_single.TabIndex = 3;
-            // 
-            // ConvertMedia
+            // CountSpace
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(580, 234);
-            this.Controls.Add(this.progressBar_single);
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.progressBar_total);
-            this.Controls.Add(this.textBox_destination);
             this.Controls.Add(this.textBox_source);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "ConvertMedia";
+            this.Name = "CountSpace";
             this.ShowIcon = false;
             this.Text = "ConvertMedia";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ConvertMedia_FormClosing);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.CountSpace_FormClosing);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -101,9 +82,7 @@
         #endregion
 
         private System.Windows.Forms.TextBox textBox_source;
-        private System.Windows.Forms.TextBox textBox_destination;
         private System.Windows.Forms.ProgressBar progressBar_total;
         private System.Windows.Forms.TextBox textBox1;
-        private System.Windows.Forms.ProgressBar progressBar_single;
     }
 }

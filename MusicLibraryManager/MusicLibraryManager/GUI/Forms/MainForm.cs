@@ -13,6 +13,7 @@ using MusicLibraryManager.DataSave;
 using MusicLibraryManager.GUI.Controls;
 using System.Threading;
 using System.IO;
+using MusicLibraryManager.Services;
 
 namespace MusicLibraryManager.GUI.Forms
 {
@@ -550,6 +551,22 @@ namespace MusicLibraryManager.GUI.Forms
             //TODO: cerco di correggere i nodi errati e mostro un riepilogo 
 
         }
+
+       /* private void convertitoMP3ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listBox_playlists.SelectedItem is Playlist)
+            {
+                Playlist p = (Playlist)listBox_playlists.SelectedItem;
+                CountSpace cs = new CountSpace(new CountParameter(p.FileSystem,FFmpegConversionEndFormat.mp3));
+                cs.Show();
+                cs.Start();
+            }    
+        }*/
+
+
+       
+
+
 
 
     }
