@@ -500,7 +500,7 @@ namespace MusicLibraryManager.GUI.Forms
                     {    
                         lss.Add(new Tuple<string, string>(SystemService.Combine(p.FileSystem.RootPath, s.TrimStart('\\', '/')), SystemService.Combine(destFolder, SystemService.ChangeExtension(s.TrimStart('\\', '/'), "mp3"))));
                     }
-
+                    
                     ConvertMedia CM = new ConvertMedia(new ConversionParameter(lss, ConversinType.SoloDiversi, FFmpegConversionEndFormat.mp3, OverrideIfExist));
                     CM.OnFFmpegConversionEnd += () =>
                     {
@@ -552,19 +552,118 @@ namespace MusicLibraryManager.GUI.Forms
 
         }
 
-       /* private void convertitoMP3ToolStripMenuItem_Click(object sender, EventArgs e)
+
+        //esporta singola cartella Originale
+        private void toolStripMenuItem3_Click(object sender, EventArgs e)
         {
             if (listBox_playlists.SelectedItem is Playlist)
             {
-                Playlist p = (Playlist)listBox_playlists.SelectedItem;
-                CountSpace cs = new CountSpace(new CountParameter(p.FileSystem,FFmpegConversionEndFormat.mp3));
-                cs.Show();
-                cs.Start();
-            }    
-        }*/
+                FolderSelectDialog fsd = new FolderSelectDialog();
+                if (fsd.ShowDialog())
+                {
+                    DialogResult dr = MessageBox.Show("Sovrascrivere eventuali file esistenti?\r\n\r\nSi: il processo Sovrascriverà eventuali file già presenti con lo stesso nome\r\nNo: Il processo VERRA' comunque avviato ma, se un file è già presente nella cartella di Output, questo non verrà sovrascritto\r\nAnnulla: Il processo verrà interrotto", "Conferma Sovrascrittura", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Exclamation);
+                    if (dr == DialogResult.Cancel)
+                        return;
+
+                    bool OverrideIfExist = dr == DialogResult.Yes ? true : false;
+                    String destFolder = fsd.FileName;
+                    Playlist p = (Playlist)listBox_playlists.SelectedItem;
+                    ListPlus<String> ls = p.FileSystem.GetAllFilePath();
+
+                    ListPlus<Tuple<String, String>> lss = new ListPlus<Tuple<string, string>>();
+                    foreach (String s in ls)
+                    {
+                        String t= s.TrimStart('\\', '/');
+                        String destFileName = SystemService.GetFileName(t);
+                        t = SystemService.Combine(destFolder, destFileName);
+
+                        while (lss.Count(x => x.Item2 ==t) > 0)
+                        {
+                            destFileName = "_" + destFileName;
+                            t = SystemService.Combine(destFolder, destFileName);
+                        }
+
+                        lss.Add(new Tuple<string, string>(SystemService.Combine(p.FileSystem.RootPath, s.TrimStart('\\', '/')), t));
+                    }
 
 
-       
+                    ConvertMedia CM = new ConvertMedia(new ConversionParameter(lss, ConversinType.Mai, FFmpegConversionEndFormat.mp3, OverrideIfExist));
+                    CM.OnFFmpegConversionEnd += () =>
+                    {
+                        if (CM.Error != null && CM.Error.Count != 0)
+                        {
+                            MessageBox.Show("Errori presenti durante la conversione!");
+                            //TODO: visualizzazione degli errori
+                        }
+                    };
+                    CM.Show();
+                    CM.Start();
+                }
+            }
+        }
+
+
+
+        //esporta singola cartella Convertito
+        private void toolStripMenuItem4_Click(object sender, EventArgs e)
+        {
+            if (listBox_playlists.SelectedItem is Playlist)
+            {
+                FolderSelectDialog fsd = new FolderSelectDialog();
+                if (fsd.ShowDialog())
+                {
+                    DialogResult dr = MessageBox.Show("Sovrascrivere eventuali file esistenti?\r\n\r\nSi: il processo Sovrascriverà eventuali file già presenti con lo stesso nome\r\nNo: Il processo VERRA' comunque avviato ma, se un file è già presente nella cartella di Output, questo non verrà sovrascritto\r\nAnnulla: Il processo verrà interrotto", "Conferma Sovrascrittura", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Exclamation);
+                    if (dr == DialogResult.Cancel)
+                        return;
+                    bool OverrideIfExist = dr == DialogResult.Yes ? true : false;
+
+                    String destFolder = fsd.FileName;
+                    Playlist p = (Playlist)listBox_playlists.SelectedItem;
+                    ListPlus<String> ls = p.FileSystem.GetAllFilePath();
+
+                    ListPlus<Tuple<String, String>> lss = new ListPlus<Tuple<string, string>>();
+                    foreach (String s in ls)
+                    {
+                        String t = SystemService.ChangeExtension(s.TrimStart('\\', '/'), "mp3");
+                        String destFileName = SystemService.GetFileName(t);
+                        t = SystemService.Combine(destFolder, destFileName);
+
+                        while (lss.Count(x => x.Item2 == t) > 0)
+                        {
+                            destFileName = "_" + destFileName;
+                            t = SystemService.Combine(destFolder, destFileName);
+                        }
+                        lss.Add(new Tuple<string, string>(SystemService.Combine(p.FileSystem.RootPath, s.TrimStart('\\', '/')), t));
+                    }
+
+                    ConvertMedia CM = new ConvertMedia(new ConversionParameter(lss, ConversinType.SoloDiversi, FFmpegConversionEndFormat.mp3, OverrideIfExist));
+                    CM.OnFFmpegConversionEnd += () =>
+                    {
+                        if (CM.Error != null && CM.Error.Count != 0)
+                        {
+                            MessageBox.Show("Errori presenti durante la conversione!");
+                            //TODO: visualizzazione degli errori
+                        }
+                    };
+                    CM.Show();
+                    CM.Start();
+                }
+            }
+        }
+
+        /* private void convertitoMP3ToolStripMenuItem_Click(object sender, EventArgs e)
+         {
+             if (listBox_playlists.SelectedItem is Playlist)
+             {
+                 Playlist p = (Playlist)listBox_playlists.SelectedItem;
+                 CountSpace cs = new CountSpace(new CountParameter(p.FileSystem,FFmpegConversionEndFormat.mp3));
+                 cs.Show();
+                 cs.Start();
+             }    
+         }*/
+
+
+
 
 
 
