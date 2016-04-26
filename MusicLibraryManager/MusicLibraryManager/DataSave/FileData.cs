@@ -30,6 +30,7 @@ namespace MusicLibraryManager.DataSave
         Option,
         Playlistlsocation,
         Playlist,
+        IndexFile,
         NotSet
     }
 }

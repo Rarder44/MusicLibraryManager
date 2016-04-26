@@ -24,6 +24,8 @@ namespace MusicLibraryManager.DataSave
                         fd.o = Json.Deserialize<Playlistlsocation>(fd.o.ToString());
                     else if (fd.Type == FileDataType.Playlist)
                         fd.o = Json.Deserialize<Playlist>(fd.o.ToString());
+                    else if (fd.Type == FileDataType.IndexFile)
+                        fd.o = Json.Deserialize<IndexFile>(fd.o.ToString());
                 }
             }
             return fd;

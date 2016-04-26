@@ -69,6 +69,7 @@
             this.ShowIcon = false;
             this.Text = "IncorporaMetadata";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.IncorporaMetadata_FormClosing);
+            this.Load += new System.EventHandler(this.IncorporaMetadata_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

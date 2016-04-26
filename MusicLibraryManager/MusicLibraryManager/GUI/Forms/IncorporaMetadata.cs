@@ -10,27 +10,88 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using ExtendCSharp;
-using static ExtendCSharp.Services.FFmpeg;
-using MusicLibraryManager.Services;
-using static ExtendCSharp.Extension;
+
 
 namespace MusicLibraryManager.GUI.Forms
 {
     public partial class IncorporaMetadata : Form
     {
-        Playlist p;
+        MyFileSystemPlus BaseFileSystem;
+        FileSystemNodePlus<MyAddittionalData> StartNode;
 
-        public bool Pause { get; set; }
-        Thread Esecuzione;
-        
-
-       
-        public IncorporaMetadata(Playlist p)
+        MetadataIncluder MI = null;
+        public bool Pause
         {
-            InitializeComponent();
-            this.p = p;
+            get
+            {
+                return MI.Pause;
+            }
+            set
+            {
+                MI.Pause = value;
+            }
         }
 
+
+
+        public IncorporaMetadata()
+        {
+            InitializeComponent();
+
+
+        }
+
+        public IncorporaMetadata(MyFileSystemPlus mfsp, FileSystemNodePlus<MyAddittionalData> AlternativeNode = null)
+        {
+            InitializeComponent();
+            this.BaseFileSystem = mfsp;
+            if(AlternativeNode ==null)
+                this.StartNode = mfsp.Root;
+            else
+                this.StartNode = AlternativeNode;
+
+            MI = new MetadataIncluder();
+            MI.OnEnd += MI_OnEnd;
+            MI.OnNodeStartProcessing += MI_OnNodeStartProcessing;
+            MI.OnNodeProcessed += MI_OnNodeProcessed;
+            MI.OnProgressChangedSingleMD5 += MI_OnProgressChangedSingleMD5;
+
+        }
+
+       
+        private void IncorporaMetadata_Load(object sender, EventArgs e)
+        {
+            Start();
+        }
+
+
+
+        double buffer = 0;
+        private void MI_OnProgressChangedSingleMD5(double AddPercent)
+        {
+            buffer += AddPercent;
+            progressBar_single.SetProgressNoAnimationInvoke((int)buffer);
+        }
+
+        private void MI_OnNodeProcessed(FileSystemNodePlus<MyAddittionalData> nodo, String Path, MetadataIncluderError Err)
+        {
+            
+            progressBar_total.SetProgressNoAnimationInvoke(progressBar_total.Value + 1);
+        }
+        private void MI_OnNodeStartProcessing(FileSystemNodePlus<MyAddittionalData> nodo, string Path)
+        {
+            buffer = 0;
+            textBox_source.SetTextInvoke(Path);
+        }
+
+        private void MI_OnEnd()
+        {
+
+            OnIncorporaMetadataFormEnd?.Invoke(BaseFileSystem, StartNode, IncorporaMetadataFormResult.Finish);
+            FormClosing -= IncorporaMetadata_FormClosing;
+            this.CloseInvoke();
+
+        }
 
         private void IncorporaMetadata_FormClosing(object sender, FormClosingEventArgs e)
         {
@@ -39,9 +100,9 @@ namespace MusicLibraryManager.GUI.Forms
             {
                 Stop();
                 FormClosing -= IncorporaMetadata_FormClosing;
-                if (OnIncorporaMetadataFormEnd != null)
-                    OnIncorporaMetadataFormEnd(p, IncorporaMetadataFormResult.Aborted);
-                this.Close();
+                OnIncorporaMetadataFormEnd?.Invoke(BaseFileSystem, StartNode, IncorporaMetadataFormResult.Aborted);
+
+                Close();
                 return;
             }
             Pause = false;
@@ -49,78 +110,39 @@ namespace MusicLibraryManager.GUI.Forms
         }
 
 
+        /// <summary>
+        /// Permette di far partire l'incorporazione dei metadata 
+        /// </summary>
         public void Start()
         {
-            Esecuzione = new Thread((object n) =>
-            {
-                if (n == null || !(n is Playlist))
-                {
-                    MessageBox.Show("Occorre passare una Playlist!", "Errore", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-
-
-                Playlist pp = (Playlist)n;
-                int Total = pp.FileSystem.Root.GetNodeCount(FileSystemNodePlusLevelType.AllNode, FileSystemNodePlusType.File);
-                progressBar_total.SetMaximumInvoke(Total);
-
-                double buffer = 0;
-                IncorporaMetadataRicorsivo(pp.FileSystem.Root,pp.FileSystem, (FileSystemNodePlus<MyAddittionalData> nodo, IncorporaMetadataError Err) =>
-                {
-                    buffer = 0;
-                    progressBar_total.SetProgressNoAnimationInvoke(progressBar_total.Value + 1);
-                },(double AddPercent) =>
-                {
-                    buffer += AddPercent;
-                    progressBar_single.SetProgressNoAnimationInvoke((int)buffer);
-                   
-                },false);
-
-                if (OnIncorporaMetadataFormEnd != null)
-                    OnIncorporaMetadataFormEnd(p,IncorporaMetadataFormResult.Finish);
-                FormClosing -= IncorporaMetadata_FormClosing;
-                this.CloseInvoke();
-            });
-            Esecuzione.Start(p);
-
-            
+            int Total = StartNode.GetNodeCount(FileSystemNodePlusLevelType.AllNode, FileSystemNodePlusType.File);
+            progressBar_total.SetMaximumInvoke(Total);
+            MI.BeginIncorporaMetadata(StartNode, BaseFileSystem); 
         }
 
-        private void IncorporaMetadataRicorsivo(FileSystemNodePlus<MyAddittionalData> nodo, MyFileSystemPlus mfsp, IncorporaMetadataNodeProcessed OnIncorporaMetadataNodeProcessed = null, MD5BlockTransformEventHandler OnProgressChangedSingleMD5 = null, bool Async = true)
-        {
-            foreach (FileSystemNodePlus<MyAddittionalData> n in nodo.GetAllNode())
-            {
-                while (Pause)
-                    Thread.Sleep(100);
-
-                if (n.Type == FileSystemNodePlusType.Directory)
-                    IncorporaMetadataRicorsivo(n, mfsp, OnIncorporaMetadataNodeProcessed, OnProgressChangedSingleMD5, Async);
-                else if (n.Type == FileSystemNodePlusType.File)
-                {
-                    textBox_source.SetTextInvoke(mfsp.GetFullPath(n));
-                    progressBar_single.SetValueInvoke(0);
-                    MetadataService.IncorporaMetadata(n, mfsp, OnIncorporaMetadataNodeProcessed, OnProgressChangedSingleMD5, Async);
-                }
-            }
-        }
-
-
+      
 
 
         public void Stop()
         {
             try
             {
-                Esecuzione.Abort();
+                MI.AbortIncorporaMetadata();
             }
             catch (Exception)
             {}
         }
 
 
-        public delegate void IncorporaMetadataFormEnd(Playlist p, IncorporaMetadataFormResult Result );
+
+       
+        
+
+
+
+        public delegate void IncorporaMetadataFormEnd(MyFileSystemPlus mfsp, FileSystemNodePlus<MyAddittionalData> AlternativeNode, IncorporaMetadataFormResult Result);
         public event IncorporaMetadataFormEnd OnIncorporaMetadataFormEnd;
-
-
+        
     }
     public enum IncorporaMetadataFormResult
     {

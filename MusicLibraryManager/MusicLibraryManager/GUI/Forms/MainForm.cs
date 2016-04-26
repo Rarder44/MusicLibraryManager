@@ -13,7 +13,7 @@ using MusicLibraryManager.DataSave;
 using MusicLibraryManager.GUI.Controls;
 using System.Threading;
 using System.IO;
-using MusicLibraryManager.Services;
+
 
 namespace MusicLibraryManager.GUI.Forms
 {
@@ -83,6 +83,9 @@ namespace MusicLibraryManager.GUI.Forms
                 p.FileSystem.Merge(c);
                 p.FileSystem.Root.SetParentOnAllChild(FileSystemNodePlusLevelType.AllNode);
                 p.FileSystem.RootPath = f.RootPath;
+                
+
+                
                 new SingleFile(p.FileSystem.Root).SetSelectChildNode(false);
                 new SingleFile(RootFileSystem.Root).SetSelectChildNode(false);
                 SavePlaylist(p);
@@ -522,8 +525,8 @@ namespace MusicLibraryManager.GUI.Forms
                 if (MessageBox.Show("Attenzione!\r\nSe un file non viene trovato NON verrà eliminato dalla lista ma i metadati rimmarrano vuoti\r\nTip: Esegui prima \"Check dei File\"\r\n\r\nIl processo può richiedere paracchio tempo, continuare?","Attenzione",MessageBoxButtons.YesNo,MessageBoxIcon.Exclamation) == DialogResult.Yes)
                 {
                     Playlist p = (Playlist)listBox_playlists.SelectedItem;
-                    IncorporaMetadata IM = new IncorporaMetadata(p);
-                    IM.OnIncorporaMetadataFormEnd += (Playlist pp, IncorporaMetadataFormResult Result) =>
+                    IncorporaMetadataPlaylist IM = new IncorporaMetadataPlaylist(p);
+                    IM.OnIncorporaMetadataPlaylistFormEnd += (Playlist pp, IncorporaMetadataFormResult Result) =>
                     {
                         if (Result == IncorporaMetadataFormResult.Finish)
                         {
@@ -537,8 +540,8 @@ namespace MusicLibraryManager.GUI.Forms
                         }
                     };
                     IM.Show();
-                    IM.Start();
-
+                    //IM.Start();
+                    //IM.ShowDialog();
                 }
         }
 

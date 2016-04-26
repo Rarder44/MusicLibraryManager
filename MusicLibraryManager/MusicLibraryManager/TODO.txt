@@ -1,0 +1,10 @@
+﻿
+
+Creare la IndexFile che sfrutta la MetatadaService ( testare con e senza GUI ) 
+implementare gli eventi:
+
+
+OnEnd
+OnTreeCreated
+OnNodeProcessed
+OnProgressChangedSingleMD5
