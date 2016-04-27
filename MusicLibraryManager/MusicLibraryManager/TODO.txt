@@ -1,10 +1,8 @@
 ﻿
-
-Creare la IndexFile che sfrutta la MetatadaService ( testare con e senza GUI ) 
-implementare gli eventi:
-
-
-OnEnd
-OnTreeCreated
-OnNodeProcessed
-OnProgressChangedSingleMD5
+implementare l'update per il file di indice
+implementare i vari metodi get per il file di indice:
+	- MD5
+	- Autore
+	- Gruppo
+	- Genere
+	- Durata

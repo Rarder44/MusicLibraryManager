@@ -105,7 +105,7 @@ namespace MusicLibraryManager.GUI.Forms
                 {
                     if (SystemService.FileExist(s))
                     {
-                        FileData FD = FileReader.ReadFile(s);
+                        FileData FD = FileService.ReadFile(s);
                         if (FD == null)
                             continue;
 
@@ -141,18 +141,18 @@ namespace MusicLibraryManager.GUI.Forms
 
         void LoadOptionFromFile()
         {
-            FileData FD = FileReader.ReadFile(GlobalVar.PathOption);
+            FileData FD = FileService.ReadFile(GlobalVar.PathOption);
             if (FD == null)
             {
                 MessageBox.Show("File di opzioni: " + GlobalVar.PathOption + " Non trovato.\r\nVerrà creato un nuovo file Opzioni");
                 option = new Option();
-                FileReader.WriteFile(GlobalVar.PathOption, option, FileDataType.Option);
+                FileService.WriteFile(GlobalVar.PathOption, option, FileDataType.Option);
             }
             else if (FD.o == null || !(FD.o is Option))
             {
                 MessageBox.Show("File di opzioni: " + GlobalVar.PathOption + " non caricato correttamente.\r\nVerrà creato un nuovo file Opzioni");
                 option = new Option();
-                FileReader.WriteFile(GlobalVar.PathOption, option, FileDataType.Option);
+                FileService.WriteFile(GlobalVar.PathOption, option, FileDataType.Option);
             }
             else
             {
@@ -161,7 +161,7 @@ namespace MusicLibraryManager.GUI.Forms
 
             option.OnSomethingChenged += (ChangedVar var) =>
             {
-                FileReader.WriteFile(GlobalVar.PathOption, option, FileDataType.Option);
+                FileService.WriteFile(GlobalVar.PathOption, option, FileDataType.Option);
                 if ((var & ChangedVar.PathMedia) == ChangedVar.PathMedia || (var & ChangedVar.Extensions) == ChangedVar.Extensions)
                 {
                     LoadRootMediaLibrary();
@@ -185,7 +185,7 @@ namespace MusicLibraryManager.GUI.Forms
 
         bool CheckPlaylistIsInList(String Path)
         {
-            FileData FD = FileReader.ReadFile(GlobalVar.PathPlaylistlsocation);
+            FileData FD = FileService.ReadFile(GlobalVar.PathPlaylistlsocation);
             if (FD == null || FD.o == null || !(FD.o is Playlistlsocation))
             {
                 return false;
@@ -198,15 +198,15 @@ namespace MusicLibraryManager.GUI.Forms
         }
         void LoadPlaylistlsocationFromFile()
         {
-            FileData FD = FileReader.ReadFile(GlobalVar.PathPlaylistlsocation);
+            FileData FD = FileService.ReadFile(GlobalVar.PathPlaylistlsocation);
             if (FD == null)
             {
-                FileReader.WriteFile(GlobalVar.PathPlaylistlsocation, new Playlistlsocation(), FileDataType.Playlistlsocation);
+                FileService.WriteFile(GlobalVar.PathPlaylistlsocation, new Playlistlsocation(), FileDataType.Playlistlsocation);
             }
             else if (FD.o == null || !(FD.o is Playlistlsocation))
             {
                 MessageBox.Show("File di Playlists: " + GlobalVar.PathOption + " non caricato correttamente.\r\n");
-                FileReader.WriteFile(GlobalVar.PathPlaylistlsocation, new Playlistlsocation(), FileDataType.Playlistlsocation);
+                FileService.WriteFile(GlobalVar.PathPlaylistlsocation, new Playlistlsocation(), FileDataType.Playlistlsocation);
             }
             else
             {
@@ -220,7 +220,7 @@ namespace MusicLibraryManager.GUI.Forms
             Playlistlsocation pll = new Playlistlsocation();
             foreach (Playlist p in listBox_playlists.Items)
                 pll.PathPlaylist.Add(p.Path);
-            FileReader.WriteFile(GlobalVar.PathPlaylistlsocation, pll, FileDataType.Playlistlsocation);
+            FileService.WriteFile(GlobalVar.PathPlaylistlsocation, pll, FileDataType.Playlistlsocation);
         }
 
 
@@ -251,7 +251,7 @@ namespace MusicLibraryManager.GUI.Forms
         bool LoadPlaylist(String Path, bool ShowMessage = true)
         {
             Path = SystemService.NormalizePath(Path);
-            FileData FD = FileReader.ReadFile(Path);
+            FileData FD = FileService.ReadFile(Path);
             if (FD == null)
             {
                 if (ShowMessage)
@@ -316,14 +316,14 @@ namespace MusicLibraryManager.GUI.Forms
         void SavePlaylist(Playlist p)
         {
             if(p!=null)
-                FileReader.WriteFile(p.Path, p, FileDataType.Playlist);
+                FileService.WriteFile(p.Path, p, FileDataType.Playlist);
         }
 
         void ReloadPlaylistFromFile(Playlist p)
         {
             if(SystemService.FileExist(p.Path))
             {
-                FileData FD = FileReader.ReadFile(p.Path);
+                FileData FD = FileService.ReadFile(p.Path);
                 if (FD != null && FD.o is Playlist)
                 {
                     Playlist temp = FD.o._Cast<Playlist>();

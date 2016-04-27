@@ -12,7 +12,7 @@ using static ExtendCSharp.Extension;
 
 namespace MusicLibraryManager
 {
-    public delegate void EndIndexFile();
+    public delegate void EndIndexFile(IndexFile i);
 
     public class IndexFile
     {
@@ -22,6 +22,7 @@ namespace MusicLibraryManager
 
         public event EndIndexFile OnEnd;
         public event EndIncorporaMetadata OnEndMetadata;
+        public event IncorporaMetadataNodeStartProcessing OnNodeStartProcessing;
         public event IncorporaMetadataNodeProcessed OnProcessedMetadata;
         public event MD5BlockTransformEventHandler OnPercentChangeMetadata;
 
@@ -74,7 +75,7 @@ namespace MusicLibraryManager
                 Worker = new Thread(() =>
                 {
                     _CreateIndexFile(Path, lo, GUI);
-                    OnEnd?.Invoke();
+                    OnEnd?.Invoke(this);
                 });
                 Worker.Start();
                 Worker.Join();
@@ -93,7 +94,7 @@ namespace MusicLibraryManager
                 Worker = new Thread(() =>
                 {
                     _CreateIndexFile(Path, lo, GUI);
-                    OnEnd?.Invoke();
+                    OnEnd?.Invoke(this);
                 });
                 Worker.Start();
                 return true;
@@ -157,23 +158,48 @@ namespace MusicLibraryManager
 
 
 
-        private static IndexFile _CreateIndexFile(String Path, FileSystemPlusLoadOption lo, bool gui)
+        private void _CreateIndexFile(String Path, FileSystemPlusLoadOption lo, bool gui)
         {
             MyFileSystemPlus t = new MyFileSystemPlus(Path, lo);
 
             if (gui)
             {
                 IncorporaMetadata IM = new IncorporaMetadata(t);
+                IM.OnNodeStartProcessing += OnNodeStartProcessing;
+                IM.OnProcessedMetadata += OnProcessedMetadata;
+
+                IM.OnPercentChangeMetadata += OnPercentChangeMetadata;
+
+                IM.OnEndMetadata += OnEndMetadata;
+                IM.OnIncorporaMetadataFormEnd += (MyFileSystemPlus mfsp, FileSystemNodePlus<MyAddittionalData> AlternativeNode, IncorporaMetadataFormResult Result) =>
+                {
+                   
+                };
+
                 IM.ShowDialog();
             }
             else
             {
                 MetadataIncluder MI = new MetadataIncluder();
+                MI.OnNodeStartProcessing += OnNodeStartProcessing;
+                MI.OnNodeProcessed += OnProcessedMetadata;
+
+                MI.OnProgressChangedSingleMD5 += (double percent) =>
+                {
+                    OnPercentChangeMetadata?.Invoke(percent);
+                };
+                MI.OnEnd += OnEndMetadata;
+
                 MI.IncorporaMetadata(t.Root, t);
             }
 
-            return new IndexFile(t);
+            ListElement = t;
+            Completed = true;
         }
+
+      
+
+
 
 
 

@@ -11,6 +11,6 @@ namespace MusicLibraryManager
     {
         static public String PathOption = "Option.mlmo";
         static public String PathPlaylistlsocation = "Playlistlsocation.mlmp";
-        static public String[] Extensions = { ".mlm", ".mlmo" };
+        static public String[] Extensions = { ".mlm", ".mlmo",".mlmi" };
     }
 }

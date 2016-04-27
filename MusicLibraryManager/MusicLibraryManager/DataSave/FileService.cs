@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MusicLibraryManager.DataSave
 {
-    static class FileReader
+    static class FileService
     {
         static public FileData ReadFile(String Path)
         {

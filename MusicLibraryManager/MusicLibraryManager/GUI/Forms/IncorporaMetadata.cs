@@ -56,6 +56,9 @@ namespace MusicLibraryManager.GUI.Forms
             MI.OnNodeProcessed += MI_OnNodeProcessed;
             MI.OnProgressChangedSingleMD5 += MI_OnProgressChangedSingleMD5;
 
+
+           
+           
         }
 
        
@@ -70,6 +73,7 @@ namespace MusicLibraryManager.GUI.Forms
         private void MI_OnProgressChangedSingleMD5(double AddPercent)
         {
             buffer += AddPercent;
+            
             progressBar_single.SetProgressNoAnimationInvoke((int)buffer);
         }
 
@@ -115,6 +119,15 @@ namespace MusicLibraryManager.GUI.Forms
         /// </summary>
         public void Start()
         {
+            MI.OnNodeStartProcessing += OnNodeStartProcessing;
+            MI.OnNodeProcessed += OnProcessedMetadata;
+            MI.OnProgressChangedSingleMD5 += (double percent) =>
+            {
+                OnPercentChangeMetadata?.Invoke(percent);
+            };
+            MI.OnEnd += OnEndMetadata;
+
+
             int Total = StartNode.GetNodeCount(FileSystemNodePlusLevelType.AllNode, FileSystemNodePlusType.File);
             progressBar_total.SetMaximumInvoke(Total);
             MI.BeginIncorporaMetadata(StartNode, BaseFileSystem); 
@@ -142,7 +155,12 @@ namespace MusicLibraryManager.GUI.Forms
 
         public delegate void IncorporaMetadataFormEnd(MyFileSystemPlus mfsp, FileSystemNodePlus<MyAddittionalData> AlternativeNode, IncorporaMetadataFormResult Result);
         public event IncorporaMetadataFormEnd OnIncorporaMetadataFormEnd;
-        
+
+        public event EndIncorporaMetadata OnEndMetadata;
+        public event IncorporaMetadataNodeStartProcessing OnNodeStartProcessing;
+        public event IncorporaMetadataNodeProcessed OnProcessedMetadata;
+        public event MD5BlockTransformEventHandler OnPercentChangeMetadata;
+
     }
     public enum IncorporaMetadataFormResult
     {

@@ -13,6 +13,7 @@ namespace MusicLibraryManager
         public bool Selezionato;
         public FFmpegMetadata Metadata;
         public String MD5;
+        public long Size;
 
         public MyAddittionalData()
         {

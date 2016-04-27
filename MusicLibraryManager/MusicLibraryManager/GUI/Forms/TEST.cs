@@ -1,10 +1,12 @@
 ﻿using ExtendCSharp;
 using ExtendCSharp.Services;
+using MusicLibraryManager.DataSave;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -33,9 +35,21 @@ namespace MusicLibraryManager.GUI.Forms
             //IndexFile I = 
           
             IndexFile i = new IndexFile();
+            i.OnEnd += I_OnEnd;
+            i.BeginLoadFromPath(@"F:\MUSICA FLAC\ORATORIO\", lo,false);
 
-            i.BeginLoadFromPath(@"F:\MUSICA FLAC\", lo,true);
+            
 
+        }
+
+        private void I_OnEnd(IndexFile i)
+        {
+            FileService.WriteFile("test.txt", i, FileDataType.IndexFile);
+            FileData d=FileService.ReadFile("test.txt");
+            if(d.Type==FileDataType.IndexFile)
+            {
+                IndexFile ii = d.o._Cast<IndexFile>();
+            }
         }
     }
 }

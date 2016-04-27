@@ -53,7 +53,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DataSave\FileReader.cs" />
+    <Compile Include="DataSave\FileService.cs" />
     <Compile Include="GUI\Controls\FileBrowser.cs">
       <SubType>UserControl</SubType>
     </Compile>

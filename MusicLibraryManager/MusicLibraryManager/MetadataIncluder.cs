@@ -159,6 +159,7 @@ namespace MusicLibraryManager
                             n.AddittionalData.Metadata = new FFmpegMetadata();
 
                         n.AddittionalData.Metadata = FFmpeg.GetMetadata(p);
+                        n.AddittionalData.Size= new FileInfo(p).Length;
 
                         SystemService.GetMD5(p, (double percent) =>
                         {
