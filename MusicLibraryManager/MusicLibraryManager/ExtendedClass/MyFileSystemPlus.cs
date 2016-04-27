@@ -32,7 +32,10 @@ namespace MusicLibraryManager
         }
 
 
-
+        public void DeselectAll()
+        {
+            Root.Flatten().ToList().ForEach(x => { x.AddittionalData.Selezionato = false; });
+        }
 
 
         public MyFileSystemPlus Clone()

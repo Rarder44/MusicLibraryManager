@@ -148,36 +148,45 @@ namespace MusicLibraryManager
                     IncorporaMetadataRicorsivo(n, mfsp);
                 else if (n.Type == FileSystemNodePlusType.File)
                 {
-                    String p = mfsp.GetFullPath(n);
-                    if (SystemService.FileExist(p))
-                    {
-                        OnNodeStartProcessing?.Invoke(n, p);
-                        if (n.AddittionalData == null)
-                            n.AddittionalData = new MyAddittionalData();
-
-                        if (n.AddittionalData.Metadata == null)
-                            n.AddittionalData.Metadata = new FFmpegMetadata();
-
-                        n.AddittionalData.Metadata = FFmpeg.GetMetadata(p);
-                        n.AddittionalData.Size= new FileInfo(p).Length;
-
-                        SystemService.GetMD5(p, (double percent) =>
-                        {
-                            OnProgressChangedSingleMD5?.Invoke(percent);
-                        }, (byte[] Hash) =>
-                        {
-                            if (Hash != null)
-                                n.AddittionalData.MD5 = Hash.ToHexString(true);
-                        });
-
-                        OnNodeProcessed?.Invoke(n,p, MetadataIncluderError.nul);
-                    }
-                    else
-                        OnNodeProcessed?.Invoke(n,p, MetadataIncluderError.FileNonTrovato);
+                    IncorporaMetadataNodo(n, mfsp.GetFullPath(n));                    
                 }
             }
         }
 
+
+        public void IncorporaMetadataNodo(FileSystemNodePlus<MyAddittionalData> nodo,String PathSource)
+        {
+           
+            if (SystemService.FileExist(PathSource))
+            {
+                OnNodeStartProcessing?.Invoke(nodo, PathSource);
+                if (nodo.AddittionalData == null)
+                    nodo.AddittionalData = new MyAddittionalData();
+
+                if (nodo.AddittionalData.Metadata == null)
+                    nodo.AddittionalData.Metadata = new FFmpegMetadata();
+
+                nodo.AddittionalData.Metadata = FFmpeg.GetMetadata(PathSource);
+                nodo.AddittionalData.Size = SystemService.FileSize(PathSource);
+
+                SystemService.GetMD5(PathSource, (double percent) =>
+                {
+                    OnProgressChangedSingleMD5?.Invoke(percent);
+                }, (byte[] Hash) =>
+                {
+                    if (Hash != null)
+                    {
+                        nodo.AddittionalData.MD5 = Hash.ToHexString(true);
+                        OnNodeProcessed?.Invoke(nodo, PathSource, MetadataIncluderError.nul);
+                    }
+                    OnNodeProcessed?.Invoke(nodo, PathSource, MetadataIncluderError.MD5Err);
+                });
+
+               
+            }
+            else
+                OnNodeProcessed?.Invoke(nodo, PathSource, MetadataIncluderError.FileNonTrovato);
+        }
 
 
     }
@@ -190,7 +199,8 @@ namespace MusicLibraryManager
     public enum MetadataIncluderError
     {
         nul,
-        FileNonTrovato
+        FileNonTrovato, 
+        MD5Err
     }
     public enum MetadataIncluderAsyncStatus
     {
