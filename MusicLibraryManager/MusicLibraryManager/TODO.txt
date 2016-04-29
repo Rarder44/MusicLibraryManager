@@ -1,4 +1,5 @@
-﻿
+﻿implementare un form per l'indice che permetta di visualizzare lo stato di 
+ciascuna operazione in tempo reale e dia un riepilogo dei nodi aggiunti/rimossi
 implementare l'update per il file di indice
 implementare i vari metodi get per il file di indice:
 	- MD5
