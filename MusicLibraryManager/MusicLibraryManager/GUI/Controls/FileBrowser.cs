@@ -97,6 +97,9 @@ namespace MusicLibraryManager.GUI.Controls
             s.OnSingleFileDoubleClick += S_OnSingleFileDoubleClick;
             s.OnSingleFileRightClick += S_OnSingleFileRightClick;
             s.OnSingleFileSelectChange += S_OnSingleFileSelectChange;
+            s.OnSingleFileMouseDown += S_OnSingleFileMouseDown;
+            s.OnSingleFileMouseUp += S_OnSingleFileMouseUp;
+            s.OnSingleFileMouseMove += S_OnSingleFileMouseMove;
 
             if(OverrideName!=null)
                 s.ShowedName = OverrideName;
@@ -112,7 +115,27 @@ namespace MusicLibraryManager.GUI.Controls
             Controls.Add(s);
         }
 
+        FileSystemNodePlus<MyAddittionalData> DownNode = null;
+        private void S_OnSingleFileMouseDown(FileSystemNodePlus<MyAddittionalData> Nodo)
+        {
+            DownNode = Nodo;
+            Cursor.Current = Cursors.Cross;
+        }
+        private void S_OnSingleFileMouseUp(FileSystemNodePlus<MyAddittionalData> Nodo)
+        {
+            
+            Cursor.Current = Cursors.Default;
+            MessageBox.Show(DownNode + " " + Nodo);
+        }
+        private void S_OnSingleFileMouseMove(FileSystemNodePlus<MyAddittionalData> Nodo)
+        {
+            
+        }
+
+        
+
        
+
         public void ReloadCheckBoxPropriety()
         {
             if (_Status == FileBrowserStatus.browsing)
@@ -149,6 +172,7 @@ namespace MusicLibraryManager.GUI.Controls
 
             if (Type == FileBrowserType.Root)
             {
+                creaCartellaToolStripMenuItem.Enabled = false;
                 aggiungiRimuoviToolStripMenuItem.Text = "Aggiungi a";
                 aggiungiRimuoviToolStripMenuItem.DropDownItems.Clear();
                 foreach (Playlist p in lp)
@@ -164,8 +188,9 @@ namespace MusicLibraryManager.GUI.Controls
                     aggiungiRimuoviToolStripMenuItem.DropDownItems.Add(t);
                 }
             }
-            else
+            else if (Type == FileBrowserType.Playlist)
             {
+                creaCartellaToolStripMenuItem.Enabled = true;
                 aggiungiRimuoviToolStripMenuItem.Text = "Rimuovi";
                 aggiungiRimuoviToolStripMenuItem.DropDownItems.Clear();
                 aggiungiRimuoviToolStripMenuItem.Click -= AggiungiRimuoviToolStripMenuItem_Click;
@@ -233,9 +258,25 @@ namespace MusicLibraryManager.GUI.Controls
             }
         }
 
-        private void aggiungiRimuoviToolStripMenuItem_Click(object sender, EventArgs e)
-        {
+        
 
+        private void creaCartellaToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Type == FileBrowserType.Playlist)
+            {
+                if(CurrentNode!=null)
+                {
+                    
+                    String Base = "Nuova Cartella ";
+                    int n =0;
+                    while (CurrentNode.FindAll((x) => { return x.Name == Base + n; }, FileSystemNodePlusLevelType.FirstLevel, FileSystemNodePlusControlType.Pre).Count > 0)
+                        n++;
+                    CurrentNode.Add(new FileSystemNodePlus<MyAddittionalData>(Base+n, FileSystemNodePlusType.Directory, CurrentNode));
+                    ReloadNode();
+                }
+
+                    
+            }
         }
     }
 

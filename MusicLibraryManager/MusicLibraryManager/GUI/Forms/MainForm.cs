@@ -41,8 +41,7 @@ namespace MusicLibraryManager.GUI.Forms
         }
 
         MyFileSystemPlus Current = null;
-        MyFileSystemPlus RootFileSystem;
-
+        IndexFile IndexMediaLibrary;
 
         string[] args = null;
 
@@ -68,15 +67,18 @@ namespace MusicLibraryManager.GUI.Forms
             }
 
             Directory.SetCurrentDirectory(SystemService.GetParent(Application.ExecutablePath));
-            LoadOptionFromFile();
-            LoadPlaylistlsocationFromFile();
+            LoadOptionFromFile(GlobalVar.PathOption);
+            LoadIndexFromFile(GlobalVar.PathIndexFile,true,option.PathMedia,option.LoadMediaOption());
+            LoadIndexMediaLibrary();
+            LoadPlaylistlsocationFromFile(GlobalVar.PathPlaylistlsocation);
             status = MainFormStatus.RootBrowsing;
+
             fileBrowser1.AddItemRequest += (Playlist p, MyFileSystemPlus f) =>
             {
                 MyFileSystemPlus c = f.Clone()._Cast<MyFileSystemPlus>();
 
-                c.RimuoviOggettiNonSelezionati();
-                c.CancellaCartelleVuote();
+                c.RimuoviFileNonSelezionati();
+                c.RimuoviCartelleVuote();
                 
                 if (p.FileSystem == null)
                     p.FileSystem = new MyFileSystemPlus();
@@ -87,13 +89,13 @@ namespace MusicLibraryManager.GUI.Forms
 
                 
                 new SingleFile(p.FileSystem.Root).SetSelectChildNode(false);
-                new SingleFile(RootFileSystem.Root).SetSelectChildNode(false);
+                new SingleFile(IndexMediaLibrary.RootFileSystem.Root).SetSelectChildNode(false);
                 SavePlaylist(p);
             };
             fileBrowser1.RemoveItemRequest += (MyFileSystemPlus ToRemoveSelect) =>
             {
-                ToRemoveSelect.RimuoviOggettiSelezionati();
-                ToRemoveSelect.CancellaCartelleVuote();
+                ToRemoveSelect.RimuoviFileSelezionati();
+                ToRemoveSelect.RimuoviCertelleVuoteSelezionate();
                 fileBrowser1.ReloadNode();
                 SavePlaylist(listBox_playlists.Items.Cast<Playlist>().Where(x => x.FileSystem == ToRemoveSelect).First());
             };
@@ -114,7 +116,7 @@ namespace MusicLibraryManager.GUI.Forms
                             if (!CheckPlaylistIsInList(s))
                             {
                                 LoadPlaylist(s);
-                                SavePlaylistlsocation();
+                                SavePlaylistlsocation(GlobalVar.PathPlaylistlsocation);
                             }
                         }
                         else if (FD.Type == FileDataType.Option)
@@ -122,7 +124,15 @@ namespace MusicLibraryManager.GUI.Forms
                             if(MessageBox.Show("Vuoi sostituire le opzioni?","Continuare?",MessageBoxButtons.YesNo,MessageBoxIcon.Warning)==DialogResult.Yes)
                             {
                                 SystemService.CopySecure(s, GlobalVar.PathOption, true);
-                                LoadOptionFromFile();
+                                LoadOptionFromFile(GlobalVar.PathOption);
+                            }
+                        }
+                        else if (FD.Type == FileDataType.IndexFile)
+                        {
+                            if (MessageBox.Show("Vuoi sostituire il file di indice?", "Continuare?", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+                            {
+                                SystemService.CopySecure(s, GlobalVar.PathIndexFile, true);
+                                LoadIndexFromFile(GlobalVar.PathIndexFile,true,option.PathMedia,option.LoadMediaOption());
                             }
                         }
                         else if (FD.Type == FileDataType.Playlistlsocation)
@@ -130,8 +140,6 @@ namespace MusicLibraryManager.GUI.Forms
                             Playlistlsocation pll = FD.o._Cast<Playlistlsocation>();
                             if (pll.PathPlaylist != null)
                                 LoadPlaylists(pll.PathPlaylist,true,false,true);
-
-
                         }
                     }
                 }
@@ -139,20 +147,70 @@ namespace MusicLibraryManager.GUI.Forms
         }
 
 
-        void LoadOptionFromFile()
+
+        void LoadIndexFromFile(String PathIndexFile, bool Update = false, String PathMediaLibrary = null, FileSystemPlusLoadOption lo = null, bool GUI = true)
         {
-            FileData FD = FileService.ReadFile(GlobalVar.PathOption);
+            
+            FileData FD = FileService.ReadFile(PathIndexFile);
             if (FD == null)
             {
-                MessageBox.Show("File di opzioni: " + GlobalVar.PathOption + " Non trovato.\r\nVerrà creato un nuovo file Opzioni");
+                if (GUI)
+                    MessageBox.Show("File di Index: " + PathIndexFile + " Non trovato.\r\nVerrà creato un nuovo file Indice");
+                IndexMediaLibrary = new IndexFile();
+                IndexMediaLibrary.LoadOption = lo;
+                FileService.WriteFile(PathIndexFile, IndexMediaLibrary, FileDataType.IndexFile);
+            }
+            else if (FD.o == null || !(FD.o is IndexFile))
+            {
+                if (GUI)
+                    MessageBox.Show("File di Index: " + PathIndexFile + " non caricato correttamente.\r\nVerrà creato un nuovo file Indice");
+                IndexMediaLibrary = new IndexFile();
+                IndexMediaLibrary.LoadOption = lo;
+                FileService.WriteFile(PathIndexFile, IndexMediaLibrary, FileDataType.IndexFile);
+            }
+            else
+            {
+                IndexMediaLibrary = FD.o._Cast<IndexFile>();
+                if(lo!=null)
+                    IndexMediaLibrary.LoadOption = lo;
+            }
+
+
+            if (Update)
+            {
+                Index_UpdateAndSave(PathIndexFile, PathMediaLibrary, null); 
+            }
+        }
+        void Index_UpdateAndSave(String PathIndexFile,String PathMediaLibrary = null, FileSystemPlusLoadOption lo = null)
+        {
+            if (lo != null)
+                IndexMediaLibrary.LoadOption = lo;
+
+            if (PathMediaLibrary == null)
+                IndexMediaLibrary.Update();
+            else
+                IndexMediaLibrary.Update(PathMediaLibrary);
+
+            FileService.WriteFile(PathIndexFile, IndexMediaLibrary, FileDataType.IndexFile);
+
+        }
+
+        void LoadOptionFromFile(String Path,bool GUI=true)
+        {
+            FileData FD = FileService.ReadFile(Path);
+            if (FD == null)
+            {
+                if(GUI)
+                    MessageBox.Show("File di opzioni: " + Path + " Non trovato.\r\nVerrà creato un nuovo file Opzioni");
                 option = new Option();
-                FileService.WriteFile(GlobalVar.PathOption, option, FileDataType.Option);
+                FileService.WriteFile(Path, option, FileDataType.Option);
             }
             else if (FD.o == null || !(FD.o is Option))
             {
-                MessageBox.Show("File di opzioni: " + GlobalVar.PathOption + " non caricato correttamente.\r\nVerrà creato un nuovo file Opzioni");
+                if(GUI)
+                    MessageBox.Show("File di opzioni: " + Path + " non caricato correttamente.\r\nVerrà creato un nuovo file Opzioni");
                 option = new Option();
-                FileService.WriteFile(GlobalVar.PathOption, option, FileDataType.Option);
+                FileService.WriteFile(Path, option, FileDataType.Option);
             }
             else
             {
@@ -161,10 +219,10 @@ namespace MusicLibraryManager.GUI.Forms
 
             option.OnSomethingChenged += (ChangedVar var) =>
             {
-                FileService.WriteFile(GlobalVar.PathOption, option, FileDataType.Option);
+                FileService.WriteFile(Path, option, FileDataType.Option);
                 if ((var & ChangedVar.PathMedia) == ChangedVar.PathMedia || (var & ChangedVar.Extensions) == ChangedVar.Extensions)
                 {
-                    LoadRootMediaLibrary();
+                    Index_UpdateAndSave(GlobalVar.PathIndexFile, option.PathMedia,option.LoadMediaOption());
                 }
                 else if((var & ChangedVar.PathFFmpeg) == ChangedVar.PathFFmpeg)
                 {
@@ -172,14 +230,9 @@ namespace MusicLibraryManager.GUI.Forms
                 }
             };
 
-            if (option.PathMedia != null)
-            {
-                LoadRootMediaLibrary();
-            }
+
             if (option.PathFFmpeg != null)
-            {
                 FFmpeg.Initialize(option.PathFFmpeg);
-            }
 
         }
 
@@ -196,16 +249,17 @@ namespace MusicLibraryManager.GUI.Forms
                 return pll.PathPlaylist.Contains(SystemService.NormalizePath(Path));
             }
         }
-        void LoadPlaylistlsocationFromFile()
+        void LoadPlaylistlsocationFromFile(String Path,bool GUI=true)
         {
-            FileData FD = FileService.ReadFile(GlobalVar.PathPlaylistlsocation);
+            FileData FD = FileService.ReadFile(Path);
             if (FD == null)
             {
                 FileService.WriteFile(GlobalVar.PathPlaylistlsocation, new Playlistlsocation(), FileDataType.Playlistlsocation);
             }
             else if (FD.o == null || !(FD.o is Playlistlsocation))
             {
-                MessageBox.Show("File di Playlists: " + GlobalVar.PathOption + " non caricato correttamente.\r\n");
+                if(GUI)
+                    MessageBox.Show("File di Playlists: " + GlobalVar.PathOption + " non caricato correttamente.\r\n");
                 FileService.WriteFile(GlobalVar.PathPlaylistlsocation, new Playlistlsocation(), FileDataType.Playlistlsocation);
             }
             else
@@ -215,34 +269,20 @@ namespace MusicLibraryManager.GUI.Forms
                     LoadPlaylists(pll.PathPlaylist);
             }            
         }
-        void SavePlaylistlsocation()
+        void SavePlaylistlsocation(String Path)
         {
             Playlistlsocation pll = new Playlistlsocation();
             foreach (Playlist p in listBox_playlists.Items)
                 pll.PathPlaylist.Add(p.Path);
-            FileService.WriteFile(GlobalVar.PathPlaylistlsocation, pll, FileDataType.Playlistlsocation);
+            FileService.WriteFile(Path, pll, FileDataType.Playlistlsocation);
         }
 
 
 
-        void LoadRootMediaLibrary()
-        {
-            if (option == null || option.PathMedia == null || option.PathMedia == "")
-                return;
 
-            FileSystemPlusLoadOption lo = new FileSystemPlusLoadOption();
-            lo.IgnoreException = true;
-            lo.RestrictExtensionEnable = true;
-            if (option != null && option.Extensions != null)
-                foreach (string s in option.Extensions)
-                    lo.RestrictExtension.AddToLower(s);
-
-            RootFileSystem = new MyFileSystemPlus(option.PathMedia, lo);
-            LoadLastLoadedRootMediaLibrary();
-        }
-        void LoadLastLoadedRootMediaLibrary()
+        void LoadIndexMediaLibrary()
         {
-            Current = RootFileSystem;
+            Current = IndexMediaLibrary.RootFileSystem;
             status = MainFormStatus.RootBrowsing;
             ReloadCurrentFileSystem();
         }
@@ -295,7 +335,7 @@ namespace MusicLibraryManager.GUI.Forms
               
             }
             if(err || ForceResavePlaylist)
-                SavePlaylistlsocation();
+                SavePlaylistlsocation(GlobalVar.PathPlaylistlsocation);
 
         }
         void SavePlaylists()
@@ -370,7 +410,7 @@ namespace MusicLibraryManager.GUI.Forms
         {
             listBox_playlists.SelectedIndex = -1;
 
-            LoadLastLoadedRootMediaLibrary();
+            LoadIndexMediaLibrary();
         }
 
         private void button3_Click(object sender, EventArgs e)
@@ -413,7 +453,7 @@ namespace MusicLibraryManager.GUI.Forms
                     Playlist p = new Playlist(sfd.FileName,s);
                     AddPlaylist(p);
                     SavePlaylist(p);
-                    SavePlaylistlsocation();
+                    SavePlaylistlsocation(GlobalVar.PathPlaylistlsocation);
                     status = MainFormStatus.RootBrowsing;
                 }
             }
@@ -436,7 +476,7 @@ namespace MusicLibraryManager.GUI.Forms
         {
             listBox_playlists.RemoveAtInvoke(listBox_playlists.SelectedIndex);
             status = MainFormStatus.RootBrowsing;
-            SavePlaylistlsocation();
+            SavePlaylistlsocation(GlobalVar.PathPlaylistlsocation);
         }
 
 
@@ -484,7 +524,49 @@ namespace MusicLibraryManager.GUI.Forms
         }
         private void convertiMP3ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if(listBox_playlists.SelectedItem is Playlist)
+            if (listBox_playlists.SelectedItem is Playlist)
+            {
+                FolderSelectDialog fsd = new FolderSelectDialog();
+                if (fsd.ShowDialog())
+                {
+                    DialogResult dr = MessageBox.Show("Sovrascrivere eventuali file esistenti?\r\n\r\nSi: il processo Sovrascriverà eventuali file già presenti con lo stesso nome\r\nNo: Il processo VERRA' comunque avviato ma, se un file è già presente nella cartella di Output, questo non verrà sovrascritto\r\nAnnulla: Il processo verrà interrotto", "Conferma Sovrascrittura", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Exclamation);
+                    if (dr == DialogResult.Cancel)
+                        return;
+                    bool OverrideIfExist = dr == DialogResult.Yes ? true : false;
+
+                    String destFolder = fsd.FileName;
+                    Playlist p = (Playlist)listBox_playlists.SelectedItem;
+                    ListPlus<Tuple<String, String>> lss = new ListPlus<Tuple<string, string>>();
+                    foreach (FileSystemNodePlus<MyAddittionalData> n in  p.FileSystem.Flatten().Where(x=> x.Type==FileSystemNodePlusType.File))
+                    {
+                        FileSystemNodePlus<MyAddittionalData> t =IndexMediaLibrary.RootFileSystem.FindFirst((x) => { return x.AddittionalData.MD5 == n.AddittionalData.MD5; });
+                        if(t==null)
+                        {
+                            //TODO: non trovato -> gestire la ricerca dei file non trovati
+                        }
+                        else
+                        {
+                            lss.Add(new Tuple<string, string>(IndexMediaLibrary.RootFileSystem.GetFullPath(t), SystemService.Combine(destFolder, SystemService.ChangeExtension(t.GetFullPath().TrimStart('\\', '/'), "mp3"))));
+                        }
+                    }
+                    ConvertMedia CM = new ConvertMedia(new ConversionParameter(lss, ConversinType.SoloDiversi, FFmpegConversionEndFormat.mp3, OverrideIfExist));
+                    CM.OnFFmpegConversionEnd += () =>
+                    {
+                        if (CM.Error != null && CM.Error.Count != 0)
+                        {
+                            MessageBox.Show("Errori presenti durante la conversione!");
+                            //TODO: visualizzazione degli errori
+                        }
+                    };
+                    CM.Show();
+                    CM.Start();
+                }
+            }
+
+
+            return;
+
+            if (listBox_playlists.SelectedItem is Playlist)
             {
                 FolderSelectDialog fsd = new FolderSelectDialog();
                 if (fsd.ShowDialog())
@@ -517,7 +599,14 @@ namespace MusicLibraryManager.GUI.Forms
                     CM.Start();
                 }
             }
+
+
+
+
         }
+
+
+
 
         private void incorporaMetadataToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -652,6 +741,11 @@ namespace MusicLibraryManager.GUI.Forms
                     CM.Start();
                 }
             }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            Index_UpdateAndSave(GlobalVar.PathIndexFile, option.PathMedia, option.LoadMediaOption());
         }
 
         /* private void convertitoMP3ToolStripMenuItem_Click(object sender, EventArgs e)

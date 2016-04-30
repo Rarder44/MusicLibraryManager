@@ -36,6 +36,10 @@
             this.originaleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.convertiMP3ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem4 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.incorporaMetadataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
@@ -45,10 +49,7 @@
             this.button2 = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
             this.fileBrowser1 = new MusicLibraryManager.GUI.Controls.FileBrowser();
-            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem4 = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
+            this.button1 = new System.Windows.Forms.Button();
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -77,7 +78,7 @@
             this.toolStripSeparator3,
             this.rimuoviToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(196, 160);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(196, 138);
             // 
             // esportaToolStripMenuItem
             // 
@@ -91,14 +92,14 @@
             // originaleToolStripMenuItem
             // 
             this.originaleToolStripMenuItem.Name = "originaleToolStripMenuItem";
-            this.originaleToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.originaleToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
             this.originaleToolStripMenuItem.Text = "Originale";
             this.originaleToolStripMenuItem.Click += new System.EventHandler(this.originaleToolStripMenuItem_Click);
             // 
             // convertiMP3ToolStripMenuItem
             // 
             this.convertiMP3ToolStripMenuItem.Name = "convertiMP3ToolStripMenuItem";
-            this.convertiMP3ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.convertiMP3ToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
             this.convertiMP3ToolStripMenuItem.Text = "Converti MP3";
             this.convertiMP3ToolStripMenuItem.Click += new System.EventHandler(this.convertiMP3ToolStripMenuItem_Click);
             // 
@@ -106,6 +107,34 @@
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
             this.toolStripSeparator1.Size = new System.Drawing.Size(192, 6);
+            // 
+            // toolStripMenuItem2
+            // 
+            this.toolStripMenuItem2.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripMenuItem3,
+            this.toolStripMenuItem4});
+            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(195, 22);
+            this.toolStripMenuItem2.Text = "Esporta singola cartella";
+            // 
+            // toolStripMenuItem3
+            // 
+            this.toolStripMenuItem3.Name = "toolStripMenuItem3";
+            this.toolStripMenuItem3.Size = new System.Drawing.Size(146, 22);
+            this.toolStripMenuItem3.Text = "Originale";
+            this.toolStripMenuItem3.Click += new System.EventHandler(this.toolStripMenuItem3_Click);
+            // 
+            // toolStripMenuItem4
+            // 
+            this.toolStripMenuItem4.Name = "toolStripMenuItem4";
+            this.toolStripMenuItem4.Size = new System.Drawing.Size(146, 22);
+            this.toolStripMenuItem4.Text = "Converti MP3";
+            this.toolStripMenuItem4.Click += new System.EventHandler(this.toolStripMenuItem4_Click);
+            // 
+            // toolStripSeparator4
+            // 
+            this.toolStripSeparator4.Name = "toolStripSeparator4";
+            this.toolStripSeparator4.Size = new System.Drawing.Size(192, 6);
             // 
             // incorporaMetadataToolStripMenuItem
             // 
@@ -185,33 +214,16 @@
             this.fileBrowser1.Status = MusicLibraryManager.GUI.Controls.FileBrowserStatus.browsing;
             this.fileBrowser1.TabIndex = 4;
             // 
-            // toolStripMenuItem2
+            // button1
             // 
-            this.toolStripMenuItem2.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripMenuItem3,
-            this.toolStripMenuItem4});
-            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(195, 22);
-            this.toolStripMenuItem2.Text = "Esporta singola cartella";
-            // 
-            // toolStripMenuItem3
-            // 
-            this.toolStripMenuItem3.Name = "toolStripMenuItem3";
-            this.toolStripMenuItem3.Size = new System.Drawing.Size(152, 22);
-            this.toolStripMenuItem3.Text = "Originale";
-            this.toolStripMenuItem3.Click += new System.EventHandler(this.toolStripMenuItem3_Click);
-            // 
-            // toolStripMenuItem4
-            // 
-            this.toolStripMenuItem4.Name = "toolStripMenuItem4";
-            this.toolStripMenuItem4.Size = new System.Drawing.Size(152, 22);
-            this.toolStripMenuItem4.Text = "Converti MP3";
-            this.toolStripMenuItem4.Click += new System.EventHandler(this.toolStripMenuItem4_Click);
-            // 
-            // toolStripSeparator4
-            // 
-            this.toolStripSeparator4.Name = "toolStripSeparator4";
-            this.toolStripSeparator4.Size = new System.Drawing.Size(192, 6);
+            this.button1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.button1.Location = new System.Drawing.Point(258, 10);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(50, 50);
+            this.button1.TabIndex = 0;
+            this.button1.Text = "Update Index";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // MainForm
             // 
@@ -221,6 +233,7 @@
             this.Controls.Add(this.listBox_playlists);
             this.Controls.Add(this.button3);
             this.Controls.Add(this.fileBrowser1);
+            this.Controls.Add(this.button1);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.button4);
             this.DoubleBuffered = true;
@@ -253,6 +266,7 @@
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem3;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem4;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
+        private System.Windows.Forms.Button button1;
     }
 }
 

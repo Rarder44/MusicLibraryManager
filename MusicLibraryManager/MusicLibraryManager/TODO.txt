@@ -1,9 +1,11 @@
-﻿implementare un form per l'indice che permetta di visualizzare lo stato di 
-ciascuna operazione in tempo reale e dia un riepilogo dei nodi aggiunti/rimossi
-implementare l'update per il file di indice
-implementare i vari metodi get per il file di indice:
-	- MD5
-	- Autore
-	- Gruppo
-	- Genere
-	- Durata
+﻿- SingleFile_MouseUp  -> SingleFile non funziona correttamente -> il sender non corrisponde all'oggetto giusto!
+
+- Implementare un form per l'indice che permetta di visualizzare lo stato di ciascuna operazione in tempo reale e dia un riepilogo dei nodi aggiunti/rimossi
+- Implementare l'esportazione dei file con ricerca mediante MD5
+- Creare una classe/servizio dedicata all'esportazione delle playlist
+- Implementare la possibilità di modificare una playlist ( posizione dei file rispetto a quella orginale )
+- Implementare un form per l'esportazione dei file che comprenda la scelta della cartella, tipo di conversione, ecc
+- Migliorare la finestra di ConvertMedia con la vista di:
+	- File processati
+	- File non trovati ( MD5 ) e possibiltà di ricercarlo
+	- File mancanti e tempo rimantente ( in base al tempo medio di conversione corrente ) 

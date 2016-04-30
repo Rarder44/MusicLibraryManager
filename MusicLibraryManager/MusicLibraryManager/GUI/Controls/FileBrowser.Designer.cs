@@ -34,6 +34,7 @@
             this.deselezionaTuttoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.aggiungiRimuoviToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.creaCartellaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -43,9 +44,10 @@
             this.sceltaCheckBoxToolStripMenuItem,
             this.deselezionaTuttoToolStripMenuItem,
             this.toolStripSeparator1,
-            this.aggiungiRimuoviToolStripMenuItem});
+            this.aggiungiRimuoviToolStripMenuItem,
+            this.creaCartellaToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(171, 76);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(171, 98);
             // 
             // sceltaCheckBoxToolStripMenuItem
             // 
@@ -71,7 +73,13 @@
             this.aggiungiRimuoviToolStripMenuItem.Name = "aggiungiRimuoviToolStripMenuItem";
             this.aggiungiRimuoviToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
             this.aggiungiRimuoviToolStripMenuItem.Text = "Aggiungi Rimuovi";
-            this.aggiungiRimuoviToolStripMenuItem.Click += new System.EventHandler(this.aggiungiRimuoviToolStripMenuItem_Click);
+            // 
+            // creaCartellaToolStripMenuItem
+            // 
+            this.creaCartellaToolStripMenuItem.Name = "creaCartellaToolStripMenuItem";
+            this.creaCartellaToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
+            this.creaCartellaToolStripMenuItem.Text = "Crea Cartella";
+            this.creaCartellaToolStripMenuItem.Click += new System.EventHandler(this.creaCartellaToolStripMenuItem_Click);
             // 
             // FileBrowser
             // 
@@ -95,5 +103,6 @@
         private System.Windows.Forms.ToolStripMenuItem deselezionaTuttoToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem aggiungiRimuoviToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem creaCartellaToolStripMenuItem;
     }
 }

@@ -44,8 +44,21 @@ namespace MusicLibraryManager.GUI.Controls
         public delegate void SingleFileRightClick(FileSystemNodePlus<MyAddittionalData> Nodo);
         public event SingleFileRightClick OnSingleFileRightClick;
 
+
+        public delegate void SingleFileMouseDown(FileSystemNodePlus<MyAddittionalData> Nodo);
+        public event SingleFileMouseDown OnSingleFileMouseDown;
+
+        public delegate void SingleFileMouseUp(FileSystemNodePlus<MyAddittionalData> Nodo);
+        public event SingleFileMouseUp OnSingleFileMouseUp;
+
+        public delegate void SingleFileMouseMove(FileSystemNodePlus<MyAddittionalData> Nodo);
+        public event SingleFileMouseMove OnSingleFileMouseMove;
+
+
         public delegate void SingleFileSelectChange(FileSystemNodePlus<MyAddittionalData> Nodo, Keys Modificatore);
         public event SingleFileSelectChange OnSingleFileSelectChange;
+
+
 
         #endregion
 
@@ -83,6 +96,19 @@ namespace MusicLibraryManager.GUI.Controls
             this.MouseDoubleClick += SingleFile_MouseDoubleClick;
             label1.MouseDoubleClick += SingleFile_MouseDoubleClick;
             Icon.MouseDoubleClick += SingleFile_MouseDoubleClick;
+
+
+            this.MouseDown += SingleFile_MouseDown;
+            label1.MouseDown += SingleFile_MouseDown;
+            Icon.MouseDown += SingleFile_MouseDown;
+
+            this.MouseUp += SingleFile_MouseUp;
+            label1.MouseUp += SingleFile_MouseUp;
+            Icon.MouseUp += SingleFile_MouseUp;
+
+            this.MouseMove += SingleFile_MouseMove;
+            label1.MouseMove += SingleFile_MouseMove;
+            Icon.MouseMove += SingleFile_MouseMove;
 
             sc = new SelectControl(Nodo, checkBox1);
             sc.OnShowCheckBoxChanged += () => { Invalidate(); };
@@ -149,6 +175,28 @@ namespace MusicLibraryManager.GUI.Controls
         #endregion
 
         #region Handler
+
+        private void SingleFile_MouseDown(object sender, MouseEventArgs e)
+        {
+            /*if (OnSingleFileMouseDown != null)
+                OnSingleFileMouseDown(Nodo);*/
+        }
+        private void SingleFile_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (OnSingleFileMouseUp != null)
+            {
+                if (sender is Label || sender is CheckBox)
+                {
+                    sender = (sender as Control).Parent;
+                }
+                OnSingleFileMouseUp((sender as SingleFile).Nodo);
+            }
+        }
+        private void SingleFile_MouseMove(object sender, MouseEventArgs e)
+        {
+            if ( OnSingleFileMouseMove != null)
+                OnSingleFileMouseMove(Nodo);
+        }
 
         private void SingleFile_MouseDoubleClick(object sender, MouseEventArgs e)
         {

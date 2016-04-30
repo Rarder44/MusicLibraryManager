@@ -18,7 +18,7 @@ namespace MusicLibraryManager
     public class IndexFile
     {
         [JsonProperty]
-        public MyFileSystemPlus ListElement;
+        public MyFileSystemPlus RootFileSystem;
         [JsonProperty]
         public FileSystemPlusLoadOption LoadOption;
 
@@ -63,11 +63,11 @@ namespace MusicLibraryManager
 
         public IndexFile()
         {
-            this.ListElement = null; 
+            this.RootFileSystem = null; 
         }
         public IndexFile(MyFileSystemPlus ListElement)
         {
-            this.ListElement = ListElement;
+            this.RootFileSystem = ListElement;
         }
 
         public bool LoadFromPath(String Path, FileSystemPlusLoadOption lo, bool GUI)
@@ -195,11 +195,12 @@ namespace MusicLibraryManager
                 MI.IncorporaMetadata(t.Root, t);
             }
 
-            ListElement = t;
+            RootFileSystem = t;
+            RootFileSystem.Root.SetParentOnAllChild(FileSystemNodePlusLevelType.AllNode);
             Completed = true;
         }
 
-      
+
 
 
 
@@ -211,35 +212,60 @@ namespace MusicLibraryManager
 
 
         /// <summary>
-        /// Controlla l'indice corrente con la Path specificata; rimuove i file non trovati ed aggiunge i nuovi file.
+        /// Controlla l'IndexFile corrente con la Path memorizzata nell'IndexFile; rimuove i file non trovati ed aggiunge i nuovi file.
         /// </summary>
-        /// <param name="Path">Path della cartella su cui eseguire il controllo </param>
         public void Update()
         {
+            if (RootFileSystem == null)
+                return;
             //controllo se esistono, su disco, tutti i file presenti nel mio FileSystem
             // quelli che non esistono li cancello
             // mentre sono in una cartella controllo anche se ci sono nuovi file da aggiungere
             MyFileSystemPlus t = new MyFileSystemPlus();
-            t.RootPath = ListElement.RootPath;
+            t.RootPath = RootFileSystem.RootPath;
 
-            t.Root = new FileSystemNodePlus<MyAddittionalData>(ListElement.RootPath.TrimEnd('\\', '/').SplitAndGetLast("\\", "/"), FileSystemNodePlusType.Directory);
+            t.Root = new FileSystemNodePlus<MyAddittionalData>(RootFileSystem.RootPath.TrimEnd('\\', '/').SplitAndGetLast("\\", "/"), FileSystemNodePlusType.Directory);
             //UpdateRecursiveListToReal(ListElement, ListElement.Root, t.Root);
 
 
 
             // incorporo i metadati in t
 
-            ListElement.DeselectAll();
-            UpdateRecursiveRealToList(ListElement, ListElement.RootPath, t.Root);
-            ListElement.RimuoviOggettiNonSelezionati();
+            RootFileSystem.DeselectAll();
+            UpdateRecursiveRealToList(RootFileSystem, RootFileSystem.RootPath, t.Root);
+            RootFileSystem.RimuoviFileNonSelezionati();
+            RootFileSystem.RimuoviCartelleVuote();
+            RootFileSystem.DeselectAll();
 
             IncorporaMetadata IM = new IncorporaMetadata(t);
+            IM.Text = "Update Index Media File"; 
             IM.ShowDialog();
-            ListElement.Merge(t);
+            RootFileSystem.Merge(t);
 
+            RootFileSystem.Root.SetParentOnAllChild(FileSystemNodePlusLevelType.AllNode);
          }
 
-        
+        /// <summary>
+        /// Controlla l'indice corrente con la Path specificata; rimuove i file non trovati ed aggiunge i nuovi file.
+        /// </summary>
+        /// <param name="RootPath">Path della cartella su cui eseguire il controllo </param>
+        public void Update(String RootPath)
+        {
+            if (RootFileSystem == null)
+                RootFileSystem = new MyFileSystemPlus();
+
+            RootFileSystem.RootPath = RootPath;
+            Update();
+        }
+
+
+        /// <summary>
+        /// DECPRECATO!
+        /// scorre tutti i file del FileSystem e controlla se sono presenti nella cartella reale
+        /// </summary>
+        /// <param name="FileSystem"></param>
+        /// <param name="Folder"></param>
+        /// <param name="Temp"></param>
         private void UpdateRecursiveListToReal(MyFileSystemPlus FileSystem, FileSystemNodePlus<MyAddittionalData> Folder, FileSystemNodePlus<MyAddittionalData> Temp)
         {
             FileSystemNodePlus<MyAddittionalData>[] tfolder=Folder.GetAllNode(FileSystemNodePlusType.Directory);
@@ -269,7 +295,15 @@ namespace MusicLibraryManager
             }
         }
 
-
+        /// <summary>
+        /// Scorre tutte le cartelle presenti nella cartella Reale e controlla i file:
+        /// se un file viente trovato nella cartella e nel FileSystem allora viene impostato il flag Selezionato a true
+        /// se un file non viene trovato nel FileSystem, viene aggiunto al FileSystem Temp
+        /// 
+        /// </summary>
+        /// <param name="FileSystem"></param>
+        /// <param name="CurrentPath">Path da controllare</param>
+        /// <param name="Temp"></param>
         private void UpdateRecursiveRealToList(MyFileSystemPlus FileSystem, String CurrentPath, FileSystemNodePlus<MyAddittionalData> Temp)
         {
             //scorro tutte le cartelle

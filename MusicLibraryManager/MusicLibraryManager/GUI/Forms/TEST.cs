@@ -33,7 +33,8 @@ namespace MusicLibraryManager.GUI.Forms
             }
 
 
-            /*FileSystemPlusLoadOption lo = new FileSystemPlusLoadOption();
+            /*
+             * FileSystemPlusLoadOption lo = new FileSystemPlusLoadOption();
             lo.IgnoreException = true;
             lo.RestrictExtensionEnable = true;
             lo.RestrictExtension.AddToLower("flac");

@@ -57,6 +57,18 @@ namespace MusicLibraryManager
         }
 
 
+
+        public FileSystemPlusLoadOption LoadMediaOption()
+        {
+            FileSystemPlusLoadOption lo = new FileSystemPlusLoadOption();
+            lo.IgnoreException = true;
+            lo.RestrictExtensionEnable = true;
+            if (Extensions != null)
+                foreach (string s in Extensions)
+                    lo.RestrictExtension.AddToLower(s);
+
+            return lo;
+        }
         public  Option()
         {
             _Extensions = new ListPlus<String>();
