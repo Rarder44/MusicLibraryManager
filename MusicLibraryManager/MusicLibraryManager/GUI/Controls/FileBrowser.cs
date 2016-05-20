@@ -116,18 +116,32 @@ namespace MusicLibraryManager.GUI.Controls
         }
 
         FileSystemNodePlus<MyAddittionalData> DownNode = null;
-        private void S_OnSingleFileMouseDown(FileSystemNodePlus<MyAddittionalData> Nodo)
+        private void S_OnSingleFileMouseDown(SingleFile SF)
         {
-            DownNode = Nodo;
+           
+            if(!SF.Nodo.AddittionalData.Selezionato)
+            {
+                currentFileSystem.DeselectAll();
+                SF.SetSelectChildNode(true); 
+            }
+            
+            DownNode = SF.Nodo;
             Cursor.Current = Cursors.Cross;
         }
-        private void S_OnSingleFileMouseUp(FileSystemNodePlus<MyAddittionalData> Nodo)
-        {
-            
+        private void S_OnSingleFileMouseUp(SingleFile SF)
+        {  
             Cursor.Current = Cursors.Default;
-            MessageBox.Show(DownNode + " " + Nodo);
+            
+            if(DownNode!= SF.Nodo)
+            {
+                if(SF.Nodo.Type==FileSystemNodePlusType.Directory)
+                {
+                    MessageBox.Show(DownNode + " " + SF.Nodo);
+                }
+                    
+            }
         }
-        private void S_OnSingleFileMouseMove(FileSystemNodePlus<MyAddittionalData> Nodo)
+        private void S_OnSingleFileMouseMove(SingleFile SF)
         {
             
         }

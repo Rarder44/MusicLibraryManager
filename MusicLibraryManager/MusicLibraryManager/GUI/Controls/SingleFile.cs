@@ -20,9 +20,14 @@ namespace MusicLibraryManager.GUI.Controls
 
         public SelectControl sc = null;
 
-        FileSystemNodePlus<MyAddittionalData> Nodo;
+        FileSystemNodePlus<MyAddittionalData> _Nodo;
+        public FileSystemNodePlus<MyAddittionalData> Nodo
+        {
+            get { return _Nodo; }
+        }
 
-        public String RealName { get { return Nodo.Name; } }
+
+        public String RealName { get { return _Nodo.Name; } }
         public String ShowedName
         {
             get { return label1.Text; }
@@ -33,7 +38,7 @@ namespace MusicLibraryManager.GUI.Controls
 
         public bool EqualNodo(FileSystemNodePlus<MyAddittionalData> n)
         {
-            return n == Nodo;
+            return n == _Nodo;
         }
 
         #region Delegati ed Eventi
@@ -45,13 +50,13 @@ namespace MusicLibraryManager.GUI.Controls
         public event SingleFileRightClick OnSingleFileRightClick;
 
 
-        public delegate void SingleFileMouseDown(FileSystemNodePlus<MyAddittionalData> Nodo);
+        public delegate void SingleFileMouseDown(SingleFile SF);
         public event SingleFileMouseDown OnSingleFileMouseDown;
 
-        public delegate void SingleFileMouseUp(FileSystemNodePlus<MyAddittionalData> Nodo);
+        public delegate void SingleFileMouseUp(SingleFile SF);
         public event SingleFileMouseUp OnSingleFileMouseUp;
 
-        public delegate void SingleFileMouseMove(FileSystemNodePlus<MyAddittionalData> Nodo);
+        public delegate void SingleFileMouseMove(SingleFile SF);
         public event SingleFileMouseMove OnSingleFileMouseMove;
 
 
@@ -68,7 +73,7 @@ namespace MusicLibraryManager.GUI.Controls
         {
             InitializeComponent();
 
-            this.Nodo = Nodo;
+            this._Nodo = Nodo;
 
             if (Nodo.Type == FileSystemNodePlusType.Directory)
                 this.Icon.BackgroundImage = global::MusicLibraryManager.Properties.Resources.Folder;
@@ -178,30 +183,35 @@ namespace MusicLibraryManager.GUI.Controls
 
         private void SingleFile_MouseDown(object sender, MouseEventArgs e)
         {
-            /*if (OnSingleFileMouseDown != null)
-                OnSingleFileMouseDown(Nodo);*/
+            if (OnSingleFileMouseDown != null)
+                OnSingleFileMouseDown(this);
         }
         private void SingleFile_MouseUp(object sender, MouseEventArgs e)
         {
             if (OnSingleFileMouseUp != null)
             {
-                if (sender is Label || sender is CheckBox)
+                Point ptCursor = this.Parent.PointToClient(Cursor.Position);
+                Control pBox = this.Parent.GetChildAtPoint(ptCursor);
+                if (pBox != null)
                 {
-                    sender = (sender as Control).Parent;
+                    if (pBox is Label || pBox is CheckBox)
+                    {
+                        pBox = pBox.Parent;
+                    }
+                    OnSingleFileMouseUp((pBox as SingleFile));
                 }
-                OnSingleFileMouseUp((sender as SingleFile).Nodo);
             }
         }
         private void SingleFile_MouseMove(object sender, MouseEventArgs e)
         {
             if ( OnSingleFileMouseMove != null)
-                OnSingleFileMouseMove(Nodo);
+                OnSingleFileMouseMove(this);
         }
 
         private void SingleFile_MouseDoubleClick(object sender, MouseEventArgs e)
         {
             if(e.Button==MouseButtons.Left && OnSingleFileDoubleClick != null)
-                OnSingleFileDoubleClick(Nodo);
+                OnSingleFileDoubleClick(_Nodo);
         }
         private void SingleFile_MouseClick(object sender, MouseEventArgs e)
         {
@@ -212,10 +222,10 @@ namespace MusicLibraryManager.GUI.Controls
             if(e.Button==MouseButtons.Right && OnSingleFileRightClick!=null)
             {
                 if(sender is SingleFile)
-                    OnSingleFileRightClick(sender._Cast<SingleFile>().Nodo);
+                    OnSingleFileRightClick(sender._Cast<SingleFile>()._Nodo);
                 else
                     if(sender._Cast<Control>().Parent is SingleFile)
-                        OnSingleFileRightClick(sender._Cast<Control>().Parent._Cast<SingleFile>().Nodo);
+                        OnSingleFileRightClick(sender._Cast<Control>().Parent._Cast<SingleFile>()._Nodo);
             }
                 
         }
@@ -226,10 +236,10 @@ namespace MusicLibraryManager.GUI.Controls
 
         public void SetSelectParentNode(bool Value)
         {
-            if (Nodo.Parent != null)
-                SetSelectParentNodeRecursive(Nodo.Parent, Value);
+            if (_Nodo.Parent != null)
+                SetSelectParentNodeRecursive(_Nodo.Parent, Value);
         }
-        public void SetSelectParentNodeRecursive(FileSystemNodePlus<MyAddittionalData> Nodo, bool Value)
+        private void SetSelectParentNodeRecursive(FileSystemNodePlus<MyAddittionalData> Nodo, bool Value)
         {
             if (Value)
             {
@@ -250,9 +260,9 @@ namespace MusicLibraryManager.GUI.Controls
 
         public void SetSelectChildNode(bool Value )
         {
-            SetSelectChildNodeRecursive(Nodo, Value);
+            SetSelectChildNodeRecursive(_Nodo, Value);
         }
-        public void SetSelectChildNodeRecursive(FileSystemNodePlus<MyAddittionalData> Node, bool Value)
+        private void SetSelectChildNodeRecursive(FileSystemNodePlus<MyAddittionalData> Node, bool Value)
         {
             Node.AddittionalData.Selezionato = Value;
             foreach(FileSystemNodePlus<MyAddittionalData> n in Node.GetAllNode())
@@ -261,7 +271,7 @@ namespace MusicLibraryManager.GUI.Controls
         }
         #endregion
 
-     
+        
     }
 
     public class SelectControl
