@@ -34,6 +34,11 @@ namespace MusicLibraryManager.GUI.Controls
             set { label1.SetTextInvoke(value); }
         }
 
+        public bool Selected
+        {
+            get { return sc.NodeSelect; }
+            set { sc.Select = value; }
+        }
         #endregion
 
         public bool EqualNodo(FileSystemNodePlus<MyAddittionalData> n)
@@ -188,6 +193,8 @@ namespace MusicLibraryManager.GUI.Controls
         }
         private void SingleFile_MouseUp(object sender, MouseEventArgs e)
         {
+            if (this.Parent == null)
+                return;
             if (OnSingleFileMouseUp != null)
             {
                 Point ptCursor = this.Parent.PointToClient(Cursor.Position);
@@ -269,9 +276,13 @@ namespace MusicLibraryManager.GUI.Controls
                 SetSelectChildNodeRecursive(n, Value);
             
         }
+
         #endregion
 
-        
+        private void SingleFile_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 
     public class SelectControl

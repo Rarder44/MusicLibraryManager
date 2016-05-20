@@ -117,29 +117,45 @@ namespace MusicLibraryManager.GUI.Controls
 
         FileSystemNodePlus<MyAddittionalData> DownNode = null;
         private void S_OnSingleFileMouseDown(SingleFile SF)
-        {
-           
-            if(!SF.Nodo.AddittionalData.Selezionato)
-            {
-                currentFileSystem.DeselectAll();
-                SF.SetSelectChildNode(true); 
-            }
-            
+        {          
             DownNode = SF.Nodo;
             Cursor.Current = Cursors.Cross;
         }
         private void S_OnSingleFileMouseUp(SingleFile SF)
-        {  
+        {
             Cursor.Current = Cursors.Default;
             
             if(DownNode!= SF.Nodo)
             {
                 if(SF.Nodo.Type==FileSystemNodePlusType.Directory)
                 {
-                    MessageBox.Show(DownNode + " " + SF.Nodo);
+
+                    String path= CurrentNode.GetFullPath();
+
+                    MyFileSystemPlus Clo = currentFileSystem.Clone();
+
+
+                    FileSystemNodePlus<MyAddittionalData> nn = Clo.GetNodeFromPath(path);
+                    MyFileSystemPlus temp = new MyFileSystemPlus();
+                    temp.Root = nn;
+
+                    temp=temp.FindPreserveTree((x) => { return x.AddittionalData.Selezionato; }, FileSystemNodePlusControlType.Pre);
+                    
+
+                    CurrentNode.Remove((t) => { return t.Type == FileSystemNodePlusType.File && t.AddittionalData.Selezionato; }, FileSystemNodePlusLevelType.AllNode, FileSystemNodePlusControlType.Pre);
+                    CurrentNode.Remove((t) => { return t.Type == FileSystemNodePlusType.Directory && t.ChildCount == 0 && t.AddittionalData.Selezionato; }, FileSystemNodePlusLevelType.AllNode, FileSystemNodePlusControlType.Post);
+
+
+                    SF.Nodo.Merge(temp.Root);
+                   
+
+                    ReloadNode();
+
                 }
                     
             }
+
+            
         }
         private void S_OnSingleFileMouseMove(SingleFile SF)
         {

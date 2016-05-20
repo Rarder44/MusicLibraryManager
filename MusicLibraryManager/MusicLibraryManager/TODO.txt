@@ -1,4 +1,4 @@
-﻿- SingleFile_MouseUp  -> SingleFile non funziona correttamente -> il sender non corrisponde all'oggetto giusto!
+﻿
 
 - Implementare un form per l'indice che permetta di visualizzare lo stato di ciascuna operazione in tempo reale e dia un riepilogo dei nodi aggiunti/rimossi
 - Implementare l'esportazione dei file con ricerca mediante MD5
@@ -9,3 +9,9 @@
 	- File processati
 	- File non trovati ( MD5 ) e possibiltà di ricercarlo
 	- File mancanti e tempo rimantente ( in base al tempo medio di conversione corrente ) 
+
+
+
+FIX
+
+deselezione dopo aver aggiunto qualche media ad una  playlist non funzionante ( i file non sono più selezionati come attributi ma rimangono selezionati nella GUI)

@@ -74,6 +74,7 @@
             this.DoubleBuffered = true;
             this.Name = "SingleFile";
             this.Size = new System.Drawing.Size(125, 20);
+            this.Load += new System.EventHandler(this.SingleFile_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

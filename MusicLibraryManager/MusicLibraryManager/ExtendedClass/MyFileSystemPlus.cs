@@ -56,7 +56,14 @@ namespace MusicLibraryManager
 
         public FileSystemNodePlus<MyAddittionalData> FindFirst(Func<FileSystemNodePlus<MyAddittionalData>,bool> Condizione)
         {
-            return Root.Flatten().Where(x => Condizione(x)).First();
+            if (Condizione(Root))
+                return Root;
+
+            IEnumerable<FileSystemNodePlus<MyAddittionalData>> t= Root.Flatten();
+            if (t.Count() == 0)
+                return null;
+
+            return t.Where(x => Condizione(x)).First();
         }
         public FileSystemNodePlus<MyAddittionalData>[] FindAll(Func<FileSystemNodePlus<MyAddittionalData>, bool> Condizione)
         {
