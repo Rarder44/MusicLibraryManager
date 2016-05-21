@@ -45,6 +45,9 @@ namespace MusicLibraryManager.GUI.Controls
         public delegate void RemoveItemRequestEventHandler(MyFileSystemPlus ToRemoveSelect);
         public event RemoveItemRequestEventHandler RemoveItemRequest;
 
+        public delegate void PlaylistChangedEventHandler(MyFileSystemPlus PlaylistSystem);
+        public event PlaylistChangedEventHandler PlaylistChanged;
+
 
         public FileBrowser()
         {
@@ -100,6 +103,7 @@ namespace MusicLibraryManager.GUI.Controls
             s.OnSingleFileMouseDown += S_OnSingleFileMouseDown;
             s.OnSingleFileMouseUp += S_OnSingleFileMouseUp;
             s.OnSingleFileMouseMove += S_OnSingleFileMouseMove;
+            s.OnSingleFileNodoChangeName += S_OnSingleFileNodoChangeName;
 
             if(OverrideName!=null)
                 s.ShowedName = OverrideName;
@@ -114,47 +118,76 @@ namespace MusicLibraryManager.GUI.Controls
 
             Controls.Add(s);
         }
+        public SingleFile GetSingleFileFromNode(FileSystemNodePlus<MyAddittionalData> Node)
+        {
+            foreach(SingleFile s in Controls)
+            {
+                if (s.Nodo == Node)
+                    return s;
+            }
+            return null;
+        }
+
+
+        private void S_OnSingleFileNodoChangeName(SingleFile Sender, FileSystemNodePlus<MyAddittionalData> Nodo, string NewName)
+        {
+            if (Nodo.Parent == null)
+                Sender.Status = SingleFileStatus.Normal;
+            else
+            {
+                FileSystemNodePlus<MyAddittionalData> parent = Nodo.Parent;
+                FileSystemNodePlus<MyAddittionalData> nt = Nodo.Clone(NewName);
+                parent.Remove((x) => { return x == Nodo; }, FileSystemNodePlusLevelType.FirstLevel, FileSystemNodePlusControlType.Pre);
+                parent.Add(nt);
+                ReloadNode();
+                if (PlaylistChanged != null)
+                    PlaylistChanged(currentFileSystem);
+            }
+        }
 
         FileSystemNodePlus<MyAddittionalData> DownNode = null;
+        SingleFile DownSingleFile = null;
         private void S_OnSingleFileMouseDown(SingleFile SF)
-        {          
-            DownNode = SF.Nodo;
-            Cursor.Current = Cursors.Cross;
+        {
+            if (Type == FileBrowserType.Playlist)
+            {
+                DownSingleFile = SF;
+                DownNode = SF.Nodo;
+                Cursor.Current = Cursors.Cross;
+            }
         }
         private void S_OnSingleFileMouseUp(SingleFile SF)
         {
-            Cursor.Current = Cursors.Default;
-            
-            if(DownNode!= SF.Nodo)
+            if (Type == FileBrowserType.Playlist)
             {
-                if(SF.Nodo.Type==FileSystemNodePlusType.Directory)
+                Cursor.Current = Cursors.Default;
+
+                if (DownNode != SF.Nodo)
                 {
+                    if (SF.Nodo.Type == FileSystemNodePlusType.Directory)
+                    {
 
-                    String path= CurrentNode.GetFullPath();
+                        String path = CurrentNode.GetFullPath();
+                        MyFileSystemPlus Clo = currentFileSystem.Clone();
+                        FileSystemNodePlus<MyAddittionalData> nn = Clo.GetNodeFromPath(path);
 
-                    MyFileSystemPlus Clo = currentFileSystem.Clone();
+                        MyFileSystemPlus temp = new MyFileSystemPlus();
+                        temp.Root = nn;
+                        temp = temp.FindPreserveTree((x) => { return x.AddittionalData.Selezionato; }, FileSystemNodePlusControlType.Pre);
+                        CurrentNode.Remove((t) => { return t.Type == FileSystemNodePlusType.File && t.AddittionalData.Selezionato; }, FileSystemNodePlusLevelType.AllNode, FileSystemNodePlusControlType.Pre);
+                        CurrentNode.Remove((t) => { return t.Type == FileSystemNodePlusType.Directory && t.ChildCount == 0 && t.AddittionalData.Selezionato; }, FileSystemNodePlusLevelType.AllNode, FileSystemNodePlusControlType.Post);
+                        temp.DeselectAll();
+                        SF.Nodo.Merge(temp.Root);
+                        SF.Selected = false;
+                        ReloadNode();
 
-
-                    FileSystemNodePlus<MyAddittionalData> nn = Clo.GetNodeFromPath(path);
-                    MyFileSystemPlus temp = new MyFileSystemPlus();
-                    temp.Root = nn;
-
-                    temp=temp.FindPreserveTree((x) => { return x.AddittionalData.Selezionato; }, FileSystemNodePlusControlType.Pre);
+                        if (PlaylistChanged != null)
+                            PlaylistChanged(currentFileSystem);
+                    }
                     
-
-                    CurrentNode.Remove((t) => { return t.Type == FileSystemNodePlusType.File && t.AddittionalData.Selezionato; }, FileSystemNodePlusLevelType.AllNode, FileSystemNodePlusControlType.Pre);
-                    CurrentNode.Remove((t) => { return t.Type == FileSystemNodePlusType.Directory && t.ChildCount == 0 && t.AddittionalData.Selezionato; }, FileSystemNodePlusLevelType.AllNode, FileSystemNodePlusControlType.Post);
-
-
-                    SF.Nodo.Merge(temp.Root);
-                   
-
-                    ReloadNode();
-
                 }
-                    
+                DownNode = null;
             }
-
             
         }
         private void S_OnSingleFileMouseMove(SingleFile SF)
@@ -203,6 +236,9 @@ namespace MusicLibraryManager.GUI.Controls
             if (Type == FileBrowserType.Root)
             {
                 creaCartellaToolStripMenuItem.Enabled = false;
+                mergeEdEstraiToolStripMenuItem.Enabled = false;
+                mergeToolStripMenuItem.Enabled = false;
+                rinominaToolStripMenuItem.Enabled = false;
                 aggiungiRimuoviToolStripMenuItem.Text = "Aggiungi a";
                 aggiungiRimuoviToolStripMenuItem.DropDownItems.Clear();
                 foreach (Playlist p in lp)
@@ -214,6 +250,7 @@ namespace MusicLibraryManager.GUI.Controls
                         {
                             AddItemRequest(sender._Cast<ToolStripMenuItemPlus>().TextObject._Cast<Playlist>(), currentFileSystem);
                         }
+                        ReloadNode();
                     };
                     aggiungiRimuoviToolStripMenuItem.DropDownItems.Add(t);
                 }
@@ -221,10 +258,15 @@ namespace MusicLibraryManager.GUI.Controls
             else if (Type == FileBrowserType.Playlist)
             {
                 creaCartellaToolStripMenuItem.Enabled = true;
+                mergeEdEstraiToolStripMenuItem.Enabled = true;
+                mergeToolStripMenuItem.Enabled = true;
+                rinominaToolStripMenuItem.Enabled = true;
                 aggiungiRimuoviToolStripMenuItem.Text = "Rimuovi";
                 aggiungiRimuoviToolStripMenuItem.DropDownItems.Clear();
                 aggiungiRimuoviToolStripMenuItem.Click -= AggiungiRimuoviToolStripMenuItem_Click;
-               aggiungiRimuoviToolStripMenuItem.Click += AggiungiRimuoviToolStripMenuItem_Click;
+                aggiungiRimuoviToolStripMenuItem.Click += AggiungiRimuoviToolStripMenuItem_Click;
+                
+
 
             }
             contextMenuStrip1.Show(Cursor.Position);
@@ -301,12 +343,111 @@ namespace MusicLibraryManager.GUI.Controls
                     int n =0;
                     while (CurrentNode.FindAll((x) => { return x.Name == Base + n; }, FileSystemNodePlusLevelType.FirstLevel, FileSystemNodePlusControlType.Pre).Count > 0)
                         n++;
-                    CurrentNode.Add(new FileSystemNodePlus<MyAddittionalData>(Base+n, FileSystemNodePlusType.Directory, CurrentNode));
+
+                    FileSystemNodePlus<MyAddittionalData> NodoT = CurrentNode.CreateNode(Base + n, FileSystemNodePlusType.Directory);
                     ReloadNode();
+                    if (PlaylistChanged != null)
+                        PlaylistChanged(currentFileSystem);
+
+                    SingleFile s = GetSingleFileFromNode(NodoT);
+                    if (s != null)
+                        s.Status = SingleFileStatus.Rename;
                 }
 
                     
             }
+        }
+
+        private void mergeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+            List<FileSystemNodePlus<MyAddittionalData>> ListaFileDir = new List<FileSystemNodePlus<MyAddittionalData>>();
+            FileSystemNodePlus<MyAddittionalData> clonato = CurrentNode.Clone();
+            clonato.Remove((t) => { return t.Type == FileSystemNodePlusType.File && !t.AddittionalData.Selezionato; }, FileSystemNodePlusLevelType.AllNode, FileSystemNodePlusControlType.Pre);
+            clonato.Remove((t) => { return t.Type == FileSystemNodePlusType.Directory && t.ChildCount == 0 && !t.AddittionalData.Selezionato; }, FileSystemNodePlusLevelType.AllNode, FileSystemNodePlusControlType.Post);
+            clonato.FindAll((x) => { return x.AddittionalData.Selezionato; }, FileSystemNodePlusLevelType.FirstLevel, FileSystemNodePlusControlType.Pre).ForEach((x) => { ListaFileDir.Add(x.Clone()); });
+            
+
+
+            CurrentNode.Remove((t) => { return t.Type == FileSystemNodePlusType.File && t.AddittionalData.Selezionato; }, FileSystemNodePlusLevelType.AllNode, FileSystemNodePlusControlType.Pre);
+            CurrentNode.Remove((t) => { return t.Type == FileSystemNodePlusType.Directory && t.ChildCount == 0 && t.AddittionalData.Selezionato; }, FileSystemNodePlusLevelType.AllNode, FileSystemNodePlusControlType.Post);
+
+            String Base = "Nuova Cartella ";
+            int n = 0;
+            while (CurrentNode.FindAll((x) => { return x.Name == Base + n; }, FileSystemNodePlusLevelType.FirstLevel, FileSystemNodePlusControlType.Pre).Count > 0)
+                n++;
+
+            FileSystemNodePlus<MyAddittionalData> NodoT = CurrentNode.CreateNode(Base + n, FileSystemNodePlusType.Directory);
+            
+
+
+            foreach (FileSystemNodePlus<MyAddittionalData> f in ListaFileDir)
+            {
+                if (f.Type == FileSystemNodePlusType.File)
+                {
+                    NodoT.Add(f);
+                }
+                else if (f.Type == FileSystemNodePlusType.Directory)
+                {
+                    NodoT.Merge(f);
+                }
+                else
+                {
+                    throw new Exception("Type non trovato");
+                }
+            }
+            ReloadNode();
+            if (PlaylistChanged != null)
+                PlaylistChanged(currentFileSystem);
+
+
+            SingleFile s = GetSingleFileFromNode(NodoT);
+            if(s!=null)
+                s.Status = SingleFileStatus.Rename;
+
+
+
+        }
+
+        private void mergeEdEstraiToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            List<FileSystemNodePlus<MyAddittionalData>> ListaFileDir = new List<FileSystemNodePlus<MyAddittionalData>>();
+            FileSystemNodePlus<MyAddittionalData> clonato = CurrentNode.Clone();
+            clonato.Remove((t) => { return t.Type == FileSystemNodePlusType.File && !t.AddittionalData.Selezionato; }, FileSystemNodePlusLevelType.AllNode, FileSystemNodePlusControlType.Pre);
+            clonato.Remove((t) => { return t.Type == FileSystemNodePlusType.Directory && t.ChildCount == 0 && !t.AddittionalData.Selezionato; }, FileSystemNodePlusLevelType.AllNode, FileSystemNodePlusControlType.Post);
+            clonato.FindAll((x) => { return x.AddittionalData.Selezionato; }, FileSystemNodePlusLevelType.FirstLevel, FileSystemNodePlusControlType.Pre).ForEach((x) => { ListaFileDir.Add(x.Clone()); });
+
+
+            
+
+            CurrentNode.Remove((t) => { return t.Type == FileSystemNodePlusType.File && t.AddittionalData.Selezionato; }, FileSystemNodePlusLevelType.AllNode, FileSystemNodePlusControlType.Pre);
+            CurrentNode.Remove((t) => { return t.Type == FileSystemNodePlusType.Directory && t.ChildCount == 0 && t.AddittionalData.Selezionato; }, FileSystemNodePlusLevelType.AllNode, FileSystemNodePlusControlType.Post);
+
+
+            foreach(FileSystemNodePlus<MyAddittionalData> f in ListaFileDir)
+            {
+                if(f.Type==FileSystemNodePlusType.File)
+                {
+                    CurrentNode.Add(f);
+                }
+                else if (f.Type == FileSystemNodePlusType.Directory)
+                {
+                    CurrentNode.Merge(f);
+                }
+                else
+                {
+                    throw new Exception("Type non trovato");
+                }
+            }
+            ReloadNode();
+            if (PlaylistChanged != null)
+                PlaylistChanged(currentFileSystem);
+        }
+
+        private void rinominaToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if(DownSingleFile!=null)
+                DownSingleFile.Status = SingleFileStatus.Rename;
         }
     }
 

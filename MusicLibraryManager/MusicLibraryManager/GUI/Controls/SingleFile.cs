@@ -39,6 +39,38 @@ namespace MusicLibraryManager.GUI.Controls
             get { return sc.NodeSelect; }
             set { sc.Select = value; }
         }
+
+        SingleFileStatus _status;
+        public SingleFileStatus Status
+        {
+            get { return _status; }
+            set
+            {
+                _status = value;
+                if(_status==SingleFileStatus.Normal)
+                {
+                    label1.SetEnableInvoke( true);
+                    label1.SetVisibleInvoke(true);
+                    textBox1.SetEnableInvoke(false);
+                    textBox1.SetVisibleInvoke(false);
+                }
+                else if (_status == SingleFileStatus.Rename)
+                {
+                    label1.SetEnableInvoke(false);
+                    label1.SetVisibleInvoke(false);
+                    textBox1.SetTextInvoke(label1.Text);
+                    textBox1.SetEnableInvoke(true);
+                    textBox1.SetVisibleInvoke(true);
+                    textBox1.Focus();
+                }
+                else
+                {
+                    throw new Exception("Status non implementato");
+                }
+            }
+
+        }
+
         #endregion
 
         public bool EqualNodo(FileSystemNodePlus<MyAddittionalData> n)
@@ -68,6 +100,8 @@ namespace MusicLibraryManager.GUI.Controls
         public delegate void SingleFileSelectChange(FileSystemNodePlus<MyAddittionalData> Nodo, Keys Modificatore);
         public event SingleFileSelectChange OnSingleFileSelectChange;
 
+        public delegate void SingleFileNodoChangeName(SingleFile Sender,FileSystemNodePlus<MyAddittionalData> Nodo, String NewName);
+        public event SingleFileNodoChangeName OnSingleFileNodoChangeName;
 
 
         #endregion
@@ -93,32 +127,26 @@ namespace MusicLibraryManager.GUI.Controls
             label1.Text = Nodo.ToString();
 
 
-            this.MouseClick += SingleFile_MouseClick;
-            label1.MouseClick += SingleFile_MouseClick;
-            Icon.MouseClick += SingleFile_MouseClick;
+            
+            Control[] c = { this, label1, Icon, textBox1 };
+            foreach(Control cc in c)
+            {
+                cc.MouseClick += SingleFile_MouseClick;
+                cc.MouseClick += SingleFile_RightClickCheck;
+                cc.MouseDoubleClick += SingleFile_MouseDoubleClick;
+                cc.MouseDown += SingleFile_MouseDown;
+                cc.MouseUp += SingleFile_MouseUp;
+                cc.MouseMove += SingleFile_MouseMove;
+            }
+            
 
-            this.MouseClick += SingleFile_RightClickCheck;
-            label1.MouseClick += SingleFile_RightClickCheck;
-            Icon.MouseClick += SingleFile_RightClickCheck;
+
             checkBox1.MouseClick += SingleFile_RightClickCheck;
 
 
-            this.MouseDoubleClick += SingleFile_MouseDoubleClick;
-            label1.MouseDoubleClick += SingleFile_MouseDoubleClick;
-            Icon.MouseDoubleClick += SingleFile_MouseDoubleClick;
+        
 
 
-            this.MouseDown += SingleFile_MouseDown;
-            label1.MouseDown += SingleFile_MouseDown;
-            Icon.MouseDown += SingleFile_MouseDown;
-
-            this.MouseUp += SingleFile_MouseUp;
-            label1.MouseUp += SingleFile_MouseUp;
-            Icon.MouseUp += SingleFile_MouseUp;
-
-            this.MouseMove += SingleFile_MouseMove;
-            label1.MouseMove += SingleFile_MouseMove;
-            Icon.MouseMove += SingleFile_MouseMove;
 
             sc = new SelectControl(Nodo, checkBox1);
             sc.OnShowCheckBoxChanged += () => { Invalidate(); };
@@ -136,7 +164,9 @@ namespace MusicLibraryManager.GUI.Controls
             };
 
 
+            Status = SingleFileStatus.Normal;
         }
+
 
         #endregion
 
@@ -283,6 +313,19 @@ namespace MusicLibraryManager.GUI.Controls
         {
 
         }
+
+        private void textBox1_KeyDown(object sender, KeyEventArgs e)
+        {
+            if(e.KeyCode==Keys.Enter && Status==SingleFileStatus.Rename)
+            {
+                if (OnSingleFileNodoChangeName != null)
+                    OnSingleFileNodoChangeName(this,_Nodo, textBox1.Text);
+            }
+            else if (e.KeyCode == Keys.Escape && Status == SingleFileStatus.Rename)
+            {
+                Status = SingleFileStatus.Normal;
+            }
+        }
     }
 
     public class SelectControl
@@ -419,8 +462,8 @@ namespace MusicLibraryManager.GUI.Controls
     }
     public enum SingleFileStatus
     {
-        Selected,
-        NotSelected
+        Normal,
+        Rename
     }
 
 }

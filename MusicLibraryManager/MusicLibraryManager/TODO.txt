@@ -11,7 +11,3 @@
 	- File mancanti e tempo rimantente ( in base al tempo medio di conversione corrente ) 
 
 
-
-FIX
-
-deselezione dopo aver aggiunto qualche media ad una  playlist non funzionante ( i file non sono più selezionati come attributi ma rimangono selezionati nella GUI)

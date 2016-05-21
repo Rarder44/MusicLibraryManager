@@ -99,9 +99,22 @@ namespace MusicLibraryManager.GUI.Forms
                 fileBrowser1.ReloadNode();
                 SavePlaylist(listBox_playlists.Items.Cast<Playlist>().Where(x => x.FileSystem == ToRemoveSelect).First());
             };
+            fileBrowser1.PlaylistChanged += (MyFileSystemPlus PlaylistSystem) =>
+            {
+                foreach (Playlist p in listBox_playlists.Items)
+                {
+                    if( p.FileSystem == PlaylistSystem)
+                    {
+                        SavePlaylist(p);
+                        return;
+                    }
+                }
+                
+            };
 
 
-            if(args!=null && args.Length!=0)
+
+            if (args!=null && args.Length!=0)
             {
                 foreach (String s in args)
                 {
@@ -146,7 +159,7 @@ namespace MusicLibraryManager.GUI.Forms
             }
         }
 
-
+      
 
         void LoadIndexFromFile(String PathIndexFile, bool Update = false, String PathMediaLibrary = null, FileSystemPlusLoadOption lo = null, bool GUI = true)
         {

@@ -35,6 +35,10 @@
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.aggiungiRimuoviToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.creaCartellaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.mergeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.mergeEdEstraiToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.rinominaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -45,9 +49,13 @@
             this.deselezionaTuttoToolStripMenuItem,
             this.toolStripSeparator1,
             this.aggiungiRimuoviToolStripMenuItem,
-            this.creaCartellaToolStripMenuItem});
+            this.creaCartellaToolStripMenuItem,
+            this.rinominaToolStripMenuItem,
+            this.toolStripSeparator2,
+            this.mergeToolStripMenuItem,
+            this.mergeEdEstraiToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(171, 98);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(203, 192);
             // 
             // sceltaCheckBoxToolStripMenuItem
             // 
@@ -81,6 +89,32 @@
             this.creaCartellaToolStripMenuItem.Text = "Crea Cartella";
             this.creaCartellaToolStripMenuItem.Click += new System.EventHandler(this.creaCartellaToolStripMenuItem_Click);
             // 
+            // mergeToolStripMenuItem
+            // 
+            this.mergeToolStripMenuItem.Name = "mergeToolStripMenuItem";
+            this.mergeToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
+            this.mergeToolStripMenuItem.Text = "Merge in Nuova Cartella";
+            this.mergeToolStripMenuItem.Click += new System.EventHandler(this.mergeToolStripMenuItem_Click);
+            // 
+            // mergeEdEstraiToolStripMenuItem
+            // 
+            this.mergeEdEstraiToolStripMenuItem.Name = "mergeEdEstraiToolStripMenuItem";
+            this.mergeEdEstraiToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
+            this.mergeEdEstraiToolStripMenuItem.Text = "Merge ed estrai";
+            this.mergeEdEstraiToolStripMenuItem.Click += new System.EventHandler(this.mergeEdEstraiToolStripMenuItem_Click);
+            // 
+            // rinominaToolStripMenuItem
+            // 
+            this.rinominaToolStripMenuItem.Name = "rinominaToolStripMenuItem";
+            this.rinominaToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
+            this.rinominaToolStripMenuItem.Text = "Rinomina";
+            this.rinominaToolStripMenuItem.Click += new System.EventHandler(this.rinominaToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(167, 6);
+            // 
             // FileBrowser
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -104,5 +138,9 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem aggiungiRimuoviToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem creaCartellaToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem mergeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem mergeEdEstraiToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem rinominaToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
     }
 }
