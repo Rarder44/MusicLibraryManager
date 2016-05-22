@@ -759,6 +759,7 @@ namespace MusicLibraryManager.GUI.Forms
         private void button1_Click(object sender, EventArgs e)
         {
             Index_UpdateAndSave(GlobalVar.PathIndexFile, GlobalVar.ApplicationOption.PathMedia, GlobalVar.ApplicationOption.LoadMediaOption());
+            ReloadCurrentFileSystem();
         }
 
         /* private void convertitoMP3ToolStripMenuItem_Click(object sender, EventArgs e)
