@@ -106,6 +106,12 @@
     <Compile Include="GUI\Forms\IncorporaMetadataPlaylist.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="GUI\Forms\IndexFileForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Forms\IndexFileForm.Designer.cs">
+      <DependentUpon>IndexFileForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\Forms\MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -156,6 +162,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Forms\ConvertMedia.resx">
       <DependentUpon>ConvertMedia.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Forms\IndexFileForm.resx">
+      <DependentUpon>IndexFileForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Forms\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
@@ -214,6 +223,7 @@
     <None Include="Resources\plus-31216_640.png" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Options\" />
     <Folder Include="Services\" />
   </ItemGroup>
   <ItemGroup>

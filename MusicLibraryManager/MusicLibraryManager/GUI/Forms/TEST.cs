@@ -25,16 +25,16 @@ namespace MusicLibraryManager.GUI.Forms
         {
             FFmpeg.Initialize(@"C:\Program Files (x86)\ffmpeg\ffmpeg.exe");
 
-            FileData d = FileService.ReadFile("test.txt");
+            /*FileData d = FileService.ReadFile("test.txt");
             if (d.Type == FileDataType.IndexFile)
             {
                 IndexFile ii = d.o._Cast<IndexFile>();
                 ii.Update();
-            }
+            }*/
 
 
-            /*
-             * FileSystemPlusLoadOption lo = new FileSystemPlusLoadOption();
+            
+            FileSystemPlusLoadOption lo = new FileSystemPlusLoadOption();
             lo.IgnoreException = true;
             lo.RestrictExtensionEnable = true;
             lo.RestrictExtension.AddToLower("flac");
@@ -45,8 +45,8 @@ namespace MusicLibraryManager.GUI.Forms
           
             IndexFile i = new IndexFile();
             i.OnEnd += I_OnEnd;
-            i.BeginLoadFromPath(@"F:\MUSICA FLAC\ORATORIO\", lo,false);
-    */
+            i.BeginLoadFromPath(@"F:\MUSICA FLAC\ORATORIO\", lo);
+    
 
 
         }

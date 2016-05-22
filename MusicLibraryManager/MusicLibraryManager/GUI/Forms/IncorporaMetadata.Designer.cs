@@ -77,8 +77,8 @@
 
         #endregion
 
-        private System.Windows.Forms.TextBox textBox_source;
-        private System.Windows.Forms.ProgressBar progressBar_single;
-        private System.Windows.Forms.ProgressBar progressBar_total;
+        protected System.Windows.Forms.TextBox textBox_source;
+        protected System.Windows.Forms.ProgressBar progressBar_single;
+        protected System.Windows.Forms.ProgressBar progressBar_total;
     }
 }

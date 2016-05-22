@@ -16,16 +16,18 @@ namespace MusicLibraryManager.DataSave
             {
                 if(fd.o is Newtonsoft.Json.Linq.JObject)
                 {
+
                     if (fd.Type == FileDataType.Option)
-                        fd.o = Json.Deserialize<Option>(fd.o.ToString());
+                        fd.o = (fd.o as Newtonsoft.Json.Linq.JObject).ToObject<Option>();
                     else if (fd.Type == FileDataType.MediaLibrary)
-                        fd.o = Json.Deserialize<MyFileSystemPlus>(fd.o.ToString());
-                    else if(fd.Type==FileDataType.Playlistlsocation)
-                        fd.o = Json.Deserialize<Playlistlsocation>(fd.o.ToString());
+                        fd.o = (fd.o as Newtonsoft.Json.Linq.JObject).ToObject<MyFileSystemPlus>();
+                    else if (fd.Type == FileDataType.Playlistlsocation)
+                        fd.o = (fd.o as Newtonsoft.Json.Linq.JObject).ToObject<Playlistlsocation>();
                     else if (fd.Type == FileDataType.Playlist)
-                        fd.o = Json.Deserialize<Playlist>(fd.o.ToString());
+                        fd.o = (fd.o as Newtonsoft.Json.Linq.JObject).ToObject<Playlist>();
                     else if (fd.Type == FileDataType.IndexFile)
-                        fd.o = Json.Deserialize<IndexFile>(fd.o.ToString());
+                        fd.o = (fd.o as Newtonsoft.Json.Linq.JObject).ToObject<IndexFile>();
+                        
                 }
             }
             return fd;

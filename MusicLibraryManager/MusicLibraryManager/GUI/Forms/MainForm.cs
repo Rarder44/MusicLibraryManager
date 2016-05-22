@@ -19,7 +19,7 @@ namespace MusicLibraryManager.GUI.Forms
 {
     public partial class MainForm : Form
     {
-        Option option;
+        //Option option;
         MainFormStatus _status;
         MainFormStatus status
         {
@@ -68,7 +68,7 @@ namespace MusicLibraryManager.GUI.Forms
 
             Directory.SetCurrentDirectory(SystemService.GetParent(Application.ExecutablePath));
             LoadOptionFromFile(GlobalVar.PathOption);
-            LoadIndexFromFile(GlobalVar.PathIndexFile,true,option.PathMedia,option.LoadMediaOption());
+            LoadIndexFromFile(GlobalVar.PathIndexFile,true, GlobalVar.ApplicationOption.PathMedia, GlobalVar.ApplicationOption.LoadMediaOption());
             LoadIndexMediaLibrary();
             LoadPlaylistlsocationFromFile(GlobalVar.PathPlaylistlsocation);
             status = MainFormStatus.RootBrowsing;
@@ -145,7 +145,7 @@ namespace MusicLibraryManager.GUI.Forms
                             if (MessageBox.Show("Vuoi sostituire il file di indice?", "Continuare?", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
                             {
                                 SystemService.CopySecure(s, GlobalVar.PathIndexFile, true);
-                                LoadIndexFromFile(GlobalVar.PathIndexFile,true,option.PathMedia,option.LoadMediaOption());
+                                LoadIndexFromFile(GlobalVar.PathIndexFile,true, GlobalVar.ApplicationOption.PathMedia, GlobalVar.ApplicationOption.LoadMediaOption());
                             }
                         }
                         else if (FD.Type == FileDataType.Playlistlsocation)
@@ -215,37 +215,37 @@ namespace MusicLibraryManager.GUI.Forms
             {
                 if(GUI)
                     MessageBox.Show("File di opzioni: " + Path + " Non trovato.\r\nVerrà creato un nuovo file Opzioni");
-                option = new Option();
-                FileService.WriteFile(Path, option, FileDataType.Option);
+                GlobalVar.ApplicationOption = new Option();
+                FileService.WriteFile(Path, GlobalVar.ApplicationOption, FileDataType.Option);
             }
             else if (FD.o == null || !(FD.o is Option))
             {
                 if(GUI)
                     MessageBox.Show("File di opzioni: " + Path + " non caricato correttamente.\r\nVerrà creato un nuovo file Opzioni");
-                option = new Option();
-                FileService.WriteFile(Path, option, FileDataType.Option);
+                GlobalVar.ApplicationOption = new Option();
+                FileService.WriteFile(Path, GlobalVar.ApplicationOption, FileDataType.Option);
             }
             else
             {
-                option = FD.o._Cast<Option>();
+                GlobalVar.ApplicationOption = FD.o._Cast<Option>();
             }
 
-            option.OnSomethingChenged += (ChangedVar var) =>
+            GlobalVar.ApplicationOption.OnSomethingChenged += (ChangedVar var) =>
             {
-                FileService.WriteFile(Path, option, FileDataType.Option);
+                FileService.WriteFile(Path, GlobalVar.ApplicationOption, FileDataType.Option);
                 if ((var & ChangedVar.PathMedia) == ChangedVar.PathMedia || (var & ChangedVar.Extensions) == ChangedVar.Extensions)
                 {
-                    Index_UpdateAndSave(GlobalVar.PathIndexFile, option.PathMedia,option.LoadMediaOption());
+                    Index_UpdateAndSave(GlobalVar.PathIndexFile, GlobalVar.ApplicationOption.PathMedia, GlobalVar.ApplicationOption.LoadMediaOption());
                 }
                 else if((var & ChangedVar.PathFFmpeg) == ChangedVar.PathFFmpeg)
                 {
-                    FFmpeg.Initialize(option.PathFFmpeg);
+                    FFmpeg.Initialize(GlobalVar.ApplicationOption.PathFFmpeg);
                 }
             };
 
 
-            if (option.PathFFmpeg != null)
-                FFmpeg.Initialize(option.PathFFmpeg);
+            if (GlobalVar.ApplicationOption.PathFFmpeg != null)
+                FFmpeg.Initialize(GlobalVar.ApplicationOption.PathFFmpeg);
 
         }
 
@@ -428,7 +428,7 @@ namespace MusicLibraryManager.GUI.Forms
 
         private void button3_Click(object sender, EventArgs e)
         {
-            OptionForm o = new OptionForm(option);
+            OptionForm o = new OptionForm(GlobalVar.ApplicationOption);
             o.ShowDialog();
         }
 
@@ -758,7 +758,7 @@ namespace MusicLibraryManager.GUI.Forms
 
         private void button1_Click(object sender, EventArgs e)
         {
-            Index_UpdateAndSave(GlobalVar.PathIndexFile, option.PathMedia, option.LoadMediaOption());
+            Index_UpdateAndSave(GlobalVar.PathIndexFile, GlobalVar.ApplicationOption.PathMedia, GlobalVar.ApplicationOption.LoadMediaOption());
         }
 
         /* private void convertitoMP3ToolStripMenuItem_Click(object sender, EventArgs e)

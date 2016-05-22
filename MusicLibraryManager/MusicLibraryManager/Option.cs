@@ -5,6 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ExtendCSharp;
+
+
 namespace MusicLibraryManager
 {
     [JsonObject(MemberSerialization.OptIn)]
@@ -58,6 +60,23 @@ namespace MusicLibraryManager
 
 
 
+        [JsonProperty]
+        bool _IndexFileFormCloseFormAutomatically = false;
+        public bool IndexFileFormCloseFormAutomatically
+        {
+            get { return _IndexFileFormCloseFormAutomatically; }
+            set
+            {
+                if (_IndexFileFormCloseFormAutomatically == value)
+                    return;
+                _IndexFileFormCloseFormAutomatically = value;
+                cv |= ChangedVar.IndexFileFormCloseFormAutomatically;
+            }
+        }
+
+
+
+
         public FileSystemPlusLoadOption LoadMediaOption()
         {
             FileSystemPlusLoadOption lo = new FileSystemPlusLoadOption();
@@ -97,6 +116,7 @@ namespace MusicLibraryManager
         PathFFmpeg=1,
         PathMedia=2,
         Extensions=4,
+        IndexFileFormCloseFormAutomatically = 8,
 
     }
 }

@@ -63,8 +63,6 @@ namespace MusicLibraryManager
                 return false;
             }
         }
-
-
         public bool BeginIncorporaMetadata(FileSystemNodePlus<MyAddittionalData> nodo, MyFileSystemPlus mfsp)
         {
             if(GetIncorporaMetadataStatus()==MetadataIncluderAsyncStatus.nul)
@@ -179,7 +177,8 @@ namespace MusicLibraryManager
                         nodo.AddittionalData.MD5 = Hash.ToHexString(true);
                         OnNodeProcessed?.Invoke(nodo, PathSource, MetadataIncluderError.nul);
                     }
-                    OnNodeProcessed?.Invoke(nodo, PathSource, MetadataIncluderError.MD5Err);
+                    else
+                        OnNodeProcessed?.Invoke(nodo, PathSource, MetadataIncluderError.MD5Err);
                 });
 
                

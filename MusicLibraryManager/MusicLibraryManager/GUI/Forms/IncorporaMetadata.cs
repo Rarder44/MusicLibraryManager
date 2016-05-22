@@ -37,7 +37,7 @@ namespace MusicLibraryManager.GUI.Forms
         public IncorporaMetadata()
         {
             InitializeComponent();
-
+           
 
         }
 
@@ -74,13 +74,13 @@ namespace MusicLibraryManager.GUI.Forms
         {
             buffer += AddPercent;
             
-            progressBar_single.SetProgressNoAnimationInvoke((int)buffer);
+            progressBar_single.SetValueNoAnimationInvoke((int)buffer);
         }
 
         private void MI_OnNodeProcessed(FileSystemNodePlus<MyAddittionalData> nodo, String Path, MetadataIncluderError Err)
         {
             
-            progressBar_total.SetProgressNoAnimationInvoke(progressBar_total.Value + 1);
+            progressBar_total.SetValueNoAnimationInvoke(progressBar_total.Value + 1);
         }
         private void MI_OnNodeStartProcessing(FileSystemNodePlus<MyAddittionalData> nodo, string Path)
         {
@@ -119,6 +119,8 @@ namespace MusicLibraryManager.GUI.Forms
         /// </summary>
         public void Start()
         {
+            if (MI == null)
+                return;
             MI.OnNodeStartProcessing += OnNodeStartProcessing;
             MI.OnNodeProcessed += OnProcessedMetadata;
             MI.OnProgressChangedSingleMD5 += (double percent) =>
