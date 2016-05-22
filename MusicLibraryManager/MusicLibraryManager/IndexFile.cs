@@ -279,6 +279,7 @@ namespace MusicLibraryManager
                 MI.OnEnd += () =>
                 {
                     IFForm.SetProgressTotalValue(IFForm.GetProgressTotalValue() + 1);
+                    IFForm.Fine();
                 };
 
 

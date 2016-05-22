@@ -3,7 +3,6 @@
 
 
 - Rimuovere la IncorporaMetadata e IncorporaMetadataPlaylist ( visto che le playlist hanno gia i metadata incorporati dal file di indice )
-- implemetare la chiusura automatica dell'IndexFileForm tramite la checkbox
 - Aggiungere alla option form la checkbox per la chiusura automatica dell'IndexFileForm 
 
 

@@ -127,6 +127,14 @@ namespace MusicLibraryManager.GUI.Forms
                 lo.SomethingChenged();
             }
         }
+
+
+        public void Fine()
+        {
+            if (checkBox_CloseAutomatic.Checked)
+                this.CloseInvoke();
+        }
+
     }
     public enum IndexFileFormStatus
     {
