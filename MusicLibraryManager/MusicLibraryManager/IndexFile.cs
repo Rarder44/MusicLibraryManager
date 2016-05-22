@@ -291,6 +291,9 @@ namespace MusicLibraryManager
             }
 
             MI.IncorporaMetadata(t.Root, t);
+            t.Root.Remove((x) => { return x.Type == FileSystemNodePlusType.File && (x.AddittionalData.MD5 == "" || x.AddittionalData.MD5 == null); }, FileSystemNodePlusLevelType.AllNode, FileSystemNodePlusControlType.Post);
+            
+
         }
 
         private void _CreateIndexFile(String Path, FileSystemPlusLoadOption lo)
@@ -517,6 +520,11 @@ namespace MusicLibraryManager
                     {
                         // il file non è stato modificato e lo seleziono.
                         n.AddittionalData.Selezionato = true;
+                    }
+                    else // nel caso in cui il file è stato modificato
+                    {
+                        //reinserisco il file all'interno di temp in modo che venga rianalizzato
+                        Temp.CreateNode(s.TrimEnd('\\', '/').SplitAndGetLast("\\", "/"), FileSystemNodePlusType.File);
                     }
                 }
             }

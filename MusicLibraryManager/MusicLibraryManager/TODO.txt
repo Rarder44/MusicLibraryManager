@@ -1,5 +1,6 @@
 ﻿- migliorare graficamente IndexFileForm
-- controllare la Abort del thread di incorporazione dati -> controllare se i dati letti vengono salvati correttamente e se il file indice risultante non è corrotto
+
+
 
 - Rimuovere la IncorporaMetadata e IncorporaMetadataPlaylist ( visto che le playlist hanno gia i metadata incorporati dal file di indice )
 - implemetare la chiusura automatica dell'IndexFileForm tramite la checkbox
