@@ -621,7 +621,7 @@ namespace MusicLibraryManager.GUI.Forms
 
 
 
-        private void incorporaMetadataToolStripMenuItem_Click(object sender, EventArgs e)
+        /*private void incorporaMetadataToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (listBox_playlists.SelectedItem is Playlist)
                 if (MessageBox.Show("Attenzione!\r\nSe un file non viene trovato NON verrà eliminato dalla lista ma i metadati rimmarrano vuoti\r\nTip: Esegui prima \"Check dei File\"\r\n\r\nIl processo può richiedere paracchio tempo, continuare?","Attenzione",MessageBoxButtons.YesNo,MessageBoxIcon.Exclamation) == DialogResult.Yes)
@@ -645,7 +645,7 @@ namespace MusicLibraryManager.GUI.Forms
                     //IM.Start();
                     //IM.ShowDialog();
                 }
-        }
+        }*/
 
 
 

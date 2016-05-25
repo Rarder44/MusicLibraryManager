@@ -1,8 +1,17 @@
-﻿- migliorare graficamente IndexFileForm
+﻿- creazione FFmpegMetadataMp3 - FFmpegMetadataFlac (esteso da FFmpegMetadata) che implementa
+	- MP3: "sovrascrittura del bitrate" 
+	- FLAC: Implementare i Bit, e Hz Campionatura
+
+FFMpeg -> GetMetadata  deve analizzare gli stream audio ( il primo che incontra ) 
 
 
 
-- Rimuovere la IncorporaMetadata e IncorporaMetadataPlaylist ( visto che le playlist hanno gia i metadata incorporati dal file di indice )
+
+- migliorare graficamente IndexFileForm
+
+
+
+
 - Aggiungere alla option form la checkbox per la chiusura automatica dell'IndexFileForm 
 
 

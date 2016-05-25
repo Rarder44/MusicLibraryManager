@@ -40,8 +40,6 @@
             this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem4 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
-            this.incorporaMetadataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.rimuoviToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -72,13 +70,11 @@
             this.toolStripSeparator1,
             this.toolStripMenuItem2,
             this.toolStripSeparator4,
-            this.incorporaMetadataToolStripMenuItem,
-            this.toolStripSeparator2,
             this.toolStripMenuItem1,
             this.toolStripSeparator3,
             this.rimuoviToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(196, 138);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(196, 110);
             // 
             // esportaToolStripMenuItem
             // 
@@ -135,18 +131,6 @@
             // 
             this.toolStripSeparator4.Name = "toolStripSeparator4";
             this.toolStripSeparator4.Size = new System.Drawing.Size(192, 6);
-            // 
-            // incorporaMetadataToolStripMenuItem
-            // 
-            this.incorporaMetadataToolStripMenuItem.Name = "incorporaMetadataToolStripMenuItem";
-            this.incorporaMetadataToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
-            this.incorporaMetadataToolStripMenuItem.Text = "Incorpora Metadata";
-            this.incorporaMetadataToolStripMenuItem.Click += new System.EventHandler(this.incorporaMetadataToolStripMenuItem_Click);
-            // 
-            // toolStripSeparator2
-            // 
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(192, 6);
             // 
             // toolStripMenuItem1
             // 
@@ -258,8 +242,6 @@
         private System.Windows.Forms.ToolStripMenuItem esportaToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem originaleToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem convertiMP3ToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem incorporaMetadataToolStripMenuItem;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem2;

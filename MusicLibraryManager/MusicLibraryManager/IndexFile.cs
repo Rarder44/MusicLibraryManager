@@ -1,7 +1,7 @@
 ﻿using ExtendCSharp;
 using ExtendCSharp.Services;
 using MusicLibraryManager.GUI.Forms;
-
+using MusicLibraryManager.Services;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -222,7 +222,7 @@ namespace MusicLibraryManager
 
         private void _IncorporaMetadata(MyFileSystemPlus t)
         {
-            MetadataIncluder MI = new MetadataIncluder();
+            MetadataIncluderServices MI = new MetadataIncluderServices();
             MI.OnNodeStartProcessing += OnNodeStartProcessing;
             MI.OnNodeProcessed += OnProcessedMetadata;
             MI.OnProgressChangedSingleMD5 += (double percent) =>
@@ -444,47 +444,6 @@ namespace MusicLibraryManager
             Update();
         }
 
-
-        /// <summary>
-        /// DECPRECATO!
-        /// scorre tutti i file del FileSystem e controlla se sono presenti nella cartella reale
-        /// </summary>
-        /// <param name="FileSystem"></param>
-        /// <param name="Folder"></param>
-        /// <param name="Temp"></param>
-        private void UpdateRecursiveListToReal(MyFileSystemPlus FileSystem, FileSystemNodePlus<MyAddittionalData> Folder, FileSystemNodePlus<MyAddittionalData> Temp)
-        {
-            FileSystemNodePlus<MyAddittionalData>[] tfolder=Folder.GetAllNode(FileSystemNodePlusType.Directory);
-            foreach (FileSystemNodePlus<MyAddittionalData> n in tfolder)
-            {
-                UpdateRecursiveListToReal(FileSystem, n, Temp.CreateNode(n.Name, n.Type));
-            }
-
-            FileSystemNodePlus<MyAddittionalData>[] tfile = Folder.GetAllNode(FileSystemNodePlusType.File);
-            foreach (FileSystemNodePlus<MyAddittionalData> n in tfile)
-            {
-                String p = FileSystem.GetFullPath(n);
-                //se il file non esiste o le dimensioni non corrispondono 
-                if(!SystemService.FileExist(p))
-                {
-                    // il file non esiste piu
-                    // cancello il file corrente
-                    Folder.Remove((Nodo) => { return Nodo == n; }, FileSystemNodePlusLevelType.FirstLevel, FileSystemNodePlusControlType.Pre);
-                    if (CanUseGui)
-                        IFForm.AddRimossi(n.GetFullPath());
-                }
-                else if (n.AddittionalData.Size == SystemService.FileSize(p))
-                {
-                    // il file è stato modificato
-                    // cancello il file corrente
-                    Folder.Remove((Nodo) => { return Nodo == n; }, FileSystemNodePlusLevelType.FirstLevel, FileSystemNodePlusControlType.Pre);
-                    if (CanUseGui)
-                        IFForm.AddRimossi(n.GetFullPath());
-
-                    Temp.CreateNode(n.Name, FileSystemNodePlusType.File);
-                }
-            }
-        }
 
         /// <summary>
         /// Scorre tutte le cartelle presenti nella cartella Reale e controlla i file:

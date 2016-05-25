@@ -9,9 +9,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using static ExtendCSharp.Extension;
 
-namespace MusicLibraryManager
+namespace MusicLibraryManager.Services
 {
-    class MetadataIncluder
+    class MetadataIncluderServices
     {
         public event EndIncorporaMetadata OnEnd;
         public event IncorporaMetadataNodeStartProcessing OnNodeStartProcessing;
