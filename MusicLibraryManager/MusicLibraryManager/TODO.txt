@@ -36,3 +36,9 @@
 
 
 
+
+- Da pensare!! un oggetto per gestire gli oggetti-file 
+	un "listener" che ascolta ( per mezzo di un evento / metodo distribuito da un interffaccia ) tutti gli oggetti passati e se c'è una modifica
+	la gestisce, ad esempio creando un altra interfaccia che permette di passare uno stream ad una classe, e questa ci scrive sopra ( ogni classe sa dove e come scriversi su file)
+
+
