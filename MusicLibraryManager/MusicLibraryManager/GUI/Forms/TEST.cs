@@ -60,5 +60,16 @@ namespace MusicLibraryManager.GUI.Forms
                 IndexFile ii = d.o._Cast<IndexFile>();
             }*/
         }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+           /* Wrapper w = new Wrapper(new FFMpegMediaMetadataFlac());
+            String ser = Json.Serialize(w);
+            Wrapper tret = Json.Deserialize<Wrapper>(ser);*/
+
+        }
     }
+
+   
+  
 }

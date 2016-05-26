@@ -10,6 +10,8 @@ namespace MusicLibraryManager.Services
     {
         //convertire dal formato 1 al formato 2 
         //con opzione di forzare la conversione o farla solo in downgrade ( evitare che un 128 venga portato a 320 )
-
+        
     }
+
+   
 }

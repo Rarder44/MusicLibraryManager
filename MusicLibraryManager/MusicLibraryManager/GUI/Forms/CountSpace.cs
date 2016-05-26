@@ -75,8 +75,9 @@ namespace MusicLibraryManager.GUI.Forms
                 progressBar_total.SetMaximumInvoke(Total);
 
 
-
-                long l = CalcoloSpazio(conv.mfsp.Root, conv.mfsp, FFmpegConversionEndFormat.mp3);
+                FFMpegMediaMetadataMp3 ff = new FFMpegMediaMetadataMp3();
+                ff.BitRateMp3 = 320;
+                long l = CalcoloSpazio(conv.mfsp.Root, conv.mfsp, ff);
                 //kb
                 String Post = "KB";
                 double d = 0;
@@ -100,10 +101,16 @@ namespace MusicLibraryManager.GUI.Forms
             
         }
 
-
-        private long CalcoloSpazio(FileSystemNodePlus<MyAddittionalData> nodo, MyFileSystemPlus mfsp, FFmpegConversionEndFormat Format)
+        /// <summary>
+        /// DEPRECATA! NON FUNZIONANTE
+        /// </summary>
+        /// <param name="nodo"></param>
+        /// <param name="mfsp"></param>
+        /// <param name="EndFormat"></param>
+        /// <returns></returns>
+        private long CalcoloSpazio(FileSystemNodePlus<MyAddittionalData> nodo, MyFileSystemPlus mfsp, FFMpegMediaMetadata EndFormat)
         {
-            if (Format == FFmpegConversionEndFormat.mp3)
+            if (EndFormat is FFMpegMediaMetadataMp3 )
             {
                 long t = 0;
                 foreach (FileSystemNodePlus<MyAddittionalData> n in nodo.GetAllNode())
@@ -112,26 +119,29 @@ namespace MusicLibraryManager.GUI.Forms
                         Thread.Sleep(100);
 
                     if (n.Type == FileSystemNodePlusType.Directory)
-                        t += CalcoloSpazio(n, mfsp, Format);
+                        t += CalcoloSpazio(n, mfsp, EndFormat);
                     else if (n.Type == FileSystemNodePlusType.File)
                     {
                         String p = mfsp.GetFullPath(n);
                         if (SystemService.FileExist(p))
                         {
                             textBox_source.SetTextInvoke(p);
-                            String temp = FFmpeg.GetMetadata(p).Duration;
-                            string[] st = temp.Split(':');
-                            long tt = 0;
-                            if (st.Length == 3)
+                            if(FFmpeg.GetMetadata(p).MediaMetadata!=null)
                             {
-                                try
+                                String temp = FFmpeg.GetMetadata(p).MediaMetadata.Duration;
+                                string[] st = temp.Split(':');
+                                long tt = 0;
+                                if (st.Length == 3)
                                 {
-                                    tt = st[0].ParseInt() * 144000; //trovo i secondi e moltiplico x 320/8 -> 3600*40
-                                    tt += st[1].ParseInt() * 2400; //trovo i secondi e moltiplico x 320/8 -> 60*40
-                                    tt += st[2].Split('.')[0].ParseInt() * 40; //trovo i secondi e moltiplico x 320/8 -> 60*40
+                                    try
+                                    {
+                                        tt = st[0].ParseInt() * 144000; //trovo i secondi e moltiplico x 320/8 -> 3600*40
+                                        tt += st[1].ParseInt() * 2400; //trovo i secondi e moltiplico x 320/8 -> 60*40
+                                        tt += st[2].Split('.')[0].ParseInt() * 40; //trovo i secondi e moltiplico x 320/8 -> 60*40
+                                    }
+                                    catch (Exception e) { }
+                                    t += tt;
                                 }
-                                catch (Exception e) { }
-                                t += tt;
                             }
                         }
                         progressBar_total.SetValueInvoke(progressBar_total.Value + 1);
@@ -174,13 +184,13 @@ namespace MusicLibraryManager.GUI.Forms
 
     public class CountParameter
     {
-        public CountParameter(MyFileSystemPlus mfsp, FFmpegConversionEndFormat Format)
+        public CountParameter(MyFileSystemPlus mfsp, FFmpegMetadata EndFormat)
         {
             this.mfsp = mfsp;
-            this.Format = Format;
+            this.EndFormat = EndFormat;
         }
         public MyFileSystemPlus mfsp;
-        public FFmpegConversionEndFormat Format;
+        public FFmpegMetadata EndFormat;
     }
 
     

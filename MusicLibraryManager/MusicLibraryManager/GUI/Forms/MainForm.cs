@@ -193,6 +193,8 @@ namespace MusicLibraryManager.GUI.Forms
             {
                 Index_UpdateAndSave(PathIndexFile, PathMediaLibrary, null); 
             }
+
+
         }
         void Index_UpdateAndSave(String PathIndexFile,String PathMediaLibrary = null, FileSystemPlusLoadOption lo = null)
         {
@@ -512,14 +514,20 @@ namespace MusicLibraryManager.GUI.Forms
                     Playlist p = (Playlist)listBox_playlists.SelectedItem;
                     ListPlus<String> ls = p.FileSystem.GetAllFilePath();
 
-                    ListPlus<Tuple<String, String>> lss = new ListPlus<Tuple<string, string>>();
+                    ListPlus<Tuple<ConvertionEntity, ConvertionEntity>> lss = new ListPlus<Tuple<ConvertionEntity, ConvertionEntity>>();
                     foreach (String s in ls)
                     {
-                        lss.Add(new Tuple<string, string>(SystemService.Combine(p.FileSystem.RootPath, s.TrimStart('\\', '/')), SystemService.Combine(destFolder, s.TrimStart('\\', '/'))));
+                        //TODO: al posto di null, mettere il vero metadata
+                        ConvertionEntity source = new ConvertionEntity(SystemService.Combine(p.FileSystem.RootPath, s.TrimStart('\\', '/')), null);
+                        //TODO: ricopiare il Metadata dell'source ( per poter fare una copia dei file e non la conversione
+                        ConvertionEntity dest = new ConvertionEntity(SystemService.Combine(destFolder, s.TrimStart('\\', '/')), null);
+                        lss.Add(new Tuple<ConvertionEntity, ConvertionEntity>(source, dest ));
                     }
 
+                    FFMpegMediaMetadataMp3 t = new FFMpegMediaMetadataMp3();
+                    t.BitRateMp3 = 320;
 
-                    ConvertMedia CM = new ConvertMedia(new ConversionParameter(lss,ConversinType.Mai,FFmpegConversionEndFormat.mp3, OverrideIfExist));
+                    ConvertMedia CM = new ConvertMedia(new ConversionParameter(lss,ConversinType.Mai,t, OverrideIfExist));
                     CM.OnFFmpegConversionEnd += () =>
                     {
                         if (CM.Error != null && CM.Error.Count != 0)
@@ -537,7 +545,7 @@ namespace MusicLibraryManager.GUI.Forms
         }
         private void convertiMP3ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (listBox_playlists.SelectedItem is Playlist)
+           /* if (listBox_playlists.SelectedItem is Playlist)
             {
                 FolderSelectDialog fsd = new FolderSelectDialog();
                 if (fsd.ShowDialog())
@@ -549,20 +557,29 @@ namespace MusicLibraryManager.GUI.Forms
 
                     String destFolder = fsd.FileName;
                     Playlist p = (Playlist)listBox_playlists.SelectedItem;
-                    ListPlus<Tuple<String, String>> lss = new ListPlus<Tuple<string, string>>();
+                    ListPlus<Tuple<ConvertionEntity, ConvertionEntity>> lss = new ListPlus<Tuple<ConvertionEntity, ConvertionEntity>>();
                     foreach (FileSystemNodePlus<MyAddittionalData> n in  p.FileSystem.Flatten().Where(x=> x.Type==FileSystemNodePlusType.File))
                     {
-                        FileSystemNodePlus<MyAddittionalData> t =IndexMediaLibrary.RootFileSystem.FindFirst((x) => { return x.AddittionalData.MD5 == n.AddittionalData.MD5; });
-                        if(t==null)
+                        FileSystemNodePlus<MyAddittionalData> tt =IndexMediaLibrary.RootFileSystem.FindFirst((x) => { return x.AddittionalData.MD5 == n.AddittionalData.MD5; });
+                        if(tt==null)
                         {
                             //TODO: non trovato -> gestire la ricerca dei file non trovati
                         }
                         else
                         {
-                            lss.Add(new Tuple<string, string>(IndexMediaLibrary.RootFileSystem.GetFullPath(t), SystemService.Combine(destFolder, SystemService.ChangeExtension(t.GetFullPath().TrimStart('\\', '/'), "mp3"))));
+                            ConvertionEntity Source = new ConvertionEntity(IndexMediaLibrary.RootFileSystem.GetFullPath(tt), tt.AddittionalData.Metadata.MediaMetadata);
+
+                            FFMpegMediaMetadataMp3 temp = new FFMpegMediaMetadataMp3(tt.AddittionalData.Metadata.MediaMetadata);
+                            //TODO: da modificare con il parametro passato come Formato finale
+                            temp.BitRateMp3 = BitRateMp3Info.kb320;
+                            ConvertionEntity Dest = new ConvertionEntity(SystemService.Combine(destFolder, SystemService.ChangeExtension(tt.GetFullPath().TrimStart('\\', '/'), "mp3")), temp);
+
+                            lss.Add(new Tuple<ConvertionEntity, ConvertionEntity>(Source, Dest));
                         }
                     }
-                    ConvertMedia CM = new ConvertMedia(new ConversionParameter(lss, ConversinType.SoloDiversi, FFmpegConversionEndFormat.mp3, OverrideIfExist));
+                    FFMpegMediaMetadataMp3 t = new FFMpegMediaMetadataMp3();
+                    t.BitRateMp3 = BitRateMp3Info.kb320;
+                    ConvertMedia CM = new ConvertMedia(new ConversionParameter(lss, ConversinType.SoloDiversi, t, OverrideIfExist));
                     CM.OnFFmpegConversionEnd += () =>
                     {
                         if (CM.Error != null && CM.Error.Count != 0)
@@ -578,8 +595,8 @@ namespace MusicLibraryManager.GUI.Forms
 
 
             return;
-
-            if (listBox_playlists.SelectedItem is Playlist)
+            */
+           /* if (listBox_playlists.SelectedItem is Playlist)
             {
                 FolderSelectDialog fsd = new FolderSelectDialog();
                 if (fsd.ShowDialog())
@@ -593,13 +610,21 @@ namespace MusicLibraryManager.GUI.Forms
                     Playlist p = (Playlist)listBox_playlists.SelectedItem;
                     ListPlus<String> ls = p.FileSystem.GetAllFilePath();
                     
-                    ListPlus<Tuple<String, String>> lss = new ListPlus<Tuple<string, string>>();
-                    foreach (String s in ls)
-                    {    
-                        lss.Add(new Tuple<string, string>(SystemService.Combine(p.FileSystem.RootPath, s.TrimStart('\\', '/')), SystemService.Combine(destFolder, SystemService.ChangeExtension(s.TrimStart('\\', '/'), "mp3"))));
-                    }
                     
-                    ConvertMedia CM = new ConvertMedia(new ConversionParameter(lss, ConversinType.SoloDiversi, FFmpegConversionEndFormat.mp3, OverrideIfExist));
+                    ListPlus<Tuple<ConvertionEntity, ConvertionEntity>> lss = new ListPlus<Tuple<ConvertionEntity, ConvertionEntity>>();
+                    foreach (String s in ls)
+                    {
+                        //TODO: al posto di null, mettere il vero metadata
+                        ConvertionEntity source = new ConvertionEntity(SystemService.Combine(p.FileSystem.RootPath, s.TrimStart('\\', '/')), null);
+                        //TODO: ricopiare il Metadata dell'source ( per poter fare una copia dei file e non la conversione
+                        ConvertionEntity dest = new ConvertionEntity(SystemService.Combine(destFolder, SystemService.ChangeExtension(s.TrimStart('\\', '/'), "mp3")), null);
+
+                        lss.Add(new Tuple<ConvertionEntity, ConvertionEntity>(source, dest));
+                    }
+
+                    FFMpegMediaMetadataMp3 t = new FFMpegMediaMetadataMp3();
+                    t.BitRateMp3 = BitRateMp3Info.kb320;
+                    ConvertMedia CM = new ConvertMedia(new ConversionParameter(lss, ConversinType.SoloDiversi, t, OverrideIfExist));
                     CM.OnFFmpegConversionEnd += () =>
                     {
                         if (CM.Error != null && CM.Error.Count != 0)
@@ -614,7 +639,7 @@ namespace MusicLibraryManager.GUI.Forms
             }
 
 
-
+            */
 
         }
 
@@ -661,7 +686,7 @@ namespace MusicLibraryManager.GUI.Forms
         //esporta singola cartella Originale
         private void toolStripMenuItem3_Click(object sender, EventArgs e)
         {
-            if (listBox_playlists.SelectedItem is Playlist)
+           /* if (listBox_playlists.SelectedItem is Playlist)
             {
                 FolderSelectDialog fsd = new FolderSelectDialog();
                 if (fsd.ShowDialog())
@@ -691,8 +716,9 @@ namespace MusicLibraryManager.GUI.Forms
                         lss.Add(new Tuple<string, string>(SystemService.Combine(p.FileSystem.RootPath, s.TrimStart('\\', '/')), t));
                     }
 
-
-                    ConvertMedia CM = new ConvertMedia(new ConversionParameter(lss, ConversinType.Mai, FFmpegConversionEndFormat.mp3, OverrideIfExist));
+                    FFMpegMediaMetadataMp3 t = new FFMpegMediaMetadataMp3();
+                    t.BitRateMp3 = BitRateMp3Info.kb320;
+                    ConvertMedia CM = new ConvertMedia(new ConversionParameter(lss, ConversinType.Mai, t, OverrideIfExist));
                     CM.OnFFmpegConversionEnd += () =>
                     {
                         if (CM.Error != null && CM.Error.Count != 0)
@@ -704,7 +730,7 @@ namespace MusicLibraryManager.GUI.Forms
                     CM.Show();
                     CM.Start();
                 }
-            }
+            }*/
         }
 
 
@@ -712,7 +738,7 @@ namespace MusicLibraryManager.GUI.Forms
         //esporta singola cartella Convertito
         private void toolStripMenuItem4_Click(object sender, EventArgs e)
         {
-            if (listBox_playlists.SelectedItem is Playlist)
+            /*if (listBox_playlists.SelectedItem is Playlist)
             {
                 FolderSelectDialog fsd = new FolderSelectDialog();
                 if (fsd.ShowDialog())
@@ -741,7 +767,9 @@ namespace MusicLibraryManager.GUI.Forms
                         lss.Add(new Tuple<string, string>(SystemService.Combine(p.FileSystem.RootPath, s.TrimStart('\\', '/')), t));
                     }
 
-                    ConvertMedia CM = new ConvertMedia(new ConversionParameter(lss, ConversinType.SoloDiversi, FFmpegConversionEndFormat.mp3, OverrideIfExist));
+                    FFMpegMediaMetadataMp3 t = new FFMpegMediaMetadataMp3();
+                    t.BitRateMp3 = BitRateMp3Info.kb320;
+                    ConvertMedia CM = new ConvertMedia(new ConversionParameter(lss, ConversinType.SoloDiversi, t, OverrideIfExist));
                     CM.OnFFmpegConversionEnd += () =>
                     {
                         if (CM.Error != null && CM.Error.Count != 0)
@@ -753,7 +781,7 @@ namespace MusicLibraryManager.GUI.Forms
                     CM.Show();
                     CM.Start();
                 }
-            }
+            }*/
         }
 
         private void button1_Click(object sender, EventArgs e)

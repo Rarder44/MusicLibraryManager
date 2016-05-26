@@ -72,13 +72,17 @@ namespace MusicLibraryManager.GUI.Forms
                 
                 if (conv.TipoConversione==ConversinType.SoloDiversi)
                 {
-                    foreach (Tuple<String, String> t in conv.SourceDestination)
+                    foreach (Tuple<ConvertionEntity, ConvertionEntity> t in conv.SourceDestination)
                     {
                         while (Pause)
                             Thread.Sleep(100);
 
+                        //TODO: controllo se i due ConvertionEntity hanno MediaMetadata uguali, allora li copio, altrimenti li converto
 
-                        if (t.Item1.ToLower().EndsWith("mp3"))
+
+
+
+                        /*if (t.Item1.ToLower().EndsWith("mp3"))
                         {
                             textBox_source.SetTextInvoke(t.Item1);
                             textBox_destination.SetTextInvoke(t.Item2);
@@ -106,28 +110,38 @@ namespace MusicLibraryManager.GUI.Forms
                         }
                         else
                         {
+                            
+
                             if (!FFmpeg.ConvertTo(conv.ConvertiIn, t.Item1, t.Item2, conv.OverrideIfExist, OnFFmpegStatusChanged, OnFFmpegProgressChanged, false))
                             {
                                 Error.Add(new Tuple<string, string, FFmpegError>(t.Item1, t.Item2, FFmpegError.DestFolderNotFound));
                                 textBox1.AppendTextInvoke("Err: " + t.Item1 + " -> " + t.Item2 + "\r\n");
                             }
-                        }
+                        }*/
+
+
+
                         progressBar_total.SetValueInvoke(progressBar_total.Value + 1);
                     }
                 }
                 else if(conv.TipoConversione==ConversinType.Mai)
                 {
-                    foreach (Tuple<String, String> t in conv.SourceDestination)
+                    //Eseguo solo la copia dei file 
+
+                    /*foreach (Tuple<ConvertionEntity, ConvertionEntity> t in conv.SourceDestination)
                     {
                         textBox_source.SetTextInvoke(t.Item1);
                         textBox_destination.SetTextInvoke(t.Item2);
                         SystemService.CopySecure(t.Item1, t.Item2, conv.OverrideIfExist, (double p, ref bool f) => { progressBar_single.SetValueInvoke((int)p); });
                         progressBar_total.SetValueInvoke(progressBar_total.Value + 1);
-                    }
+                    }*/
                 }
                 else if(conv.TipoConversione==ConversinType.Sempre)
                 {
-                    foreach (Tuple<String, String> t in conv.SourceDestination)
+
+                    //Forzo la conversione dei file
+
+                    /*foreach (Tuple<String, String> t in conv.SourceDestination)
                     {
                         while (Pause)
                             Thread.Sleep(100);
@@ -136,7 +150,9 @@ namespace MusicLibraryManager.GUI.Forms
                             Error.Add(new Tuple<string, string, FFmpegError>(t.Item1, t.Item2, FFmpegError.DestFolderNotFound));
 
                         progressBar_total.SetValueInvoke(progressBar_total.Value + 1);
-                    }
+                    }*/
+
+
                 }
                 
                
@@ -202,17 +218,17 @@ namespace MusicLibraryManager.GUI.Forms
 
     public class ConversionParameter
     {
-        public ConversionParameter(ListPlus<Tuple<String, String>> SourceDestination, ConversinType TipoConversione, FFmpegConversionEndFormat ConvertiIn ,bool OverrideIfExist=true)
+        public ConversionParameter(ListPlus<Tuple<ConvertionEntity, ConvertionEntity>> SourceDestination, ConversinType TipoConversione, FFMpegMediaMetadataMp3 ConvertiIn ,bool OverrideIfExist=true)
         {
             this.SourceDestination = SourceDestination;
             this.OverrideIfExist = OverrideIfExist;
             this.TipoConversione = TipoConversione;
             this.ConvertiIn = ConvertiIn;
         }
-        public ListPlus<Tuple<String, String>> SourceDestination;
+        public ListPlus<Tuple<ConvertionEntity, ConvertionEntity>> SourceDestination;
         public bool OverrideIfExist { get; set; }
         public ConversinType TipoConversione { get; set; }
-        public FFmpegConversionEndFormat ConvertiIn { get; set; }
+        public FFMpegMediaMetadataMp3 ConvertiIn { get; set; }
     }
 
     

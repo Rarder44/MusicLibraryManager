@@ -1,10 +1,19 @@
-﻿- creazione FFmpegMetadataMp3 - FFmpegMetadataFlac (esteso da FFmpegMetadata) che implementa
-	- MP3: "sovrascrittura del bitrate" 
-	- FLAC: Implementare i Bit, e Hz Campionatura
+﻿- Modifico la FFmpeg per convertire i tipi di media  ( con passaggio di parametri )
+	mp3 to flac
+	mp3 to wav
 
-FFMpeg -> GetMetadata  deve analizzare gli stream audio ( il primo che incontra ) 
+	flac to mp3 
+	flac to wav
 
+	wav to mp3
+	wav to flac
+	
 
+	
+	
+
+- sistemare caricamento Index File al primo avvio
+- Sistemare caricamento Index File quando cambi la cartella sorgente ( non viene avviata la GUI! ) 
 
 
 - migliorare graficamente IndexFileForm

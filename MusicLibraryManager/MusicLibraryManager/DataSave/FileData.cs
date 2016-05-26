@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace MusicLibraryManager.DataSave
 {
+   
     [JsonObject(MemberSerialization.OptIn)]
     class FileData
     {

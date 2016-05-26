@@ -6,8 +6,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+
+
+
+
 namespace MusicLibraryManager
 {
+
+
     public class MyAddittionalData:ICloneablePlus
     {
         public bool Selezionato;

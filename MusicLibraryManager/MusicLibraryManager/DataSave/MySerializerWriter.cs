@@ -1,4 +1,5 @@
 ﻿using ExtendCSharp.Services;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -16,8 +17,8 @@ namespace MusicLibraryManager.DataSave
         static public void Serialize(Object o, String Path)
         {
             /*File.WriteAllText(Path, Json.Serialize(o));*/
-
-            File.WriteAllText(Path, ZipService.Zip(Json.Serialize(o)));            
+                
+            File.WriteAllText(Path, ZipService.Zip(Json.Serialize(o)));          
 
         }
         static public  T Deserialize<T>(String Path)
@@ -25,7 +26,7 @@ namespace MusicLibraryManager.DataSave
             /*if (File.Exists(Path))
                 return Json.Deserialize<T>(File.ReadAllText(Path));
 
-            return default(T);    */
+            return default(T);   */ 
 
             if (File.Exists(Path))
                 return Json.Deserialize<T>(ZipService.UnZip( File.ReadAllText(Path)));
