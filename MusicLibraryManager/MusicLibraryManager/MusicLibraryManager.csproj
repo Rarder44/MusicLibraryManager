@@ -207,6 +207,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Icon.ico" />
+    <None Include="metaflac.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <Content Include="TODO.txt" />
     <None Include="Resources\folder-icon-512x5121.png" />
     <None Include="Resources\plus-31216_640.png" />
