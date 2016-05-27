@@ -29,6 +29,20 @@ namespace MusicLibraryManager
             }
         }
 
+        [JsonProperty]
+        String _PathMetaflac = "metaflac.exe";
+        public String PathMetaflac
+        {
+            get { return _PathMetaflac; }
+            set
+            {
+                if (_PathMetaflac == value)
+                    return;
+                _PathMetaflac = value;
+                cv |= ChangedVar.PathMetaflac;
+            }
+        }
+
 
         [JsonProperty]
         String _PathMedia = null;
@@ -117,6 +131,7 @@ namespace MusicLibraryManager
         PathMedia=2,
         Extensions=4,
         IndexFileFormCloseFormAutomatically = 8,
+        PathMetaflac=16
 
     }
 }

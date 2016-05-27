@@ -58,9 +58,10 @@ namespace MusicLibraryManager.GUI.Forms
             {
                 if (File.Exists(ofd.FileName))
                 {
-                    if(FFmpeg.Initialize(ofd.FileName))
+                    if(FFmpeg.CheckValidFFmpeg(ofd.FileName))
                     {
                         textBox_ffmpeg.Text = ofd.FileName;
+                        FFmpeg.Initialize(ofd.FileName, GlobalVar.ApplicationOption.PathMetaflac);
                     }
                     else
                     {

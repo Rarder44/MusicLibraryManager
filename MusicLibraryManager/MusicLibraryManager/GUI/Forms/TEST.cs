@@ -23,7 +23,7 @@ namespace MusicLibraryManager.GUI.Forms
 
         private void button1_Click(object sender, EventArgs e)
         {
-            FFmpeg.Initialize(@"C:\Program Files (x86)\ffmpeg\ffmpeg.exe");
+            FFmpeg.Initialize(@"C:\Program Files (x86)\ffmpeg\ffmpeg.exe","metaflac.exe");
 
             /*FileData d = FileService.ReadFile("test.txt");
             if (d.Type == FileDataType.IndexFile)
@@ -40,7 +40,7 @@ namespace MusicLibraryManager.GUI.Forms
             lo.RestrictExtension.AddToLower("flac");
             lo.RestrictExtension.AddToLower("mp3");
 
-            FFmpeg.Initialize(@"C:\Program Files (x86)\ffmpeg\ffmpeg.exe");
+            FFmpeg.Initialize(@"C:\Program Files (x86)\ffmpeg\ffmpeg.exe", "metaflac.exe");
             //IndexFile I = 
           
             IndexFile i = new IndexFile();

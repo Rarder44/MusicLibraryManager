@@ -247,13 +247,13 @@ namespace MusicLibraryManager.GUI.Forms
                 }
                 else if((var & ChangedVar.PathFFmpeg) == ChangedVar.PathFFmpeg)
                 {
-                    FFmpeg.Initialize(GlobalVar.ApplicationOption.PathFFmpeg);
+                    FFmpeg.Initialize(GlobalVar.ApplicationOption.PathFFmpeg,GlobalVar.ApplicationOption.PathMetaflac);
                 }
             };
 
 
-            if (GlobalVar.ApplicationOption.PathFFmpeg != null)
-                FFmpeg.Initialize(GlobalVar.ApplicationOption.PathFFmpeg);
+            if (GlobalVar.ApplicationOption.PathFFmpeg != null && GlobalVar.ApplicationOption.PathMetaflac!=null)
+                FFmpeg.Initialize(GlobalVar.ApplicationOption.PathFFmpeg, GlobalVar.ApplicationOption.PathMetaflac);
 
         }
 
