@@ -5,16 +5,15 @@
 	- implementare "effetti grafici" ( slide del pannello nella direzione selezionata)
 
 
+
 - Modifico la FFmpeg per convertire i tipi di media  ( con passaggio di parametri )
-	mp3 to flac
 	mp3 to wav
 
-	flac to mp3 
 	flac to wav
 
 	wav to mp3
 	wav to flac
-	
+- TESTARE le conversioni! ( e il ConvertTo )
 
 	
 	
