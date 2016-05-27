@@ -342,6 +342,8 @@ namespace MusicLibraryManager
                  {
                     
                      IFForm.ShowDialog();
+                     IFForm.CloseInvoke();
+                     IFForm = null;
                  });
                 GUIThread.Start();
                 return true;
@@ -360,6 +362,7 @@ namespace MusicLibraryManager
             {
                 IFForm.CloseInvoke();
                 GUIThread.Abort();
+                IFForm = null;
             } 
         }
 

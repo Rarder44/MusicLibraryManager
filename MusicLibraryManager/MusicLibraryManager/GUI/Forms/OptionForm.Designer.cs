@@ -42,6 +42,7 @@
             this.label3 = new System.Windows.Forms.Label();
             this.button4 = new System.Windows.Forms.Button();
             this.textBox_ext = new System.Windows.Forms.TextBox();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -159,11 +160,22 @@
             this.textBox_ext.Size = new System.Drawing.Size(120, 20);
             this.textBox_ext.TabIndex = 5;
             // 
+            // checkBox1
+            // 
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Location = new System.Drawing.Point(15, 328);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(238, 17);
+            this.checkBox1.TabIndex = 6;
+            this.checkBox1.Text = "Chiudi in automatico la finsestra del file indice";
+            this.checkBox1.UseVisualStyleBackColor = true;
+            // 
             // OptionForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(627, 387);
+            this.Controls.Add(this.checkBox1);
             this.Controls.Add(this.textBox_ext);
             this.Controls.Add(this.button4);
             this.Controls.Add(this.listBox1);
@@ -200,5 +212,6 @@
         private System.Windows.Forms.TextBox textBox_ext;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
         private System.Windows.Forms.ToolStripMenuItem asdToolStripMenuItem;
+        private System.Windows.Forms.CheckBox checkBox1;
     }
 }

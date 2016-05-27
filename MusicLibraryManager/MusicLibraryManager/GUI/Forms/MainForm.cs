@@ -198,12 +198,18 @@ namespace MusicLibraryManager.GUI.Forms
         }
         void Index_UpdateAndSave(String PathIndexFile,String PathMediaLibrary = null, FileSystemPlusLoadOption lo = null)
         {
-            if (lo != null)
-                IndexMediaLibrary.LoadOption = lo;
+            if (IndexMediaLibrary == null)
+            {
+                IndexMediaLibrary = new IndexFile();
+            }
 
-            if (PathMediaLibrary == null)
-                IndexMediaLibrary.Update();
-            else
+            if (lo != null)
+            {
+                IndexMediaLibrary.LoadOption = lo;
+            }
+                
+
+            if (PathMediaLibrary != null)
                 IndexMediaLibrary.Update(PathMediaLibrary);
 
             FileService.WriteFile(PathIndexFile, IndexMediaLibrary, FileDataType.IndexFile);
@@ -432,6 +438,10 @@ namespace MusicLibraryManager.GUI.Forms
         {
             OptionForm o = new OptionForm(GlobalVar.ApplicationOption);
             o.ShowDialog();
+            if (GlobalVar.ApplicationOption.ChangedVar != ChangedVar.nul)
+            {
+                new Thread(() => { GlobalVar.ApplicationOption.SomethingChenged(); }).Start();
+            }
         }
 
 

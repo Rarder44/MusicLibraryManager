@@ -12,16 +12,12 @@
 	
 	
 
-- sistemare caricamento Index File al primo avvio
-- Sistemare caricamento Index File quando cambi la cartella sorgente ( non viene avviata la GUI! ) 
 
 
 - migliorare graficamente IndexFileForm
 
 
 
-
-- Aggiungere alla option form la checkbox per la chiusura automatica dell'IndexFileForm 
 
 
 

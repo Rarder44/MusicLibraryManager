@@ -8,6 +8,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -29,6 +30,8 @@ namespace MusicLibraryManager.GUI.Forms
             textBox_ffmpeg.Text = option.PathFFmpeg;
             foreach(string s in option.Extensions)
                 listBox1.Items.Add(s);
+
+            checkBox1.Checked = option.IndexFileFormCloseFormAutomatically;
         }
 
         private void MediaPath_Click(object sender, EventArgs e)
@@ -81,7 +84,9 @@ namespace MusicLibraryManager.GUI.Forms
         }
         private void button4_Click(object sender, EventArgs e)
         {
-            listBox1.Items.Add(textBox_ext.Text.Trim(' ', '.').ToLower());
+            string s = textBox_ext.Text.Trim(' ', '.').ToLower();
+            if(s!="")
+                listBox1.Items.Add(s);
             textBox_ext.Text = "";
         }
         private void asdToolStripMenuItem_Click(object sender, EventArgs e)
@@ -98,13 +103,11 @@ namespace MusicLibraryManager.GUI.Forms
             ListPlus<String> ls = listBox1.Items.ToListPlus<String>();
             option.Extensions.RemoveNotInRange(ls);
             option.Extensions.AddUnique(ls);
-            if (option.ChangedVar != ChangedVar.nul)
-            {
-                option.SomethingChenged();
-            }
+            option.IndexFileFormCloseFormAutomatically = checkBox1.Checked;
 
-                   
             Close();
+      
+            
         }
 
         private void OptionForm_FormClosed(object sender, FormClosedEventArgs e)
