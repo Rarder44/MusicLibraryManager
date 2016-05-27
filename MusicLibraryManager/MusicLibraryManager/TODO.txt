@@ -1,4 +1,11 @@
-﻿- Modifico la FFmpeg per convertire i tipi di media  ( con passaggio di parametri )
+﻿- implementare lo SliderPanel:
+	- un pannello con i comand dx,sx,su,giu ( rinominabili e visualizzabili da costruttore )
+	- il passaggio di una lista di sottopannelli ( interfaccia per definire i metodi base ) 
+	- implementare una logica per gestire la sequenza dei pannelli ( il pannello corrente viene interrogato e sa che pannello richiamare )
+	- implementare "effetti grafici" ( slide del pannello nella direzione selezionata)
+
+
+- Modifico la FFmpeg per convertire i tipi di media  ( con passaggio di parametri )
 	mp3 to flac
 	mp3 to wav
 
