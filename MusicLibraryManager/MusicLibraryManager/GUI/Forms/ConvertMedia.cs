@@ -21,8 +21,12 @@ namespace MusicLibraryManager.GUI.Forms
 
         public bool Pause { get; set; }
         Thread Esecuzione;
-        
 
+
+        public ConvertMedia()
+        {
+            InitializeComponent();
+        }
 
         public ConvertMedia(ConversionParameter cp)
         {

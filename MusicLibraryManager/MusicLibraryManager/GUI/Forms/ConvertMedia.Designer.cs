@@ -99,11 +99,10 @@
         }
 
         #endregion
-
-        private System.Windows.Forms.TextBox textBox_source;
-        private System.Windows.Forms.TextBox textBox_destination;
-        private System.Windows.Forms.ProgressBar progressBar_total;
-        private System.Windows.Forms.TextBox textBox1;
-        private System.Windows.Forms.ProgressBar progressBar_single;
+        public System.Windows.Forms.TextBox textBox_source;
+        public System.Windows.Forms.TextBox textBox_destination;
+        public System.Windows.Forms.ProgressBar progressBar_total;
+        public System.Windows.Forms.ProgressBar progressBar_single;
+        public System.Windows.Forms.TextBox textBox1;
     }
 }

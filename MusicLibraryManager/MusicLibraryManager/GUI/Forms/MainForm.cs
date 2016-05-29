@@ -555,41 +555,91 @@ namespace MusicLibraryManager.GUI.Forms
         }
         private void convertiMP3ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-           /* if (listBox_playlists.SelectedItem is Playlist)
+            ConvertMedia cm = new ConvertMedia();
+
+            new Thread(() =>
             {
-                FolderSelectDialog fsd = new FolderSelectDialog();
-                if (fsd.ShowDialog())
+                cm.ShowDialogInvoke();
+            }).Start();
+
+            new Thread(() =>
+            {
+                
+                if (listBox_playlists.SelectedItemInvoke() is Playlist)
                 {
-                    DialogResult dr = MessageBox.Show("Sovrascrivere eventuali file esistenti?\r\n\r\nSi: il processo Sovrascriverà eventuali file già presenti con lo stesso nome\r\nNo: Il processo VERRA' comunque avviato ma, se un file è già presente nella cartella di Output, questo non verrà sovrascritto\r\nAnnulla: Il processo verrà interrotto", "Conferma Sovrascrittura", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Exclamation);
-                    if (dr == DialogResult.Cancel)
-                        return;
-                    bool OverrideIfExist = dr == DialogResult.Yes ? true : false;
-
-                    String destFolder = fsd.FileName;
-                    Playlist p = (Playlist)listBox_playlists.SelectedItem;
-                    ListPlus<Tuple<ConvertionEntity, ConvertionEntity>> lss = new ListPlus<Tuple<ConvertionEntity, ConvertionEntity>>();
-                    foreach (FileSystemNodePlus<MyAddittionalData> n in  p.FileSystem.Flatten().Where(x=> x.Type==FileSystemNodePlusType.File))
+                    FolderSelectDialog fsd = new FolderSelectDialog();
+                    if (fsd.ShowDialog())
                     {
-                        FileSystemNodePlus<MyAddittionalData> tt =IndexMediaLibrary.RootFileSystem.FindFirst((x) => { return x.AddittionalData.MD5 == n.AddittionalData.MD5; });
-                        if(tt==null)
-                        {
-                            //TODO: non trovato -> gestire la ricerca dei file non trovati
-                        }
-                        else
-                        {
-                            ConvertionEntity Source = new ConvertionEntity(IndexMediaLibrary.RootFileSystem.GetFullPath(tt), tt.AddittionalData.Metadata.MediaMetadata);
+                        DialogResult dr = MessageBox.Show("Sovrascrivere eventuali file esistenti?\r\n\r\nSi: il processo Sovrascriverà eventuali file già presenti con lo stesso nome\r\nNo: Il processo VERRA' comunque avviato ma, se un file è già presente nella cartella di Output, questo non verrà sovrascritto\r\nAnnulla: Il processo verrà interrotto", "Conferma Sovrascrittura", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Exclamation);
+                        if (dr == DialogResult.Cancel)
+                            return;
+                        bool OverrideIfExist = dr == DialogResult.Yes ? true : false;
 
-                            FFMpegMediaMetadataMp3 temp = new FFMpegMediaMetadataMp3(tt.AddittionalData.Metadata.MediaMetadata);
-                            //TODO: da modificare con il parametro passato come Formato finale
-                            temp.BitRateMp3 = BitRateMp3Info.kb320;
-                            ConvertionEntity Dest = new ConvertionEntity(SystemService.Combine(destFolder, SystemService.ChangeExtension(tt.GetFullPath().TrimStart('\\', '/'), "mp3")), temp);
+                        String destFolder = fsd.FileName;
+                        Playlist p = (Playlist)listBox_playlists.SelectedItemInvoke();
 
-                            lss.Add(new Tuple<ConvertionEntity, ConvertionEntity>(Source, Dest));
+
+                        IEnumerable<FileSystemNodePlus<MyAddittionalData>> i = p.FileSystem.Flatten().Where(x => x.Type == FileSystemNodePlusType.File);
+
+                        cm.progressBar_total.SetMaximumInvoke(i.Count());
+                        foreach (FileSystemNodePlus<MyAddittionalData> n in i )
+                        {
+                            FileSystemNodePlus<MyAddittionalData> tt = IndexMediaLibrary.RootFileSystem.FindFirst((x) => { return x.AddittionalData.MD5 == n.AddittionalData.MD5; });
+                            if (tt == null)
+                            {
+                                //TODO: non trovato -> gestire la ricerca dei file non trovati
+                            }
+                            else
+                            {
+                                ConvertionEntity Source = new ConvertionEntity(IndexMediaLibrary.RootFileSystem.GetFullPath(tt), tt.AddittionalData.Metadata.MediaMetadata);
+
+                                FFMpegMediaMetadataMp3 temp = new FFMpegMediaMetadataMp3(tt.AddittionalData.Metadata.MediaMetadata);
+                                //TODO: da modificare con il parametro passato come Formato finale
+                                temp.BitRateMp3 = 320;
+                                temp.SamplingRate = (Source.MediaMetadata is FFMpegMediaMetadataFlac) ? (Source.MediaMetadata as FFMpegMediaMetadataFlac).SamplingRate : (Source.MediaMetadata as FFMpegMediaMetadataMp3).SamplingRate;
+                                if(temp.SamplingRate==SamplingRateInfo.nul)
+                                {
+                                    temp.SamplingRate = SamplingRateInfo._44100;
+                                }
+                                ConvertionEntity Dest = new ConvertionEntity(SystemService.Combine(destFolder, SystemService.ChangeExtension(tt.GetFullPath().TrimStart('\\', '/'), "mp3")), temp);
+
+                                //lss.Add(new Tuple<ConvertionEntity, ConvertionEntity>(Source, Dest));
+
+                                FFmpeg.ConvertTo(Source, Dest, false, true, (st, src, des) =>
+                                {
+                                    if (st == FFmpegStatus.Running)
+                                    {
+                                        cm.textBox_source.SetTextInvoke(src);
+                                        cm.textBox_destination.SetTextInvoke(des);
+                                        cm.progressBar_total.SetValueNoAnimationInvoke(cm.progressBar_total.Value + 1);
+                                        cm.progressBar_single.SetValueNoAnimationInvoke(0);
+                                    }
+
+                                }, (Percent, src, Destination, Error) =>
+                                {
+                                    if (Error == FFmpegError.DestFolderNotFound)
+                                    {
+                                        cm.textBox1.SetTextInvoke("non trovato " + src);
+                                    }
+                                    else
+                                    {
+                                        cm.progressBar_single.SetValueNoAnimationInvoke(Percent);
+                                    }
+
+                                }, false);
+
+                            }
                         }
                     }
-                    FFMpegMediaMetadataMp3 t = new FFMpegMediaMetadataMp3();
-                    t.BitRateMp3 = BitRateMp3Info.kb320;
-                    ConvertMedia CM = new ConvertMedia(new ConversionParameter(lss, ConversinType.SoloDiversi, t, OverrideIfExist));
+                }
+
+            }).Start();
+
+
+            // "F:\Export";
+            
+                   
+                    /*ConvertMedia CM = new ConvertMedia(new ConversionParameter(lss, ConversinType.SoloDiversi, t, OverrideIfExist));
                     CM.OnFFmpegConversionEnd += () =>
                     {
                         if (CM.Error != null && CM.Error.Count != 0)
@@ -599,13 +649,13 @@ namespace MusicLibraryManager.GUI.Forms
                         }
                     };
                     CM.Show();
-                    CM.Start();
-                }
-            }
+                    CM.Start();*/
+                
+            
 
 
             return;
-            */
+            
            /* if (listBox_playlists.SelectedItem is Playlist)
             {
                 FolderSelectDialog fsd = new FolderSelectDialog();
