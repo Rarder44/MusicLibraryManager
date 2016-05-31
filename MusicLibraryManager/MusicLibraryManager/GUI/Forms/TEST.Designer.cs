@@ -48,7 +48,7 @@
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(75, 23);
             this.button2.TabIndex = 1;
-            this.button2.Text = "json test";
+            this.button2.Text = " test";
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
@@ -61,6 +61,7 @@
             this.Controls.Add(this.button1);
             this.Name = "TEST";
             this.Text = "TEST";
+            this.Load += new System.EventHandler(this.TEST_Load);
             this.ResumeLayout(false);
 
         }
