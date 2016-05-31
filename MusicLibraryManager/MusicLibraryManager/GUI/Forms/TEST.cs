@@ -113,7 +113,13 @@ namespace MusicLibraryManager.GUI.Forms
 
         private void TEST_Load(object sender, EventArgs e)
         {
+            SliderForm sp = new SliderForm(SlideFormButton.Right|SlideFormButton.Left);
+            sp.ShowDialog();
+        }
 
+        private void button3_Click(object sender, EventArgs e)
+        {
+           
         }
     }
 
