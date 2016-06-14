@@ -1,6 +1,7 @@
 ﻿using ExtendCSharp;
 using ExtendCSharp.Services;
 using MusicLibraryManager.DataSave;
+using MusicLibraryManager.GUI.Controls.ConvertionPanel;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -113,8 +114,24 @@ namespace MusicLibraryManager.GUI.Forms
 
         private void TEST_Load(object sender, EventArgs e)
         {
-            SliderForm sp = new SliderForm(SlideFormButton.Right|SlideFormButton.Left);
+
+            //creo i nodi
+            SliderNode fn = new SliderNode();
+            fn.panel = new FirstPanel();
+
+            SliderNode sn = new SliderNode();
+            sn.panel = new SecondPanel();
+
+
+            // assegno il giro dei nodi
+            fn.SetNext(SlideFormButton.Right, sn);
+            sn.SetNext(SlideFormButton.Left, fn);
+
+
+            // creo lo slider e gli passo il primo nodo da caricare
+            SliderForm sp = new SliderForm(fn);
             sp.ShowDialog();
+            Close();
         }
 
         private void button3_Click(object sender, EventArgs e)

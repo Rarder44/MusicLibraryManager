@@ -83,6 +83,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataSave\FileService.cs" />
+    <Compile Include="GUI\Controls\ConvertionPanel\FirstPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GUI\Controls\ConvertionPanel\SecondPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="GUI\Controls\FileBrowser.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -150,6 +156,12 @@
     <Compile Include="DataSave\FileData.cs" />
     <Compile Include="Services\ConvertServices.cs" />
     <Compile Include="Services\MetadataIncluder.cs" />
+    <EmbeddedResource Include="GUI\Controls\ConvertionPanel\FirstPanel.resx">
+      <DependentUpon>FirstPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Controls\ConvertionPanel\SecondPanel.resx">
+      <DependentUpon>SecondPanel.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="GUI\Controls\FileBrowser.resx">
       <DependentUpon>FileBrowser.cs</DependentUpon>
     </EmbeddedResource>
