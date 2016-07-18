@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MusicLibraryManager", "MusicLibraryManager\MusicLibraryManager.csproj", "{331F9D0B-E596-4D3C-A0EA-0395250B0089}"
 EndProject
@@ -11,16 +11,21 @@ Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
+		Test|Any CPU = Test|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{331F9D0B-E596-4D3C-A0EA-0395250B0089}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{331F9D0B-E596-4D3C-A0EA-0395250B0089}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{331F9D0B-E596-4D3C-A0EA-0395250B0089}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{331F9D0B-E596-4D3C-A0EA-0395250B0089}.Release|Any CPU.Build.0 = Release|Any CPU
+		{331F9D0B-E596-4D3C-A0EA-0395250B0089}.Test|Any CPU.ActiveCfg = Test|Any CPU
+		{331F9D0B-E596-4D3C-A0EA-0395250B0089}.Test|Any CPU.Build.0 = Test|Any CPU
 		{9199318B-0F63-4FAF-A0F1-823EF0072EEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9199318B-0F63-4FAF-A0F1-823EF0072EEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9199318B-0F63-4FAF-A0F1-823EF0072EEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9199318B-0F63-4FAF-A0F1-823EF0072EEA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9199318B-0F63-4FAF-A0F1-823EF0072EEA}.Test|Any CPU.ActiveCfg = Debug|Any CPU
+		{9199318B-0F63-4FAF-A0F1-823EF0072EEA}.Test|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

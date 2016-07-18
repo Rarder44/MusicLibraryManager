@@ -242,11 +242,13 @@ namespace MusicLibraryManager.GUI.Forms
             GlobalVar.ApplicationOption.OnSomethingChenged += (ChangedVar var) =>
             {
                 FileService.WriteFile(Path, GlobalVar.ApplicationOption, FileDataType.Option);
-                if ((var & ChangedVar.PathMedia) == ChangedVar.PathMedia || (var & ChangedVar.Extensions) == ChangedVar.Extensions)
+
+                
+                if (var.HasFlag(ChangedVar.PathMedia) || var.HasFlag(ChangedVar.Extensions))
                 {
                     Index_UpdateAndSave(GlobalVar.PathIndexFile, GlobalVar.ApplicationOption.PathMedia, GlobalVar.ApplicationOption.LoadMediaOption());
                 }
-                else if((var & ChangedVar.PathFFmpeg) == ChangedVar.PathFFmpeg)
+                else if(var.HasFlag(ChangedVar.PathFFmpeg))
                 {
                     FFmpeg.Initialize(GlobalVar.ApplicationOption.PathFFmpeg,GlobalVar.ApplicationOption.PathMetaflac);
                 }

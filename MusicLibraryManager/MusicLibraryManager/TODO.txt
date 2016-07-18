@@ -1,4 +1,8 @@
-﻿- implementare lo SliderPanel:
+﻿- Creare un form per la creazione delle ConvertionOption
+- Creare la classe che gestisce la conversione data una ConvertionOption
+- Creare un form per la conversione, "Guidato" dalla classe precendete 
+
+- implementare lo SliderPanel:
 	- un pannello con i comand dx,sx,su,giu ( rinominabili e visualizzabili da costruttore )
 	- il passaggio di una lista di sottopannelli ( interfaccia per definire i metodi base ) 
 	- implementare una logica per gestire la sequenza dei pannelli ( il pannello corrente viene interrogato e sa che pannello richiamare )

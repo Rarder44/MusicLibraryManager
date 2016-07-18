@@ -1,6 +1,7 @@
 ﻿using ExtendCSharp;
 using ExtendCSharp.Services;
 using MusicLibraryManager.DataSave;
+using MusicLibraryManager.GUI.Controls.ConvertionPanel;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -63,10 +64,79 @@ namespace MusicLibraryManager.GUI.Forms
 
         private void button2_Click(object sender, EventArgs e)
         {
-           /* Wrapper w = new Wrapper(new FFMpegMediaMetadataFlac());
-            String ser = Json.Serialize(w);
-            Wrapper tret = Json.Deserialize<Wrapper>(ser);*/
+            FFmpeg.Initialize(@"C:\Program Files (x86)\ffmpeg\ffmpeg.exe", "metaflac.exe");
 
+            FileSystemPlusLoadOption lo = new FileSystemPlusLoadOption();
+            lo.IgnoreException = true;
+            lo.RestrictExtensionEnable = true;
+            lo.RestrictExtension.AddToLower("flac");
+            lo.RestrictExtension.AddToLower("mp3");
+
+
+            IndexFile i = new IndexFile();
+            i.OnEnd += I_OnEnd2;
+            i.BeginLoadFromPath(@"D:\Musica\DJ CAVA Mashups\", lo);
+
+
+            
+            /* Wrapper w = new Wrapper(new FFMpegMediaMetadataFlac());
+             String ser = Json.Serialize(w);
+             Wrapper tret = Json.Deserialize<Wrapper>(ser);*/
+
+            //D:\Musica\DJ CAVA Mashups
+
+        }
+
+        private void I_OnEnd2(IndexFile i)
+        {
+
+            FileSystemNodePlus<MyAddittionalData> n = i.RootFileSystem.FindFirst((x) => { return x.Name.StartsWith("Summertime"); });
+
+            ConvertionEntity s = new ConvertionEntity(i.RootFileSystem.GetFullPath(n), n.AddittionalData.Metadata.MediaMetadata);
+            FFMpegMediaMetadataFlac mm = new FFMpegMediaMetadataFlac(n.AddittionalData.Metadata.MediaMetadata);
+            mm.SamplingRate = SamplingRateInfo._44100;
+            mm.Bit = BitInfo._24;
+            ConvertionEntity d = new ConvertionEntity(SystemService.ChangeExtension(i.RootFileSystem.GetFullPath(n), "flac"),mm);
+            
+            
+            FFmpeg.ConvertTo(s, d, true, true, 
+                (status, source, dest) => 
+                {
+                    if (status == FFmpegStatus.Stop)
+                        MessageBox.Show(source + " -> " + dest + "\r\n FINE!");
+            }, 
+                (percent, source, dest, error) => 
+                {
+
+            }, false);
+
+        }
+
+        private void TEST_Load(object sender, EventArgs e)
+        {
+
+            //creo i nodi
+            SliderNode fn = new SliderNode();
+            fn.panel = new FirstPanel();
+
+            SliderNode sn = new SliderNode();
+            sn.panel = new SecondPanel();
+
+
+            // assegno il giro dei nodi
+            fn.SetNext(SlideFormButton.Right, sn);
+            sn.SetNext(SlideFormButton.Left, fn);
+
+
+            // creo lo slider e gli passo il primo nodo da caricare
+            SliderForm sp = new SliderForm(fn);
+            sp.ShowDialog();
+            Close();
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+           
         }
     }
 

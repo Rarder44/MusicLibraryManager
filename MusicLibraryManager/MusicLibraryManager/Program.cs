@@ -18,8 +18,13 @@ namespace MusicLibraryManager
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new MainForm( args));
-            //Application.Run(new TEST());
+            #if TEST
+                Application.Run(new TEST());
+            #else
+                Application.Run(new MainForm( args));
+            #endif
+            
+
         }
     }
 }
