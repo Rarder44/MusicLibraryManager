@@ -13,14 +13,13 @@ using static ExtendCSharp.Extension;
 
 namespace MusicLibraryManager
 {
-    public delegate void EndIndexFile(IndexFile i);
 
     public class IndexFile
     {
         #region Eventi
 
-        public event EndIndexFile OnEnd;
-        public event EndIncorporaMetadata OnEndMetadata;
+        public event Action<IndexFile> OnEnd;
+        public event Action OnEndMetadata;
         public event IncorporaMetadataNodeStartProcessing OnNodeStartProcessing;
         public event IncorporaMetadataNodeProcessed OnProcessedMetadata;
         public event MD5BlockTransformEventHandler OnPercentChangeMetadata;
@@ -98,7 +97,7 @@ namespace MusicLibraryManager
         {
             get
             {
-                return GUI && IFForm != null && IFForm.Status == IndexFileFormStatus.Open;
+                return GUI && IFForm != null && IFForm.Status == FormStatus.Open;
             }
         }
 
@@ -476,12 +475,15 @@ namespace MusicLibraryManager
                     FileSystemNodePlus<MyAddittionalData> n = FileSystem.GetNodeFromPath(s);
                     if (n == null)
                     {
-                        //file nuovo
+                        //se il file non viene trovato vuol dire che è nuovo e lo aggiungo al temp
                         Temp.CreateNode(s.TrimEnd('\\', '/').SplitAndGetLast("\\", "/"), FileSystemNodePlusType.File);
                     }
-                    else if (n.AddittionalData.Size == SystemService.FileSize(s))
+                    else if (n.AddittionalData.Size == SystemService.FileSize(s) && n.AddittionalData.MD5!=null && n.Type == (SystemService.FileExist(s)?FileSystemNodePlusType.File:FileSystemNodePlusType.Directory))
                     {
-                        // il file non è stato modificato e lo seleziono.
+                        // il file non è stato modificato ( dimensine ) 
+                        // ha l'md5 
+                        // che il tipo corrisponda ( per errori di vecchi Index
+                        // lo seleziono ( vuol dire che lo tengo ) .
                         n.AddittionalData.Selezionato = true;
                     }
                     else // nel caso in cui il file è stato modificato

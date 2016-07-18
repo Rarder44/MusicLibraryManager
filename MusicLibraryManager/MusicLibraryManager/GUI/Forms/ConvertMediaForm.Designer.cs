@@ -1,6 +1,6 @@
 ﻿namespace MusicLibraryManager.GUI.Forms
 {
-    partial class ConvertMedia
+    partial class ConvertMediaForm
     {
         /// <summary>
         /// Required designer variable.
@@ -77,7 +77,7 @@
             this.progressBar_single.Size = new System.Drawing.Size(556, 23);
             this.progressBar_single.TabIndex = 3;
             // 
-            // ConvertMedia
+            // ConvertMediaForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -89,10 +89,11 @@
             this.Controls.Add(this.textBox_source);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "ConvertMedia";
+            this.Name = "ConvertMediaForm";
             this.ShowIcon = false;
             this.Text = "ConvertMedia";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ConvertMedia_FormClosing);
+            this.Load += new System.EventHandler(this.ConvertMediaForm_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

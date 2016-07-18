@@ -11,9 +11,11 @@ using static ExtendCSharp.Extension;
 
 namespace MusicLibraryManager.Services
 {
+
+
     class MetadataIncluderServices
     {
-        public event EndIncorporaMetadata OnEnd;
+        public event Action OnEnd;
         public event IncorporaMetadataNodeStartProcessing OnNodeStartProcessing;
         public event IncorporaMetadataNodeProcessed OnNodeProcessed;
         public event ProgressChangedSingleMD5 OnProgressChangedSingleMD5;
@@ -190,7 +192,6 @@ namespace MusicLibraryManager.Services
 
     }
 
-    public delegate void EndIncorporaMetadata();
     public delegate void IncorporaMetadataNodeStartProcessing(FileSystemNodePlus<MyAddittionalData> nodo, String Path);
     public delegate void IncorporaMetadataNodeProcessed(FileSystemNodePlus<MyAddittionalData> nodo,String Path, MetadataIncluderError Err);
     public delegate void ProgressChangedSingleMD5(double percent);

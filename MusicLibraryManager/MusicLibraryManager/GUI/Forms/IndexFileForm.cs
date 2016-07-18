@@ -15,8 +15,8 @@ namespace MusicLibraryManager.GUI.Forms
     {
         #region Variabili
 
-        private IndexFileFormStatus _Status;
-        public IndexFileFormStatus Status
+        private FormStatus _Status;
+        public FormStatus Status
         {
             get { return _Status; }
         }
@@ -27,7 +27,7 @@ namespace MusicLibraryManager.GUI.Forms
 
         public IndexFileForm()
         {
-            InitializeComponent();;
+            InitializeComponent();
             if (lo != null)
                 checkBox_CloseAutomatic.Checked = lo.IndexFileFormCloseFormAutomatically;
         }
@@ -112,11 +112,11 @@ namespace MusicLibraryManager.GUI.Forms
 
         private void IndexFileForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            _Status = IndexFileFormStatus.Closed;
+            _Status = FormStatus.Closed;
         }
         private void IndexFileForm_Load(object sender, EventArgs e)
         {
-            _Status = IndexFileFormStatus.Open;
+            _Status = FormStatus.Open;
         }
 
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
@@ -136,10 +136,6 @@ namespace MusicLibraryManager.GUI.Forms
         }
 
     }
-    public enum IndexFileFormStatus
-    {
-        Open,
-        Closed,
-    }
+
 
 }

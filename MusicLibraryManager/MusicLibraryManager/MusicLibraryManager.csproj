@@ -72,6 +72,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConvertMedia.cs" />
     <Compile Include="DataSave\FileService.cs" />
     <Compile Include="GUI\Controls\FileBrowser.cs">
       <SubType>UserControl</SubType>
@@ -85,17 +86,18 @@
     <Compile Include="GUI\Controls\SingleFile.Designer.cs">
       <DependentUpon>SingleFile.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\Forms\Common.cs" />
     <Compile Include="GUI\Forms\CountSpace.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="GUI\Forms\CountSpace.Designer.cs">
       <DependentUpon>CountSpace.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\Forms\ConvertMedia.cs">
+    <Compile Include="GUI\Forms\ConvertMediaForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="GUI\Forms\ConvertMedia.Designer.cs">
-      <DependentUpon>ConvertMedia.cs</DependentUpon>
+    <Compile Include="GUI\Forms\ConvertMediaForm.Designer.cs">
+      <DependentUpon>ConvertMediaForm.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\Forms\IndexFileForm.cs">
       <SubType>Form</SubType>
@@ -149,8 +151,8 @@
     <EmbeddedResource Include="GUI\Forms\CountSpace.resx">
       <DependentUpon>CountSpace.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\Forms\ConvertMedia.resx">
-      <DependentUpon>ConvertMedia.cs</DependentUpon>
+    <EmbeddedResource Include="GUI\Forms\ConvertMediaForm.resx">
+      <DependentUpon>ConvertMediaForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Forms\IndexFileForm.resx">
       <DependentUpon>IndexFileForm.cs</DependentUpon>
