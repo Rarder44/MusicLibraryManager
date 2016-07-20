@@ -662,6 +662,11 @@ namespace MusicLibraryManager.GUI.Forms
             ReloadCurrentFileSystem();
         }
 
+        private void textBoxPlus1_TextChanged(object sender, EventArgs e)
+        {
+            fileBrowser1.ScrollTo("^" + (sender as TextBoxPlus).Text,System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+        }
+
         /* private void convertitoMP3ToolStripMenuItem_Click(object sender, EventArgs e)
          {
              if (listBox_playlists.SelectedItem is Playlist)

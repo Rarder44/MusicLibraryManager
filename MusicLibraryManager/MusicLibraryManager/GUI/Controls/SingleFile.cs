@@ -80,7 +80,7 @@ namespace MusicLibraryManager.GUI.Controls
 
         #region Delegati ed Eventi
 
-        public delegate void SingleFileDoubleClick(FileSystemNodePlus<MyAddittionalData> Nodo);
+        public delegate void SingleFileDoubleClick(SingleFile sender,FileSystemNodePlus<MyAddittionalData> Nodo);
         public event SingleFileDoubleClick OnSingleFileDoubleClick;
 
         public delegate void SingleFileRightClick(FileSystemNodePlus<MyAddittionalData> Nodo);
@@ -103,6 +103,7 @@ namespace MusicLibraryManager.GUI.Controls
         public delegate void SingleFileNodoChangeName(SingleFile Sender,FileSystemNodePlus<MyAddittionalData> Nodo, String NewName);
         public event SingleFileNodoChangeName OnSingleFileNodoChangeName;
 
+        public event KeyEventHandler OnSingleFileKeyDown;
 
         #endregion
 
@@ -138,6 +139,8 @@ namespace MusicLibraryManager.GUI.Controls
                 cc.MouseDown += SingleFile_MouseDown;
                 cc.MouseUp += SingleFile_MouseUp;
                 cc.MouseMove += SingleFile_MouseMove;
+                cc.KeyDown += SingleFile_KeyDown;
+
             }
             
 
@@ -168,6 +171,7 @@ namespace MusicLibraryManager.GUI.Controls
             Status = SingleFileStatus.Normal;
         }
 
+       
 
         #endregion
 
@@ -249,7 +253,7 @@ namespace MusicLibraryManager.GUI.Controls
         private void SingleFile_MouseDoubleClick(object sender, MouseEventArgs e)
         {
             if(e.Button==MouseButtons.Left && OnSingleFileDoubleClick != null)
-                OnSingleFileDoubleClick(_Nodo);
+                OnSingleFileDoubleClick(this,_Nodo);
         }
         private void SingleFile_MouseClick(object sender, MouseEventArgs e)
         {
@@ -266,6 +270,10 @@ namespace MusicLibraryManager.GUI.Controls
                         OnSingleFileRightClick(sender._Cast<Control>().Parent._Cast<SingleFile>()._Nodo);
             }
                 
+        }
+        private void SingleFile_KeyDown(object sender, KeyEventArgs e)
+        {
+            OnSingleFileKeyDown?.Invoke(sender, e);
         }
 
         #endregion

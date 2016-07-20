@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using ExtendCSharp;
+using System.Text.RegularExpressions;
 
 namespace MusicLibraryManager.GUI.Controls
 {
@@ -36,6 +37,9 @@ namespace MusicLibraryManager.GUI.Controls
 
         public FileBrowserType Type = FileBrowserType.Root;
         public List<Playlist> lp = null;
+
+
+      
 
         #endregion
 
@@ -104,6 +108,8 @@ namespace MusicLibraryManager.GUI.Controls
             s.OnSingleFileMouseUp += S_OnSingleFileMouseUp;
             s.OnSingleFileMouseMove += S_OnSingleFileMouseMove;
             s.OnSingleFileNodoChangeName += S_OnSingleFileNodoChangeName;
+            s.OnSingleFileKeyDown += S_OnSingleFileKeyDown;
+
 
             if(OverrideName!=null)
                 s.ShowedName = OverrideName;
@@ -118,6 +124,9 @@ namespace MusicLibraryManager.GUI.Controls
 
             Controls.Add(s);
         }
+
+        
+
         public SingleFile GetSingleFileFromNode(FileSystemNodePlus<MyAddittionalData> Node)
         {
             foreach(SingleFile s in Controls)
@@ -298,10 +307,24 @@ namespace MusicLibraryManager.GUI.Controls
             
         }
 
-        private void S_OnSingleFileDoubleClick(FileSystemNodePlus<MyAddittionalData> Nodo)
+        private void S_OnSingleFileDoubleClick(SingleFile Sender,FileSystemNodePlus<MyAddittionalData> Nodo)
         {
             if (Nodo.Type == FileSystemNodePlusType.Directory)
-                LoadNode(Nodo);
+            {
+                if (Sender.ShowedName == "..")
+                {
+                    String s = CurrentNode.Name;
+                    LoadNode(Nodo);
+                    ScrollTo("^" + s);
+                }
+                else
+                {
+                    LoadNode(Nodo);
+                }
+                
+                
+            }
+
         }
         private void S_OnSingleFileRightClick(FileSystemNodePlus<MyAddittionalData> Nodo)
         {
@@ -448,6 +471,77 @@ namespace MusicLibraryManager.GUI.Controls
         {
             if(DownSingleFile!=null)
                 DownSingleFile.Status = SingleFileStatus.Rename;
+        }
+
+
+
+        /// <summary>
+        /// Scrolla nel punto in cui la Regex viene soddisfatta
+        /// </summary>
+        /// <param name="Pattern"></param>
+        public void ScrollTo(String PatternRegex, RegexOptions o= RegexOptions.None)
+        {
+            Regex r = new Regex(PatternRegex,o);
+
+            foreach (Control c in Controls)
+            {
+                if(c is SingleFile)
+                {
+                    if(r.IsMatch((c as SingleFile).Nodo.Name))
+                    {
+                        ScrollTo(c.Location);
+                        break;
+                    }
+                }
+            }
+        }
+        /// <summary>
+        /// Scrolla nel punto specificato
+        /// </summary>
+        /// <param name="p"></param>
+        public void ScrollTo(Point p)
+        {
+            AutoScrollPosition = p.Sub(AutoScrollPosition);
+        }
+
+
+
+        private void S_OnSingleFileKeyDown(object sender, KeyEventArgs e)
+        {
+            FileBrowser_KeyDown(sender, e);
+        }
+
+        String CurrentSearchString = "";
+        TimeSpanPlus CurrentTime = null;
+        private void FileBrowser_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (CurrentTime == null)
+            {
+                CurrentSearchString = "^"+e.KeyCode.ToString();
+                CurrentTime = TimeSpanPlus.Now;
+            }
+            else
+            {
+                TimeSpanPlus Old = CurrentTime;
+                CurrentTime= TimeSpanPlus.Now;
+                if ((CurrentTime - Old).TotalSeconds < 2)
+                {
+                    CurrentSearchString += e.KeyCode.ToString();
+                }
+                else
+                {
+                    CurrentSearchString = "^" + e.KeyCode.ToString();
+                }
+            }
+
+            ScrollTo(CurrentSearchString,RegexOptions.IgnoreCase);
+        }
+
+
+
+        protected override System.Drawing.Point ScrollToControl(Control activeControl)
+        {
+            return DisplayRectangle.Location;
         }
     }
 
