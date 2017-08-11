@@ -1,4 +1,7 @@
 ﻿using ExtendCSharp;
+using ExtendCSharp.Controls;
+using ExtendCSharp.ExtendedClass;
+using ExtendCSharp.Forms;
 using ExtendCSharp.Services;
 using MusicLibraryManager.DataSave;
 using MusicLibraryManager.GUI.Controls.ConvertionPanel;
@@ -24,7 +27,8 @@ namespace MusicLibraryManager.GUI.Forms
 
         private void button1_Click(object sender, EventArgs e)
         {
-            FFmpeg.Initialize(@"C:\Program Files (x86)\ffmpeg\ffmpeg.exe","metaflac.exe");
+            FFmpeg fs = ServicesManager.Get<FFmpeg>();
+            fs.Initialize(@"C:\Program Files (x86)\ffmpeg\ffmpeg.exe","metaflac.exe");
 
             /*FileData d = FileService.ReadFile("test.txt");
             if (d.Type == FileDataType.IndexFile)
@@ -41,7 +45,7 @@ namespace MusicLibraryManager.GUI.Forms
             lo.RestrictExtension.AddToLower("flac");
             lo.RestrictExtension.AddToLower("mp3");
 
-            FFmpeg.Initialize(@"C:\Program Files (x86)\ffmpeg\ffmpeg.exe", "metaflac.exe");
+            fs.Initialize(@"C:\Program Files (x86)\ffmpeg\ffmpeg.exe", "metaflac.exe");
             //IndexFile I = 
           
             IndexFile i = new IndexFile();
@@ -64,7 +68,8 @@ namespace MusicLibraryManager.GUI.Forms
 
         private void button2_Click(object sender, EventArgs e)
         {
-            FFmpeg.Initialize(@"C:\Program Files (x86)\ffmpeg\ffmpeg.exe", "metaflac.exe");
+            FFmpeg fs = ServicesManager.Get<FFmpeg>();
+            fs.Initialize(@"C:\Program Files (x86)\ffmpeg\ffmpeg.exe", "metaflac.exe");
 
             FileSystemPlusLoadOption lo = new FileSystemPlusLoadOption();
             lo.IgnoreException = true;
@@ -89,6 +94,8 @@ namespace MusicLibraryManager.GUI.Forms
 
         private void I_OnEnd2(IndexFile i)
         {
+            SystemService ss = ServicesManager.Get<SystemService>();
+            FFmpeg fs = ServicesManager.Get<FFmpeg>();
 
             FileSystemNodePlus<MyAddittionalData> n = i.RootFileSystem.FindFirst((x) => { return x.Name.StartsWith("Summertime"); });
 
@@ -96,10 +103,10 @@ namespace MusicLibraryManager.GUI.Forms
             FFMpegMediaMetadataFlac mm = new FFMpegMediaMetadataFlac(n.AddittionalData.Metadata.MediaMetadata);
             mm.SamplingRate = SamplingRateInfo._44100;
             mm.Bit = BitInfo._24;
-            ConvertionEntity d = new ConvertionEntity(SystemService.ChangeExtension(i.RootFileSystem.GetFullPath(n), "flac"),mm);
+            ConvertionEntity d = new ConvertionEntity(ss.ChangeExtension(i.RootFileSystem.GetFullPath(n), "flac"),mm);
             
             
-            FFmpeg.ConvertTo(s, d, true, true, 
+            fs.ConvertTo(s, d, true, true, 
                 (status, source, dest) => 
                 {
                     if (status == FFmpegStatus.Stop)

@@ -1,5 +1,7 @@
 ﻿using ExtendCSharp;
+using ExtendCSharp.ExtendedClass;
 using ExtendCSharp.Services;
+using MusicLibraryManager.GUI.Forms;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -7,13 +9,15 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using static ExtendCSharp.Extension;
+using ExtendCSharp.Interfaces;
 
 namespace MusicLibraryManager.Services
 {
 
 
-    class MetadataIncluderServices
+    public class MetadataIncluderServices
     {
         public event Action OnEnd;
         public event IncorporaMetadataNodeStartProcessing OnNodeStartProcessing;
@@ -23,6 +27,8 @@ namespace MusicLibraryManager.Services
         Thread Worker;
         bool Completed = false;
         bool _Pause = false;
+        MutexObjectDispatcherServices<Nodo_pathsource> dispatcher;
+
 
         public bool Pause
         {
@@ -46,14 +52,73 @@ namespace MusicLibraryManager.Services
                     _Pause = false;
             }
         }
+        public class PauseCatcher : ICatcher<bool>
+        {
+            MetadataIncluderServices s;
+            public PauseCatcher(MetadataIncluderServices s)
+            {
+                this.s = s;
+            }
+            public bool value
+            {
+                get
+                {
+                    return s._Pause;
+                }
+            }
+        }
+
+
+        public MetadataIncluderServices()
+        {
+            dispatcher = new MutexObjectDispatcherServices<Nodo_pathsource>(MutexObjectDispatcherListType.fifo,new PauseCatcher(this));
+        }
 
         public bool IncorporaMetadata(FileSystemNodePlus<MyAddittionalData> nodo, MyFileSystemPlus mfsp)
         {
             if (GetIncorporaMetadataStatus() == MetadataIncluderAsyncStatus.nul)
             {
+                PauseCatcher pc = new PauseCatcher(this);
                 Worker = new Thread(() =>
                 {
-                    IncorporaMetadataRicorsivo(nodo, mfsp);
+					//TODO: l'incorpora metadata dovrebbe fuonzionare senza grafica, modificare i metodi affinchè i thread siano slegati dalla grafica
+					
+					
+                    FormService fs = ServicesManager.Get<FormService>();
+                    //Creo vari form per l'inclusione a dei metadati a thread (4)
+                    int n_thread = 4;
+                    int h = IncorporaMetatadaThread.height;
+                    int y = 0;
+
+                    FormsCloseCatcher FormChiusi = new FormsCloseCatcher();
+                    for (int i = 0; i < n_thread; i++)
+                    {
+                        int temp = y;
+                        fs.StartFormThread(() => { IncorporaMetatadaThread t= new IncorporaMetatadaThread(dispatcher, OnNodeProcessed, pc, temp); FormChiusi.AddForm(t);return t; });
+                        y += h;
+                    }
+
+
+                    RiempiDispatcher(nodo, mfsp, dispatcher);
+
+                    
+
+                    while(dispatcher.Count()!=0)    //Aspetto che il dispatcher venga svuotato
+                        Thread.Sleep(100);
+
+
+
+                    dispatcher.End = true;
+
+                    while (FormChiusi.TotAperti!= n_thread)    //Attendo che tutti i form vengano aperti ( sicurezza ) 
+                        Thread.Sleep(100);
+
+
+                    while (!FormChiusi)    //Attendo la chiusura di tutti form
+                        Thread.Sleep(100);
+
+
+
                     OnEnd?.Invoke();
                 });
                 Worker.Start();
@@ -119,6 +184,7 @@ namespace MusicLibraryManager.Services
             try
             {
                 Worker.Abort();
+                dispatcher.End = true;
                 _Pause = false;
             }catch (Exception e)
             {
@@ -135,7 +201,6 @@ namespace MusicLibraryManager.Services
                 return false;
         }
 
-        
 
         private void IncorporaMetadataRicorsivo(FileSystemNodePlus<MyAddittionalData> nodo, MyFileSystemPlus mfsp)
         {
@@ -143,7 +208,7 @@ namespace MusicLibraryManager.Services
             {
                 while (_Pause)
                     Thread.Sleep(100);
-                
+
                 if (n.Type == FileSystemNodePlusType.Directory)
                     IncorporaMetadataRicorsivo(n, mfsp);
                 else if (n.Type == FileSystemNodePlusType.File)
@@ -153,11 +218,29 @@ namespace MusicLibraryManager.Services
             }
         }
 
+        private void RiempiDispatcher(FileSystemNodePlus<MyAddittionalData> nodo, MyFileSystemPlus mfsp, MutexObjectDispatcherServices<Nodo_pathsource> dispatcher)
+        {
+            foreach (FileSystemNodePlus<MyAddittionalData> n in nodo.GetAllNode())
+            {
+                /*while (_Pause)
+                    Thread.Sleep(100);
+                */
+                if (n.Type == FileSystemNodePlusType.Directory)
+                    RiempiDispatcher(n, mfsp,dispatcher);
+                else if (n.Type == FileSystemNodePlusType.File)
+                {
+                    dispatcher.Add(new Nodo_pathsource() { nodo = n, Pathsource = mfsp.GetFullPath(n) });
+                    //IncorporaMetadataNodo(n, mfsp.GetFullPath(n));                    
+                }
+            }
+        }
+
 
         public void IncorporaMetadataNodo(FileSystemNodePlus<MyAddittionalData> nodo,String PathSource)
         {
-           
-            if (SystemService.FileExist(PathSource))
+
+            SystemService ss = ServicesManager.Get<SystemService>();
+            if (ss.FileExist(PathSource))
             {
                 OnNodeStartProcessing?.Invoke(nodo, PathSource);
                 if (nodo.AddittionalData == null)
@@ -166,10 +249,11 @@ namespace MusicLibraryManager.Services
                 if (nodo.AddittionalData.Metadata == null)
                     nodo.AddittionalData.Metadata = new FFmpegMetadata();
 
-                nodo.AddittionalData.Metadata = FFmpeg.GetMetadata(PathSource);
-                nodo.AddittionalData.Size = SystemService.FileSize(PathSource);
+                FFmpeg fs = ServicesManager.Get<FFmpeg>();
+                nodo.AddittionalData.Metadata = fs.GetMetadata(PathSource);
+                nodo.AddittionalData.Size = ss.FileSize(PathSource);
 
-                SystemService.GetMD5(PathSource, (double percent) =>
+                ss.GetMD5(PathSource, (double percent) =>
                 {
                     OnProgressChangedSingleMD5?.Invoke(percent);
                 }, (byte[] Hash) =>
@@ -213,5 +297,39 @@ namespace MusicLibraryManager.Services
     }
 
 
+    public class Nodo_pathsource
+    {
+        public FileSystemNodePlus<MyAddittionalData> nodo;
+        public String Pathsource;
+    }
 
+
+
+    public class FormsCloseCatcher :ICatcher<bool>
+    {
+        public int TotAperti = 0;
+        int Open = 0;
+        public void AddForm(Form f)
+        {
+            if (!f.IsDisposed)
+            {
+                Open++;
+                TotAperti++;
+                f.FormClosed += F_FormClosed;
+            }
+        }
+
+        private void F_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            Open--;
+        }
+
+        public override bool value
+        {
+            get
+            {
+                return Open == 0;
+            }
+        }
+    }
 }

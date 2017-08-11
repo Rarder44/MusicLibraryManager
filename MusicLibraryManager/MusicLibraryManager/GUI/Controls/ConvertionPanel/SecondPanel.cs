@@ -1,4 +1,6 @@
 ﻿using ExtendCSharp;
+using ExtendCSharp.Controls;
+using ExtendCSharp.Forms;
 using System;
 using System.Collections.Generic;
 using System.Linq;

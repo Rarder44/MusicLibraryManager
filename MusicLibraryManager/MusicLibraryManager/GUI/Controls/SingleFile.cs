@@ -11,6 +11,7 @@ using ExtendCSharp;
 using System.Drawing.Drawing2D;
 using ExtendCSharp.Services;
 using System.IO;
+using ExtendCSharp.ExtendedClass;
 
 namespace MusicLibraryManager.GUI.Controls
 {
@@ -120,7 +121,8 @@ namespace MusicLibraryManager.GUI.Controls
                 this.Icon.BackgroundImage = global::MusicLibraryManager.Properties.Resources.Folder;
             else if (Nodo.Type == FileSystemNodePlusType.File)
             {
-                Icon icon = RegisteredFileType.GetIconFromExtension(Path.GetExtension(Nodo.Name).ToLower());
+                
+                Icon icon = ServicesManager.Get<RegisteredFileTypeService>().GetIconFromExtension(Path.GetExtension(Nodo.Name).ToLower());
                 if (icon != null)
                     this.Icon.BackgroundImage = icon.ToBitmap();
             }

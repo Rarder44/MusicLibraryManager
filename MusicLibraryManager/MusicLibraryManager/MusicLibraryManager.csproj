@@ -115,6 +115,12 @@
     <Compile Include="GUI\Forms\ConvertMediaForm.Designer.cs">
       <DependentUpon>ConvertMediaForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\Forms\IncorporaMetatadaThread.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Forms\IncorporaMetatadaThread.Designer.cs">
+      <DependentUpon>IncorporaMetatadaThread.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\Forms\IndexFileForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -175,6 +181,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Forms\ConvertMediaForm.resx">
       <DependentUpon>ConvertMediaForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Forms\IncorporaMetatadaThread.resx">
+      <DependentUpon>IncorporaMetatadaThread.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Forms\IndexFileForm.resx">
       <DependentUpon>IndexFileForm.cs</DependentUpon>

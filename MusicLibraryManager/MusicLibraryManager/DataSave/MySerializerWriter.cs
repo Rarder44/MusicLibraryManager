@@ -17,8 +17,8 @@ namespace MusicLibraryManager.DataSave
         static public void Serialize(Object o, String Path)
         {
             /*File.WriteAllText(Path, Json.Serialize(o));*/
-                
-            File.WriteAllText(Path, ZipService.Zip(Json.Serialize(o)));          
+
+            File.WriteAllText(Path, ServicesManager.Get<ZipService>().Zip(ServicesManager.Get<JsonService>().Serialize(o)));          
 
         }
         static public  T Deserialize<T>(String Path)
@@ -29,7 +29,7 @@ namespace MusicLibraryManager.DataSave
             return default(T);   */ 
 
             if (File.Exists(Path))
-                return Json.Deserialize<T>(ZipService.UnZip( File.ReadAllText(Path)));
+                return ServicesManager.Get<JsonService>().Deserialize<T>(ServicesManager.Get<ZipService>().UnZip( File.ReadAllText(Path)));
             return default(T);
 
         }

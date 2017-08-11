@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using ExtendCSharp;
 using static ExtendCSharp.Services.FFmpeg;
+using ExtendCSharp.ExtendedClass;
 
 namespace MusicLibraryManager.GUI.Forms
 {
@@ -58,11 +59,12 @@ namespace MusicLibraryManager.GUI.Forms
         {
             Esecuzione = new Thread((object cp) =>
             {
+                FFmpeg fs = ServicesManager.Get<FFmpeg>();
                 if (cp == null || !(cp is CountParameter))
                 {
                     MessageBox.Show("Occorre passare i parametri per il conteggio!", "Errore", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
-                else if (!FFmpeg.Loaded)
+                else if (!fs.Loaded)
                 {
                     MessageBox.Show("FFmpeg non inizializzato!", "Errore", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
@@ -110,6 +112,7 @@ namespace MusicLibraryManager.GUI.Forms
         /// <returns></returns>
         private long CalcoloSpazio(FileSystemNodePlus<MyAddittionalData> nodo, MyFileSystemPlus mfsp, FFMpegMediaMetadata EndFormat)
         {
+            SystemService ss = ServicesManager.Get<SystemService>();
             if (EndFormat is FFMpegMediaMetadataMp3 )
             {
                 long t = 0;
@@ -123,12 +126,13 @@ namespace MusicLibraryManager.GUI.Forms
                     else if (n.Type == FileSystemNodePlusType.File)
                     {
                         String p = mfsp.GetFullPath(n);
-                        if (SystemService.FileExist(p))
+                        if (ss.FileExist(p))
                         {
                             textBox_source.SetTextInvoke(p);
-                            if(FFmpeg.GetMetadata(p).MediaMetadata!=null)
+                            FFmpeg fs = ServicesManager.Get<FFmpeg>();
+                            if (fs.GetMetadata(p).MediaMetadata!=null)
                             {
-                                String temp = FFmpeg.GetMetadata(p).MediaMetadata.Duration;
+                                String temp = fs.GetMetadata(p).MediaMetadata.Duration;
                                 string[] st = temp.Split(':');
                                 long tt = 0;
                                 if (st.Length == 3)

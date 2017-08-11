@@ -1,4 +1,5 @@
 ﻿using ExtendCSharp;
+using ExtendCSharp.ExtendedClass;
 using ExtendCSharp.Services;
 using MusicLibraryManager.GUI.Forms;
 using Newtonsoft.Json;
@@ -151,6 +152,7 @@ namespace MusicLibraryManager
         /// <param name="cp">Parametri di conversione</param>
         public void ConvertPlaylist(IEnumerable<FileSystemNodePlus<MyAddittionalData>> ListaNodi, IndexFile IndexFileSorgente, String DestFolder, ConversionParameter cp)
         {
+            SystemService ss = ServicesManager.Get<SystemService>();
             if (GUI)
                 StartGui();
 
@@ -195,12 +197,12 @@ namespace MusicLibraryManager
                     if (cp.TipoConversione == ConversinType.Mai)
                     {
                         String PathSource = IndexFileSorgente.RootFileSystem.GetFullPath(tt);
-                        String PathDestination = SystemService.Combine(DestFolder, (n.GetFullPath().TrimStart('\\', '/')));
+                        String PathDestination = ss.CombinePaths(DestFolder, (n.GetFullPath().TrimStart('\\', '/')));
 
                         if (CanUseGui)
                             CMForm.StartConvertItem(PathSource, PathDestination);
                         OnStartConverting?.Invoke(PathSource, PathDestination);
-                        SystemService.CopySecure(PathSource, PathDestination, cp.OverrideIfExist, (double Percent, ref bool cancelFlag) =>
+                        ss.CopySecure(PathSource, PathDestination, cp.OverrideIfExist, (double Percent, ref bool cancelFlag) =>
                         {
                             if (CanUseGui)
                                 CMForm.UpdateProgressPartial((int)Percent);
@@ -215,7 +217,7 @@ namespace MusicLibraryManager
                     {
 
                         String PathSource = IndexFileSorgente.RootFileSystem.GetFullPath(tt);
-                        String PathDestination = SystemService.Combine(DestFolder, SystemService.ChangeExtension(n.GetFullPath().TrimStart('\\', '/'), cp.ConvertiIn.GetDefaultExtension()));
+                        String PathDestination = ss.CombinePaths(DestFolder, ss.ChangeExtension(n.GetFullPath().TrimStart('\\', '/'), cp.ConvertiIn.GetDefaultExtension()));
 
 
 
@@ -225,7 +227,8 @@ namespace MusicLibraryManager
 
                         bool ForceConversion = cp.TipoConversione == ConversinType.Sempre ? true : false;
                         bool Err = false;
-                        FFmpeg.ConvertTo(Source, Dest, ForceConversion, cp.OverrideIfExist, (st, src, des) =>
+                        FFmpeg fs = ServicesManager.Get<FFmpeg>();
+                        fs.ConvertTo(Source, Dest, ForceConversion, cp.OverrideIfExist, (st, src, des) =>
                         {
                             if (st == FFmpegStatus.Running)
                             {

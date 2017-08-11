@@ -1,8 +1,10 @@
 ﻿using ExtendCSharp;
+using ExtendCSharp.ExtendedClass;
 using ExtendCSharp.Services;
 using MusicLibraryManager.GUI.Forms;
 using MusicLibraryManager.Services;
 using Newtonsoft.Json;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -291,7 +293,10 @@ namespace MusicLibraryManager
             }
 
             MI.IncorporaMetadata(t.Root, t);
-            t.Root.Remove((x) => { return x.Type == FileSystemNodePlusType.File && (x.AddittionalData.MD5 == "" || x.AddittionalData.MD5 == null); }, FileSystemNodePlusLevelType.AllNode, FileSystemNodePlusControlType.Post);
+            t.Root.Remove((x) => 
+            {
+                return x.Type == FileSystemNodePlusType.File && (x.AddittionalData.MD5 == "" || x.AddittionalData.MD5 == null);
+            }, FileSystemNodePlusLevelType.AllNode, FileSystemNodePlusControlType.Post);
             
 
         }
@@ -461,13 +466,14 @@ namespace MusicLibraryManager
             //scorro tutte le cartelle
             //imposto selezionato a tutti i file che trovo 
             //alla fine rimuovo i file non selezionati
-            String[] tfolder = SystemService.GetDirectories(CurrentPath);
+            SystemService ss = ServicesManager.Get<SystemService>();
+            String[] tfolder = ss.GetDirectories(CurrentPath);
             foreach (String s in tfolder)
             { 
                 UpdateRecursiveRealToList(FileSystem, s, Temp.CreateNode(s.TrimEnd('\\', '/').SplitAndGetLast("\\", "/"), FileSystemNodePlusType.Directory));
             }
 
-            String[] tfile = SystemService.GetFiles(CurrentPath);
+            String[] tfile = ss.GetFiles(CurrentPath);
             foreach (String s in tfile)
             {
                 if (LoadOption == null || (LoadOption != null && (!LoadOption.RestrictExtensionEnable || LoadOption.RestrictExtension.Contains(System.IO.Path.GetExtension(s).TrimStart('.').ToLower()))))
@@ -478,7 +484,7 @@ namespace MusicLibraryManager
                         //se il file non viene trovato vuol dire che è nuovo e lo aggiungo al temp
                         Temp.CreateNode(s.TrimEnd('\\', '/').SplitAndGetLast("\\", "/"), FileSystemNodePlusType.File);
                     }
-                    else if (n.AddittionalData.Size == SystemService.FileSize(s) && n.AddittionalData.MD5!=null && n.Type == (SystemService.FileExist(s)?FileSystemNodePlusType.File:FileSystemNodePlusType.Directory))
+                    else if (n.AddittionalData.Size == ss.FileSize(s) && n.AddittionalData.MD5!=null && n.Type == (ss.FileExist(s)?FileSystemNodePlusType.File:FileSystemNodePlusType.Directory))
                     {
                         // il file non è stato modificato ( dimensine ) 
                         // ha l'md5 

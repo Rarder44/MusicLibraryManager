@@ -1,4 +1,6 @@
 ﻿using ExtendCSharp;
+using ExtendCSharp.ExtendedClass;
+using ExtendCSharp.Forms;
 using ExtendCSharp.Services;
 using System;
 using System.Collections.Generic;
@@ -51,6 +53,8 @@ namespace MusicLibraryManager.GUI.Forms
 
         private void FFmpeg_Click(object sender, EventArgs e)
         {
+            FFmpeg fs = ServicesManager.Get<FFmpeg>();
+
             OpenFileDialog ofd = new OpenFileDialog();
             ofd.FileName = "FFmpeg";
             ofd.Filter = "FFmpeg|FFmpeg.exe";
@@ -58,10 +62,10 @@ namespace MusicLibraryManager.GUI.Forms
             {
                 if (File.Exists(ofd.FileName))
                 {
-                    if(FFmpeg.CheckValidFFmpeg(ofd.FileName))
+                    if(fs.CheckValidFFmpeg(ofd.FileName))
                     {
                         textBox_ffmpeg.Text = ofd.FileName;
-                        FFmpeg.Initialize(ofd.FileName, GlobalVar.ApplicationOption.PathMetaflac);
+                        fs.Initialize(ofd.FileName, GlobalVar.ApplicationOption.PathMetaflac);
                     }
                     else
                     {

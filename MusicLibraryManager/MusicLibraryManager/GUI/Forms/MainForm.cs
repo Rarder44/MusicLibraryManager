@@ -13,7 +13,9 @@ using MusicLibraryManager.DataSave;
 using MusicLibraryManager.GUI.Controls;
 using System.Threading;
 using System.IO;
-
+using ExtendCSharp.ExtendedClass;
+using ExtendCSharp.Forms;
+using ExtendCSharp.Controls;
 
 namespace MusicLibraryManager.GUI.Forms
 {
@@ -58,15 +60,16 @@ namespace MusicLibraryManager.GUI.Forms
 
         private void MainForm_Load(object sender, EventArgs e)
         {
+            SystemService ss = ServicesManager.Get<SystemService>();
             foreach(String s in GlobalVar.Extensions)
             {
-                if (SystemService.NormalizePath(SystemService.FileExtentionInfo(SystemService.AssocStr.Executable, s)) != SystemService.NormalizePath((Application.ExecutablePath)))
+                if (ss.NormalizePath(ss.FileExtentionInfo(SystemService.AssocStr.Executable, s)) != ss.NormalizePath((Application.ExecutablePath)))
                 {
-                    SystemService.SetAssociationFileExtention(s, "MusicLibraryManager.Rarder44", Application.ExecutablePath, "Music Library Manager RUUUUULEXXXXXX");
+                    ss.SetAssociationFileExtention(s, "MusicLibraryManager.Rarder44", Application.ExecutablePath, "Music Library Manager RUUUUULEXXXXXX");
                 }
             }
 
-            Directory.SetCurrentDirectory(SystemService.GetParent(Application.ExecutablePath));
+            Directory.SetCurrentDirectory(ss.GetParent(Application.ExecutablePath));
             LoadOptionFromFile(GlobalVar.PathOption);
             LoadIndexFromFile(GlobalVar.PathIndexFile,true, GlobalVar.ApplicationOption.PathMedia, GlobalVar.ApplicationOption.LoadMediaOption());
             LoadIndexMediaLibrary();
@@ -118,7 +121,7 @@ namespace MusicLibraryManager.GUI.Forms
             {
                 foreach (String s in args)
                 {
-                    if (SystemService.FileExist(s))
+                    if (ss.FileExist(s))
                     {
                         FileData FD = FileService.ReadFile(s);
                         if (FD == null)
@@ -136,7 +139,7 @@ namespace MusicLibraryManager.GUI.Forms
                         {
                             if(MessageBox.Show("Vuoi sostituire le opzioni?","Continuare?",MessageBoxButtons.YesNo,MessageBoxIcon.Warning)==DialogResult.Yes)
                             {
-                                SystemService.CopySecure(s, GlobalVar.PathOption, true);
+                                ss.CopySecure(s, GlobalVar.PathOption, true);
                                 LoadOptionFromFile(GlobalVar.PathOption);
                             }
                         }
@@ -144,7 +147,7 @@ namespace MusicLibraryManager.GUI.Forms
                         {
                             if (MessageBox.Show("Vuoi sostituire il file di indice?", "Continuare?", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
                             {
-                                SystemService.CopySecure(s, GlobalVar.PathIndexFile, true);
+                                ss.CopySecure(s, GlobalVar.PathIndexFile, true);
                                 LoadIndexFromFile(GlobalVar.PathIndexFile,true, GlobalVar.ApplicationOption.PathMedia, GlobalVar.ApplicationOption.LoadMediaOption());
                             }
                         }
@@ -157,6 +160,9 @@ namespace MusicLibraryManager.GUI.Forms
                     }
                 }
             }
+            this.WindowState = FormWindowState.Minimized;
+            this.Show();
+            this.WindowState = FormWindowState.Normal;
         }
 
       
@@ -239,6 +245,8 @@ namespace MusicLibraryManager.GUI.Forms
                 GlobalVar.ApplicationOption = FD.o._Cast<Option>();
             }
 
+
+            FFmpeg fs = ServicesManager.Get<FFmpeg>();
             GlobalVar.ApplicationOption.OnSomethingChenged += (ChangedVar var) =>
             {
                 FileService.WriteFile(Path, GlobalVar.ApplicationOption, FileDataType.Option);
@@ -250,13 +258,14 @@ namespace MusicLibraryManager.GUI.Forms
                 }
                 else if(var.HasFlag(ChangedVar.PathFFmpeg))
                 {
-                    FFmpeg.Initialize(GlobalVar.ApplicationOption.PathFFmpeg,GlobalVar.ApplicationOption.PathMetaflac);
+                  
+                    fs.Initialize(GlobalVar.ApplicationOption.PathFFmpeg,GlobalVar.ApplicationOption.PathMetaflac);
                 }
             };
 
 
             if (GlobalVar.ApplicationOption.PathFFmpeg != null && GlobalVar.ApplicationOption.PathMetaflac!=null)
-                FFmpeg.Initialize(GlobalVar.ApplicationOption.PathFFmpeg, GlobalVar.ApplicationOption.PathMetaflac);
+                fs.Initialize(GlobalVar.ApplicationOption.PathFFmpeg, GlobalVar.ApplicationOption.PathMetaflac);
 
         }
 
@@ -270,7 +279,8 @@ namespace MusicLibraryManager.GUI.Forms
             else
             {
                 Playlistlsocation pll = FD.o._Cast<Playlistlsocation>();
-                return pll.PathPlaylist.Contains(SystemService.NormalizePath(Path));
+                SystemService ss = ServicesManager.Get<SystemService>();
+                return pll.PathPlaylist.Contains(ss.NormalizePath(Path));
             }
         }
         void LoadPlaylistlsocationFromFile(String Path,bool GUI=true)
@@ -314,7 +324,8 @@ namespace MusicLibraryManager.GUI.Forms
 
         bool LoadPlaylist(String Path, bool ShowMessage = true)
         {
-            Path = SystemService.NormalizePath(Path);
+            SystemService ss = ServicesManager.Get<SystemService>();
+            Path = ss.NormalizePath(Path);
             FileData FD = FileService.ReadFile(Path);
             if (FD == null)
             {
@@ -385,7 +396,8 @@ namespace MusicLibraryManager.GUI.Forms
 
         void ReloadPlaylistFromFile(Playlist p)
         {
-            if(SystemService.FileExist(p.Path))
+            SystemService ss = ServicesManager.Get<SystemService>();
+            if (ss.FileExist(p.Path))
             {
                 FileData FD = FileService.ReadFile(p.Path);
                 if (FD != null && FD.o is Playlist)

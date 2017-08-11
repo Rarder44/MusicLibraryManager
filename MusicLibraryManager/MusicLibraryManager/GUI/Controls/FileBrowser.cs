@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using ExtendCSharp;
 using System.Text.RegularExpressions;
+using ExtendCSharp.ExtendedClass;
+using ExtendCSharp.Controls;
 
 namespace MusicLibraryManager.GUI.Controls
 {
@@ -179,7 +181,7 @@ namespace MusicLibraryManager.GUI.Controls
                         String path = CurrentNode.GetFullPath();
                         MyFileSystemPlus Clo = currentFileSystem.Clone();
                         FileSystemNodePlus<MyAddittionalData> nn = Clo.GetNodeFromPath(path);
-
+                        
                         MyFileSystemPlus temp = new MyFileSystemPlus();
                         temp.Root = nn;
                         temp = temp.FindPreserveTree((x) => { return x.AddittionalData.Selezionato; }, FileSystemNodePlusControlType.Pre);

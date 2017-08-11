@@ -69,44 +69,55 @@ namespace MusicLibraryManager.GUI.Forms
         public void AddRimossi(object obj)
         {
             listBox_Rimossi.AddInvoke(obj);
+            SelectLastIndex(listBox_Rimossi);
         }
         public void AddRimossi(object[] objArr)
         {
             listBox_Rimossi.AddInvoke(objArr);
+            SelectLastIndex(listBox_Rimossi);
         }
         public void AddRimossi(ListBox.ObjectCollection objColl)
         {
             listBox_Rimossi.AddInvoke(objColl);
+            SelectLastIndex(listBox_Rimossi);
         }
+        
 
         public void AddAggiunti(object obj)
         {
-            try
-            {
-                listBox_Aggiunti.AddInvoke(obj);
-            }
-            catch(Exception ex) { }
+            listBox_Aggiunti.AddInvoke(obj);
+            SelectLastIndex(listBox_Aggiunti);
         }
         public void AddAggiunti(object[] objArr)
         {
             listBox_Aggiunti.AddInvoke(objArr);
+            SelectLastIndex(listBox_Aggiunti);
         }
         public void AddAggiunti(ListBox.ObjectCollection objColl)
         {
             listBox_Aggiunti.AddInvoke(objColl);
+            SelectLastIndex(listBox_Aggiunti);
         }
 
         public void AddProblemi(object obj)
         {
             listBox_Problemi.AddInvoke(obj);
+            SelectLastIndex(listBox_Problemi);
         }
         public void AddProblemi(object[] objArr)
         {
             listBox_Problemi.AddInvoke(objArr);
+            SelectLastIndex(listBox_Problemi);
         }
         public void AddProblemi(ListBox.ObjectCollection objColl)
         {
             listBox_Problemi.AddInvoke(objColl);
+            SelectLastIndex(listBox_Problemi);
+        }
+
+        public void SelectLastIndex(ListBox l)
+        {
+            l.SetSelectedIndexInvoke(l.GetItemsCountInvoke() - 1);
         }
 
 
